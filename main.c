@@ -23,11 +23,13 @@ int main(){
 
   save_ppm(img,"bred.ppm");
 
-  struct board* copy_board = load_ppm("bred.ppm");
+  struct board* copy_board;
+  copy_board = load_ppm("bred.ppm");
 
   save_ppm(copy_board, "dont_change_jerrys_fire_code.ppm");
 
   free_board(&img);
+  free_board(&copy_board);
 
   return EXIT_SUCCESS;
 }

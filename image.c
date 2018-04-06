@@ -131,7 +131,8 @@ struct board* load_ppm(const char* file){
     }
   }
 
-  struct board* new_board = make_board(&res_x, &res_y);
+  struct board* new_board;
+  new_board = make_board(&res_x, &res_y);
   //fire we made the board
   //read in the pixels
   int current_y = 0;
@@ -166,6 +167,8 @@ struct board* load_ppm(const char* file){
     }
     current_y += 1;
   }
+  fclose(fp);
+  if(line) free(line);
   return new_board;
 }
 
