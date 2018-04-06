@@ -10,14 +10,16 @@
 
 int main(){
   struct board* img;
-  int dimx=200;
+  int dimx=100;
   int dimy=100;
   img = make_board(&dimx,&dimy);
-  for(int c1 = 0; c1 < dimx; c1++){
-    for(int c2 = 0; c2 < dimy; c2++){
-      set_pixel(img, &c1, &c2, 0,0,255);
-    }
+
+  for(int x = 0; x<dimx;++x)
+  {
+    int zero = 0;
+    set_pixel(img,&x,&zero, x+155,0,0);
   }
+
   save_ppm(img,"bred.ppm");
 
   free_board(&img);

@@ -12,6 +12,7 @@ struct pixel{
   int blue;
 };
 
+//top left of board is 0,0
 struct board
 {
   int resolution_x;
