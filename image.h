@@ -20,10 +20,10 @@ struct board
 };
 
 struct pixel get_pixel(const struct board* board, const int* x, const int* y);
-void set_pixel(const struct board* board, const int* x, const int* y, const int* r, const int* g, const int* b);
+void set_pixel(const struct board *board, const int *x, const int *y, int r, int g, int b);
 void save_ppm(const struct board* board, const char* file);
-*board make_board(const int* res_x, const int* res_y);
-
+struct board* make_board(const int* res_x, const int* res_y);
+void free_board(struct board** board);
 
 
 #endif
