@@ -10,17 +10,22 @@
 
 int main(){
   struct board* img;
-  int dimx=100;
-  int dimy=100;
+  int dimx=500;
+  int dimy=250;
   img = make_board(&dimx,&dimy);
 
   for(int x = 0; x<dimx;++x)
   {
-    int zero = 0;
-    set_pixel(img,&x,&zero, x+155,0,0);
+    for(int y = 0; y < dimy; ++y){
+      set_pixel(img,&x,&y, (x + 100) % 255 , (y),0);
+    }
   }
 
   save_ppm(img,"bred.ppm");
+
+  struct board* copy_board = load_ppm("bred.ppm");
+
+  save_ppm(copy_board, "dont_change_jerrys_fire_code.ppm");
 
   free_board(&img);
 

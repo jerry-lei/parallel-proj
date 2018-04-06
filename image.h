@@ -25,6 +25,6 @@ void set_pixel(const struct board *board, const int *x, const int *y, int r, int
 void save_ppm(const struct board* board, const char* file);
 struct board* make_board(const int* res_x, const int* res_y);
 void free_board(struct board** board);
-
+struct board* load_ppm(const char* file);
 
 #endif
