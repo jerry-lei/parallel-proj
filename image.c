@@ -152,16 +152,12 @@ struct board* load_ppm(const char* file){
         }
         else if(number_ints_read % 3 == 2){
           b = val;
+          int current_x = number_ints_read / 3;
+          set_pixel(new_board, &current_x, &current_y, r,g,b);
         }
         number_ints_read += 1;
       }
       else { // Otherwise, move on to the next character.
-        if(len > 0){
-          if(number_ints_read % 3 == 2){
-            int current_x = number_ints_read / 3;
-            set_pixel(new_board, &current_x, &current_y, r,g,b);
-          }
-        }
         ptr++;
       }
     }

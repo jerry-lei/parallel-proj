@@ -17,7 +17,7 @@ int main(){
   for(int x = 0; x<dimx;++x)
   {
     for(int y = 0; y < dimy; ++y){
-      set_pixel(img,&x,&y, (x + 100) % 255 , (y),0);
+      set_pixel(img,&x,&y, (x + 100) % 255 , (y + 100) % 255 , y + 10);
     }
   }
 
