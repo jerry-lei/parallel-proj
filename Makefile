@@ -1,5 +1,5 @@
 all: main.c image.c
-	gcc *.c
+	gcc *.c -lm
 run:
 	./a.out
 leak:

@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <ctype.h>
+#include <math.h>
 #include "image.h"
+#include "boolean.h"
 
 //returns the pixel at the given x,y coordinate
 struct pixel get_pixel(const struct board *board, const int *x, const int *y)
 {
   if ((*x) >= board->resolution_x || ((*y) >=board->resolution_y) || (*x) < 0 || (*y) < 0)
   {
-    fprintf(stderr, "ERROR: Trying to access out of bounds. Function get_pixel in image.c.\n");
+    fprintf(stderr, "ERROR: Trying to access out of bounds\n");
   }
   return (board->image)[*y][*x];
 }
@@ -18,7 +21,7 @@ void set_pixel(const struct board *board, const int *x, const int *y, int r, int
 {
   if ((*x) >= board->resolution_x || ((*y) >= board->resolution_y) || (*x) < 0 || (*y) < 0)
   {
-    fprintf(stderr, "ERROR: Trying to access out of bounds. Function set_pixel in image.c.\n");
+    fprintf(stderr, "ERROR: Trying to access out of bounds\n");
     fprintf(stderr, "x:%d y:%d\n", *x, *y);
   }
 
@@ -82,7 +85,7 @@ struct board* load_ppm(const char* file){
 
   fp = fopen(file,"r");
   if(fp == NULL){
-    fprintf(stderr, "Rut roh: File couldn't open. Function load_ppm in image.c.\n");
+    fprintf(stderr, "ERROR: Could not open file\n");
     return NULL;
   }
   //read 3 lines before making a board
@@ -96,7 +99,7 @@ struct board* load_ppm(const char* file){
     else{
       if(number_lines_read == 0){
         if(line[0] != 'P'){
-          fprintf(stderr, "Rut roh: You did a bamboozle, bad image descriptor. Function load_ppm in image.c.\n");
+          fprintf(stderr, "ERROR: Bad image descriptor\n");
           return NULL;
         }
       }
@@ -119,7 +122,7 @@ struct board* load_ppm(const char* file){
           }
         }
         if(number_ints_read != 2){
-          fprintf(stderr, "Rut roh: You did a bamboozle, too many dimensions. We're playing 2D chess, not %dD chess. Function load_ppm in image.c.\n", number_ints_read);
+          fprintf(stderr, "ERROR: Corrupted file\n");
           return NULL;
         }
       }
@@ -176,4 +179,14 @@ void free_board(struct board **board)
   }
   free((*board)->image);
   free(*board);
+}
+
+int sheer(struct board** board, double degrees)
+{
+  double beta = sin(degrees*(PI/180.0)); 
+  double alpha = -tan((degrees*(PI/180.0))/2);
+
+  printf("A:%f",alpha);
+  printf("B:%f\n",beta);
+  return TRUE;
 }

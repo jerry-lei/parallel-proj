@@ -10,8 +10,8 @@
 
 int main(){
   struct board* img;
-  int dimx=500;
-  int dimy=250;
+  int dimx=100;
+  int dimy=100;
   img = make_board(&dimx,&dimy);
 
   for(int x = 0; x<dimx;++x)
@@ -30,6 +30,8 @@ int main(){
 
   free_board(&img);
   free_board(&copy_board);
+
+  sheer(&img,20.0);
 
   return EXIT_SUCCESS;
 }

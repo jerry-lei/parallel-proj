@@ -3,6 +3,7 @@
 
 #define MAX_COLOR 255
 #define DEFAULT_COLOR 0
+#define PI 3.14159265358979323846
 
 //color struct represents a pixel.
 struct pixel{
@@ -26,5 +27,9 @@ void save_ppm(const struct board* board, const char* file);
 struct board* make_board(const int* res_x, const int* res_y);
 void free_board(struct board** board);
 struct board* load_ppm(const char* file);
-
+int sheer(struct board** board, double degrees);
 #endif
+
+
+
+//http://datagenetics.com/blog/august32013/index.html
