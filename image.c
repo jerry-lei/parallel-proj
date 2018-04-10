@@ -12,9 +12,9 @@ struct pixel get_pixel(const struct board *board, const int *x, const int *y)
 {
   if ((*x) >= board->resolution_x || ((*y) >= board->resolution_y) || (*x) < 0 || (*y) < 0)
   {
-    #ifndef NO_ERROR
+#ifndef NO_ERROR
     fprintf(stderr, "ERROR: Trying to get out of bounds\n");
-    #endif
+#endif
   }
   return (board->image)[*y][*x];
 }
@@ -23,10 +23,10 @@ void set_pixel(const struct board *board, const int *x, const int *y, int r, int
 {
   if ((*x) >= board->resolution_x || ((*y) >= board->resolution_y) || (*x) < 0 || (*y) < 0)
   {
-    #ifndef NO_ERROR
+#ifndef NO_ERROR
     fprintf(stderr, "ERROR: Trying to set out of bounds\n");
     fprintf(stderr, "x:%d y:%d\n", *x, *y);
-    #endif
+#endif
   }
 
   //add out of bounds color checking
@@ -34,6 +34,12 @@ void set_pixel(const struct board *board, const int *x, const int *y, int r, int
   (board->image)[*y][*x].red = r;
   (board->image)[*y][*x].blue = b;
   (board->image)[*y][*x].green = g;
+}
+void scale_pixel(struct pixel* pixel, double scale)
+{
+  pixel->red *= scale;
+  pixel->blue *= scale;
+  pixel->green *= scale;
 }
 
 //saves the specified board into the file.
@@ -209,37 +215,186 @@ void free_board(struct board **board)
   free(*board);
 }
 
-int sheer_x(struct board **board, double degrees)
+int shear_x(struct board **board, double degrees)
 {
-  double beta = sin(degrees * (PI / 180.0));
+  //double beta = sin(degrees * (PI / 180.0));
   double alpha = tan((degrees * (PI / 180.0)) / 2);
 
-  int dim_x = abs((2 * alpha) * ((*board)->resolution_x))+(*board)->resolution_x;
+  int dim_x = abs((alpha) * ((*board)->resolution_x)) + (*board)->resolution_x;
   int dim_y = (*board)->resolution_y;
-  printf("x:%d  y:%d\n",dim_x,dim_y);
-  struct board *sheered = make_board(&dim_x, &dim_y);
 
+  //int dim_x=200;
+  //int dim_y=200;
+  struct board *sheared = make_board(&dim_x, &dim_y);
+  if (sheared == NULL)
+  {
+    return -1;
+  }
+  for (int y = 0; y < dim_y; ++y)
+  {
+    for (int x = 0; x < dim_x; ++x)
+    {
+      set_pixel(sheared, &x, &y, 255, 255, 255);
+    }
+  }
 
+  int a = 50;
+  int b = 50;
+  struct pixel test = get_pixel(*board, &a, &b);
+  printf("R:%d G:%d B:%d\n", test.red, test.green, test.blue);
   for (int y = 0; y < (*board)->resolution_y; ++y)
   {
-    double skew = alpha * (y + 0.5);
-    double skew_i = floor(skew);
-    double skew_f = skew - skew_i;
-    double oleft = 0.0;
+    double skew = alpha * y;
+    int skewi = floor(skew);
+    double skewf = skew - skewi;
+    double oleft = 0;
+    for (int x = (*board)->resolution_x - 1; x >= 0; --x)
+    {
+      struct pixel p = get_pixel(*board, &x, &y);
+      int left = 0;
+      if (x + skewi > 0)
+      {
+        int new_x = x + skewi;
+        set_pixel(sheared, &new_x, &y, p.red, p.green, p.blue);
+      }
+      oleft = left;
+    }
+    if (skewi + 1 > 0)
+    {
+      int new_x = skewi + 1;
+      // /set_pixel(sheared,&new_x,&y,oleft,oleft,oleft);
+    }
+  }
+  free_board(board);
+
+  *board = sheared;
+
+  return 0;
+}
+
+int shear_x_experiment(struct board **board, double degrees)
+{
+  //this does antialiasing
+  //try on stripes.ppm
+  //does not malloc a large enough image when angle increases
+  double beta = sin(degrees * (PI / 180.0));
+
+  int dim_x = abs((beta) * ((*board)->resolution_x)) + (*board)->resolution_x;
+  int dim_y = (*board)->resolution_y;
+
+  struct board *sheared = make_board(&dim_x, &dim_y);
+  if (sheared == NULL)
+  {
+    return -1;
+  }
+  for (int y = 0; y < dim_y; ++y)
+  {
+    for (int x = 0; x < dim_x; ++x)
+    {
+      set_pixel(sheared, &x, &y, 255, 255, 255);
+    }
+  }
+
+  //for (int y = 0; y < (*board)->resolution_y; ++y)
+  for(int y = (*board)->resolution_y-1; y >= 0; --y)
+  {
+    double skew = beta * y;
+
+    // /double skew = beta*(y+0.5);
+    int skewi = floor(skew);
+    double skewf = skew - skewi;
+    struct pixel oleft;
+    oleft.red=255;
+    oleft.green=255;
+    oleft.blue=255;
+    //for (int x = (*board)->resolution_x-1; x >=0; --x)
+    for (int x = 0; x <(*board)->resolution_x; ++x)
+    {
+      int pos_x = (*board)->resolution_x-x;
+      
+      struct pixel pixel = get_pixel(*board, &x, &y);
+      struct pixel left;
+
+      left.red=pixel.red;
+      left.green=pixel.green;
+      left.blue=pixel.blue;
+      scale_pixel(&left,skewf);
+      
+      pixel.red-=left.red;
+      pixel.red+=oleft.red;
+
+      pixel.green-=left.green;
+      pixel.green+=oleft.green;
+
+      pixel.blue-=left.blue;
+      pixel.blue+=oleft.blue;
+
+      if(x+skewi>0)
+      {
+        int shear_pos_x = pos_x+skewi;
+        set_pixel(sheared,&shear_pos_x,&y,pixel.red,pixel.green,pixel.blue);
+      }
+      oleft=left;
+    }
+    if(skewi+1>0)
+    {
+      int temp = skewi+1;
+      set_pixel(sheared,&temp,&y,oleft.red,oleft.green,oleft.blue);
+    }
+  }
+  free_board(board);
+
+  *board = sheared;
+
+  return 0;
+}
+
+int shear_y(struct board **board, double degrees)
+{
+  //double beta = sin(degrees * (PI / 180.0));
+  double beta = tan((degrees * (PI / 180.0)) / 2);
+  int dim_x = (*board)->resolution_x;
+  int dim_y = abs(beta * ((*board)->resolution_y)) + (*board)->resolution_y;
+
+  struct board *sheared = make_board(&dim_x, &dim_y);
+  if (sheared == NULL)
+  {
+    return -1;
+  }
+  for (int y = 0; y < dim_y; ++y)
+  {
+    for (int x = 0; x < dim_x; ++x)
+    {
+      set_pixel(sheared, &x, &y, 255, 255, 255);
+    }
+  }
+  for (int y = 0; y < (*board)->resolution_y; ++y)
+  {
 
     for (int x = 0; x < (*board)->resolution_x; ++x)
     {
-      int x_p = x - beta * y;
-      int x_pos = (*board)->resolution_x - x;
-      struct pixel pix = get_pixel(*board, &x, &y);
-
-      set_pixel(sheered, &x_p, &y, pix.red, pix.green, pix.blue);
+      double skew = beta * x;
+      int skewi = floor(skew);
+      double skewf = skew - skewi;
+      double oleft = 0;
+      int pos = (*board)->resolution_y - y;
+      struct pixel p = get_pixel(*board, &x, &pos);
+      int left = 0;
+      if (y - skewi > 0)
+      {
+        int new_y = y - skewi;
+        set_pixel(sheared, &x, &new_y, p.red, p.green, p.blue);
+      }
+      oleft = left;
+    }
+    //if (skewi + 1 > 0)
+    {
+      //int new_x = skewi + 1;
+      // /set_pixel(sheared,&new_x,&y,oleft,oleft,oleft);
     }
   }
-save_ppm(sheered,"sheer_wood.ppm");
   free_board(board);
+  *board = sheared;
 
-  board = &sheered;
-
-  return TRUE;
+  return 0;
 }

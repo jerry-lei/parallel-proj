@@ -1,6 +1,9 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
+//http://datagenetics.com/blog/august32013/index.html
+//https://www.ocf.berkeley.edu/~fricke/projects/israel/paeth/rotation_by_shearing.html
+
 #define MAX_COLOR 255
 #define DEFAULT_COLOR 0
 #define PI 3.14159265358979323846
@@ -23,14 +26,12 @@ struct board
 
 struct pixel get_pixel(const struct board* board, const int* x, const int* y);
 void set_pixel(const struct board *board, const int *x, const int *y, int r, int g, int b);
+void scale_pixel(struct pixel* pixel, double scale);
 void save_ppm(const struct board* board, const char* file);
 struct board* make_board(const int* res_x, const int* res_y);
 void free_board(struct board** board);
 struct board* load_ppm(const char* file);
-int sheer_x(struct board** board, double degrees);
+int shear_x(struct board** board, double degrees);
+int shear_x_experiment(struct board** board, double degrees);
+int shear_y(struct board** board, double degrees);
 #endif
-
-
-
-//http://datagenetics.com/blog/august32013/index.html
-//https://www.ocf.berkeley.edu/~fricke/projects/israel/paeth/rotation_by_shearing.html

@@ -1,6 +1,6 @@
 all: main.c image.c
-	gcc *.c -lm
+	gcc image.c main.c -g -lm
 run:
 	./a.out
-leak:
+valgrind:
 	valgrind --leak-check=full -v ./a.out

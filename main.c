@@ -9,31 +9,16 @@
 
 
 int main(){
-  /*struct board* img;
-  int dimx=100;
-  int dimy=100;
-  img = make_board(&dimx,&dimy);
 
-  for(int x = 0; x<dimx;++x)
-  {
-    for(int y = 0; y < dimy; ++y){
-      set_pixel(img,&x,&y, (x + 100) % 255 , (y + 100) % 255 , y + 10);
-    }
-  }
-
-  save_ppm(img,"bred.ppm");
-
-  struct board* copy_board;
-  copy_board = load_ppm("bred.ppm");
-
-  save_ppm(copy_board, "dont_change_jerrys_fire_code.ppm");
-
-  free_board(&img);
-  free_board(&copy_board);*/
-
-  struct board* img = load_ppm("wood.ppm");
-  sheer_x(&img,20.0);
-  //save_ppm(img,"sheer_wood.ppm");
+  struct board* img = load_ppm("stripes.ppm");
+    int a=50;
+  int b=50;
+  struct pixel test = get_pixel(img,&a,&b);
+  printf("R:%d G:%d B:%d\n",test.red,test.green,test.blue);
+  shear_x_experiment(&img,20.0);
+  //shear_y(&img,20.0);
+  //shear_x(&img,20.0);
+  save_ppm(img, "shear_stripes.ppm");
   free_board(&img);
 
   return EXIT_SUCCESS;
