@@ -9,7 +9,7 @@
 
 
 int main(){
-  struct board* img;
+  /*struct board* img;
   int dimx=100;
   int dimy=100;
   img = make_board(&dimx,&dimy);
@@ -29,9 +29,12 @@ int main(){
   save_ppm(copy_board, "dont_change_jerrys_fire_code.ppm");
 
   free_board(&img);
-  free_board(&copy_board);
+  free_board(&copy_board);*/
 
-  sheer(&img,20.0);
+  struct board* img = load_ppm("wood.ppm");
+  sheer_x(&img,20.0);
+  //save_ppm(img,"sheer_wood.ppm");
+  free_board(&img);
 
   return EXIT_SUCCESS;
 }

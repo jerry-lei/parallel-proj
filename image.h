@@ -27,9 +27,10 @@ void save_ppm(const struct board* board, const char* file);
 struct board* make_board(const int* res_x, const int* res_y);
 void free_board(struct board** board);
 struct board* load_ppm(const char* file);
-int sheer(struct board** board, double degrees);
+int sheer_x(struct board** board, double degrees);
 #endif
 
 
 
 //http://datagenetics.com/blog/august32013/index.html
+//https://www.ocf.berkeley.edu/~fricke/projects/israel/paeth/rotation_by_shearing.html
