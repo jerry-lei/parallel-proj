@@ -282,8 +282,9 @@ int shear_x_experiment(struct board **board, double degrees)
   //does not malloc a large enough image when angle increases
   double beta = sin(degrees * (PI / 180.0));
 
-  int dim_x = abs((beta) * ((*board)->resolution_x)) + (*board)->resolution_x;
+  int dim_x = ceil(beta*(*board)->resolution_y)+ (*board)->resolution_x;
   int dim_y = (*board)->resolution_y;
+  printf("Shear image dim x:%d y:%d\n",dim_x,dim_y);
 
   struct board *sheared = make_board(&dim_x, &dim_y);
   if (sheared == NULL)
@@ -302,20 +303,19 @@ int shear_x_experiment(struct board **board, double degrees)
   for(int y = (*board)->resolution_y-1; y >= 0; --y)
   {
     double skew = beta * y;
-
-    // /double skew = beta*(y+0.5);
     int skewi = floor(skew);
     double skewf = skew - skewi;
     struct pixel oleft;
-    oleft.red=255;
-    oleft.green=255;
-    oleft.blue=255;
+    oleft.red=0;
+    oleft.green=0;
+    oleft.blue=0;
     //for (int x = (*board)->resolution_x-1; x >=0; --x)
     for (int x = 0; x <(*board)->resolution_x; ++x)
     {
-      int pos_x = (*board)->resolution_x-x;
+      int pos_x = (*board)->resolution_x-1-x;
+      pos_x=x;
 
-      struct pixel pixel = get_pixel(*board, &x, &y);
+      struct pixel pixel = get_pixel(*board, &pos_x, &y);
       struct pixel left;
 
       left.red=pixel.red;
@@ -332,7 +332,7 @@ int shear_x_experiment(struct board **board, double degrees)
       pixel.blue-=left.blue;
       pixel.blue+=oleft.blue;
 
-      if(x+skewi>0)
+      if(pos_x+skewi>0)
       {
         int shear_pos_x = pos_x+skewi;
         set_pixel(sheared,&shear_pos_x,&y,pixel.red,pixel.green,pixel.blue);
@@ -342,7 +342,7 @@ int shear_x_experiment(struct board **board, double degrees)
     if(skewi+1>0)
     {
       int temp = skewi+1;
-      set_pixel(sheared,&temp,&y,oleft.red,oleft.green,oleft.blue);
+      //set_pixel(sheared,&temp,&y,oleft.red,oleft.green,oleft.blue);
     }
   }
   free_board(board);
