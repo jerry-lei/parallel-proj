@@ -164,7 +164,6 @@ struct board *load_ppm(const char *file)
   new_board = make_board(&res_x, &res_y);
   //fire we made the board
   //read in the pixels
-  int current_y = 0;
   while ((read = getline(&line, &len, fp)) != -1)
   {
     int r, g, b;
@@ -188,6 +187,7 @@ struct board *load_ppm(const char *file)
         {
           b = val;
           int current_x = number_ints_read / 3;
+          int current_y = number_ints_read / res_y;
           set_pixel(new_board, &current_x, &current_y, r, g, b);
         }
         number_ints_read += 1;
@@ -197,7 +197,6 @@ struct board *load_ppm(const char *file)
         ptr++;
       }
     }
-    current_y += 1;
   }
   fclose(fp);
   if (line)
@@ -311,7 +310,7 @@ int shear_x_experiment(struct board **board, double degrees)
     for (int x = 0; x <(*board)->resolution_x; ++x)
     {
       int pos_x = (*board)->resolution_x-x;
-      
+
       struct pixel pixel = get_pixel(*board, &x, &y);
       struct pixel left;
 
@@ -319,7 +318,7 @@ int shear_x_experiment(struct board **board, double degrees)
       left.green=pixel.green;
       left.blue=pixel.blue;
       scale_pixel(&left,skewf);
-      
+
       pixel.red-=left.red;
       pixel.red+=oleft.red;
 
