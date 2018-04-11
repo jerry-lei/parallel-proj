@@ -387,11 +387,24 @@ int shear_x_experiment(struct board **board, double degrees)
   return 0;
 }
 
+int shear_y_experiment(struct board **board, double degrees){
+  if(degrees > 0){
+    shear_y(*board, 0-degrees);
+  }
+  else{
+    shear_y(*board, fabs(degrees));
+  }
+  return 0;
+}
+
 int shear_y(struct board **board, double degrees)
 {
   double alpha = sin(degrees * (PI / 180.0));
+  //double alpha = 0.34;
+  printf("Alpha: %f\n", alpha);
+  //double alpha = tan((degrees * (PI / 180.0)) / 2);
   int dim_x = (*board)->resolution_x;
-  int dim_y = ceil(alpha * (*board)->resolution_y) + (*board)->resolution_y;
+  int dim_y = ceil(fabs(alpha) * (*board)->resolution_x) + (*board)->resolution_y;
   printf("Shear image dim x:%d y:%d\n", dim_x, dim_y);
 
   struct board *sheared = make_board(&dim_x, &dim_y);
@@ -407,26 +420,60 @@ int shear_y(struct board **board, double degrees)
     }
   }
   //for (int y = 0; y < (*board)->resolution_y; ++y)
-  for(int y = (*board)->resolution_y-1; y >= 0; --y)
+  //for(int y = (*board)->resolution_y-1; y >= 0; --y)
+  for (int x = 0; x < (*board)->resolution_x; ++x)
+  //for(int x = (*board)->resolution_x; x>=0;--x)
   {
 
-    for (int x = 0; x < (*board)->resolution_x; ++x)
+    double skew = alpha * x;
+    int skewi = floor(skew);
+    double skewf = skew - skewi;
+    struct pixel oleft;
+    oleft.red = 255;
+    oleft.green = 255;
+    oleft.blue = 255;
+
+    for (int y = 0; y < (*board)->resolution_y; ++y)
+    //for(int y = (*board)->resolution_y-1; y >= 0; --y)
+    //for (int x = 0; x < (*board)->resolution_x; ++x)
     //for(int x = (*board)->resolution_x; x>=0;--x)
     {
-      double skew = alpha * x;
-      int skewi = floor(skew);
-      double skewf = skew - skewi;
-      double oleft = 0;
       int pos = (*board)->resolution_y - y-1;
-      struct pixel p = get_pixel(*board, &x, &pos);
-      int left = 0;
-      if (y + skewi > 0)
-      {
-        int new_y = y + skewi;
-        set_pixel(sheared, &x, &new_y, p.red, p.green, p.blue);
+      struct pixel pixel = get_pixel(*board, &x, &y);
+      struct pixel left;
+
+      left.red = pixel.red;
+      left.green = pixel.green;
+      left.blue = pixel.blue;
+      scale_pixel(&left, skewf);
+
+      pixel.red -= left.red;
+      pixel.red += oleft.red;
+
+      pixel.green -= left.green;
+      pixel.green += oleft.green;
+
+      pixel.blue -= left.blue;
+      pixel.blue += oleft.blue;
+      //if ((*board)->resolution_y - (y + skewi) > 0)
+      if(degrees > 0.0){
+        if ((y + skewi) > 0)
+        {
+          //int new_y = (*board)->resolution_y - (y + skewi);
+          int new_y = (y + skewi);
+          set_pixel(sheared, &x, &new_y, pixel.red, pixel.green, pixel.blue);
+        }
+        oleft = left;
       }
-      oleft = left;
-    }
+      else{
+        if ((y+skewi + floor(fabs(alpha) * (*board)->resolution_y)) > 0 )
+        {
+          int new_y = (y+skewi + floor(fabs(alpha) * (*board)->resolution_y)) ;
+          set_pixel(sheared, &x, &new_y, pixel.red, pixel.green, pixel.blue);
+        }
+        oleft = left;
+      }
+  }
     //if (skewi + 1 > 0)
     {
       //int new_x = skewi + 1;
