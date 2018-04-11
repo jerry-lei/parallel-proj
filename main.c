@@ -10,16 +10,16 @@
 
 int main(){
 
-  struct board* img = load_ppm("square.ppm");
+  struct board* img = load_ppm("stripes.ppm");
   printf("After load ppm\n");
-  //   int a=50;
-  // int b=50;
-  // struct pixel test = get_pixel(img,&a,&b);
-  // printf("R:%d G:%d B:%d\n",test.red,test.green,test.blue);
+     int a=50;
+   int b=50;
+   struct pixel test = get_pixel(img,&a,&b);
+  printf("R:%d G:%d B:%d\n",test.red,test.green,test.blue);
   shear_x_experiment(&img,20.0);
-  //shear_y(&img,20.0);
+  shear_y(&img,20.0);
   //shear_x(&img,20.0);
-  save_ppm(img, "shear_stripes.ppm");
+  save_ppm(img, "thingy_shear.ppm");
   free_board(&img);
 
   return EXIT_SUCCESS;
