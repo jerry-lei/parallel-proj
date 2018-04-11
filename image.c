@@ -164,15 +164,20 @@ struct board *load_ppm(const char *file)
   new_board = make_board(&res_x, &res_y);
   //fire we made the board
   //read in the pixels
+  int current_y = 0;
+  int number_ints_read = 0;
   while ((read = getline(&line, &len, fp)) != -1)
   {
     int r, g, b;
-    int number_ints_read = 0;
     char *ptr = line;
     while (*ptr)
     {
       if (isdigit(*ptr))
       {
+        if(number_ints_read >= res_x * 3){
+          current_y += 1;
+          number_ints_read = 0;
+        }
         long val = strtol(ptr, &ptr, 10);
         //this is so bad i don't even know what i'm thinking
         if (number_ints_read % 3 == 0)
@@ -187,7 +192,6 @@ struct board *load_ppm(const char *file)
         {
           b = val;
           int current_x = number_ints_read / 3;
-          int current_y = number_ints_read / res_y;
           set_pixel(new_board, &current_x, &current_y, r, g, b);
         }
         number_ints_read += 1;
