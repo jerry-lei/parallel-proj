@@ -252,65 +252,66 @@ int resize_board(struct board** board, int ignore_r, int ignore_g, int ignore_b)
   int down_bound = dim_y - 1;
   //get left_bound, right_bound
   for(int c1 = 0; c1 < dim_x; c1++){
-    if(right_bound != dim_x - 1 && left_bound != 0) break;
+    if(left_bound != 0) break;
     for(int c2 = 0; c2 < dim_y; c2++){
-      if(right_bound != dim_x - 1 && left_bound != 0) break;
+      if(left_bound != 0) break;
       //get the left bound
       struct pixel get_pix = get_pixel(*board, &c1, &c2);
-      if(get_pix.red != ignore_r || get_pix.green != ignore_g || get_pix.blue != ignore_b ){
+      if(get_pix.red != ignore_r || get_pix.green != ignore_g || get_pix.blue != ignore_b )
         left_bound = c1;
-      }
-      //get the right bound
-      int right_c1 = dim_x - c1 - 1;
-      int right_c2 = dim_x - c2 - 1;
-      get_pix = get_pixel(*board, &right_c1, &right_c2);
-      if(get_pix.red != ignore_r || get_pix.green != ignore_g || get_pix.blue != ignore_b ){
-        right_bound = (dim_x-c1-1)+1;
-      }
+    }
+  }
+  for(int c1 = dim_x - 1; c1 >= 0; c1--){
+    if(right_bound != dim_x-1) break;
+    for(int c2 = dim_y - 1; c2 >= 0; c2--){
+      if(right_bound != dim_x-1) break;
+      //get the left bound
+      struct pixel get_pix = get_pixel(*board, &c1, &c2);
+      if(get_pix.red != ignore_r || get_pix.green != ignore_g || get_pix.blue != ignore_b )
+        right_bound = c1;
     }
   }
   //get up_bound, down_bound
   for(int c1 = 0; c1 < dim_y; c1++){
-    if(down_bound != dim_y - 1 && up_bound != 0) break;
-    for(int c2 = 0; c2 < dim_y; c2++){
-      if(down_bound != dim_y - 1 && up_bound != 0) break;
+    if(up_bound != 0) break;
+    for(int c2 = 0; c2 < dim_x; c2++){
+      if(up_bound != 0) break;
       //get the up bound
-      struct pixel get_pix = get_pixel(*board, &c1, &c2);
-      if(get_pix.red != ignore_r || get_pix.green != ignore_g || get_pix.blue != ignore_b ){
+      struct pixel get_pix = get_pixel(*board, &c2, &c1);
+      if(get_pix.red != ignore_r || get_pix.green != ignore_g || get_pix.blue != ignore_b )
         up_bound = c1;
-      }
-      //get the down_bound
-      int right_c1 = dim_y - c1 - 1;
-      int right_c2 = dim_y - c2 - 1;
-      get_pix = get_pixel(*board, &right_c1, &right_c2);
-      if(get_pix.red != ignore_r || get_pix.green != ignore_g || get_pix.blue != ignore_b ){
-        down_bound = (dim_y-c1-1)+1;
-      }
+    }
+  }
+  for(int c1 = dim_y - 1; c1 >= 0; c1--){
+    if(down_bound != dim_y-1) break;
+    for(int c2 = dim_x - 1; c2 >= 0; c2--){
+      if(down_bound != dim_y-1) break;
+      //get the up bound
+      struct pixel get_pix = get_pixel(*board, &c2, &c1);
+      if(get_pix.red != ignore_r || get_pix.green != ignore_g || get_pix.blue != ignore_b )
+        down_bound = c1;
     }
   }
 
-  int new_dim_x = right_bound - left_bound;
-  int new_dim_y = down_bound - up_bound;
-
+  int new_dim_x = abs(right_bound - left_bound-1);
+  int new_dim_y = abs(down_bound - up_bound-1);
 
   struct board *new_board = make_board(&new_dim_x, &new_dim_y);
 
-  int x_counter = 0;
-  int y_counter = 0;
   for(int c1 = 0; c1 < new_dim_x; ++c1){
-    y_counter = 0;
     for(int c2 = 0; c2 < new_dim_y; ++c2){
-      int start_left = left_bound + c1;
-      int start_up = up_bound + c2;
+      int start_left = left_bound + c1 + 1;
+      int start_up = up_bound + c2 + 1;
       struct pixel old_pixel = get_pixel(*board, &start_left, &start_up);
-      set_pixel(new_board, &x_counter, &y_counter, old_pixel.red, old_pixel.green, old_pixel.blue);
-      y_counter++;
+      set_pixel(new_board, &c1, &c2, old_pixel.red, old_pixel.green, old_pixel.blue);
     }
-    x_counter++;
   }
 
   free_board(board);
   *board = new_board;
+
+
+  return 0;
 }
 
 int shear_x_experiment(struct board **board, double degrees)
@@ -399,7 +400,7 @@ int shear_y_experiment(struct board **board, double degrees){
 
 int shear_y(struct board **board, double degrees)
 {
-  double alpha = sin(degrees * (PI / 180.0));
+  double alpha = sin((0-degrees) * (PI / 180.0));
   //double alpha = 0.34;
   printf("Alpha: %f\n", alpha);
   //double alpha = tan((degrees * (PI / 180.0)) / 2);
@@ -456,7 +457,7 @@ int shear_y(struct board **board, double degrees)
       pixel.blue -= left.blue;
       pixel.blue += oleft.blue;
       //if ((*board)->resolution_y - (y + skewi) > 0)
-      if(degrees > 0.0){
+      if(degrees < 0.0){
         if ((y + skewi) > 0)
         {
           //int new_y = (*board)->resolution_y - (y + skewi);
