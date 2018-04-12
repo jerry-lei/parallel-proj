@@ -33,6 +33,6 @@ void free_board(struct board** board);
 struct board* load_ppm(const char* file);
 int resize_board(struct board** board, int ignore_r, int ignore_g, int ignore_b);
 int shear_x_experiment(struct board** board, double degrees);
-int shear_y(struct board** board, double degrees);
+int shear_y(struct board** board, double degrees, int ignore_r, int ignore_g, int ignore_b);
 int shear_y_experiment(struct board **board, double degrees);
 #endif

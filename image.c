@@ -388,17 +388,8 @@ int shear_x_experiment(struct board **board, double degrees)
   return 0;
 }
 
-int shear_y_experiment(struct board **board, double degrees){
-  if(degrees > 0){
-    shear_y(*board, 0-degrees);
-  }
-  else{
-    shear_y(*board, fabs(degrees));
-  }
-  return 0;
-}
 
-int shear_y(struct board **board, double degrees)
+int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, int ignore_b)
 {
   double alpha = sin((0-degrees) * (PI / 180.0));
   //double alpha = 0.34;
@@ -420,6 +411,8 @@ int shear_y(struct board **board, double degrees)
       set_pixel(sheared, &x, &y, 255, 255, 255);
     }
   }
+  int max_y = -1;
+  int min_y = dim_y + 1;
   //for (int y = 0; y < (*board)->resolution_y; ++y)
   //for(int y = (*board)->resolution_y-1; y >= 0; --y)
   for (int x = 0; x < (*board)->resolution_x; ++x)
@@ -467,9 +460,13 @@ int shear_y(struct board **board, double degrees)
         oleft = left;
       }
       else{
-        if ((y+skewi + floor(fabs(alpha) * (*board)->resolution_y)) > 0 )
+        if ((y+skewi + ((dim_y) - (*board) -> resolution_y)) > 0 )
         {
-          int new_y = (y+skewi + floor(fabs(alpha) * (*board)->resolution_y)) ;
+          int new_y = (y+skewi + ((dim_y) - (*board) -> resolution_y));
+          if(pixel.red != ignore_r || pixel.green != ignore_g || pixel.blue != ignore_b){
+            if(new_y < min_y) min_y = new_y;
+            if(new_y > max_y) max_y = new_y;
+          }
           set_pixel(sheared, &x, &new_y, pixel.red, pixel.green, pixel.blue);
         }
         oleft = left;
@@ -481,8 +478,18 @@ int shear_y(struct board **board, double degrees)
       // /set_pixel(sheared,&new_x,&y,oleft,oleft,oleft);
     }
   }
+  int smaller_y = max_y - min_y;
+  struct board* resized_board = make_board(&dim_x,&smaller_y);
+  for(int c1 = 0; c1 < dim_x; c1++){
+    for(int c2 = 0; c2 < smaller_y; c2++){
+      int altered = min_y + c2;
+      struct pixel old = get_pixel(sheared, &c1, &altered);
+      set_pixel(resized_board,&c1,&c2, old.red, old.green, old.blue);
+    }
+  }
   free_board(board);
-  *board = sheared;
+  free_board(&sheared);
+  *board = resized_board;
 
   return 0;
 }
