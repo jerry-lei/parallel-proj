@@ -3,6 +3,7 @@
 
 //http://datagenetics.com/blog/august32013/index.html
 //https://www.ocf.berkeley.edu/~fricke/projects/israel/paeth/rotation_by_shearing.html
+//http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
 
 #define MAX_COLOR 255
 #define DEFAULT_COLOR 0
@@ -31,8 +32,11 @@ void save_ppm(const struct board* board, const char* file);
 struct board* make_board(const int* res_x, const int* res_y);
 void free_board(struct board** board);
 struct board* load_ppm(const char* file);
-int resize_board(struct board** board, int ignore_r, int ignore_g, int ignore_b);
-int shear_x_experiment(struct board** board, double degrees);
+int autocrop_board(struct board** board, int ignore_r, int ignore_g, int ignore_b);
+int shear_x(struct board** board, double degrees);
 int shear_y(struct board** board, double degrees);
 int shear_y_experiment(struct board **board, double degrees);
+int rotate(struct board** board, double degrees);
+int resize_percent(struct board** board, double percent);
+void to_grayscale(struct board** board);
 #endif

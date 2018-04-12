@@ -242,7 +242,7 @@ void free_board(struct board **board)
   free(*board);
 }
 
-int resize_board(struct board** board, int ignore_r, int ignore_g, int ignore_b)
+int autocrop_board(struct board** board, int ignore_r, int ignore_g, int ignore_b)
 {
   int dim_x = (*board) -> resolution_x;
   int dim_y = (*board) -> resolution_y;
@@ -314,11 +314,8 @@ int resize_board(struct board** board, int ignore_r, int ignore_g, int ignore_b)
   return 0;
 }
 
-int shear_x_experiment(struct board **board, double degrees)
+int shear_x(struct board **board, double degrees)
 {
-  //this does antialiasing
-  //try on stripes.ppm
-  //does not malloc a large enough image when angle increases
   double beta = tan((degrees * (PI / 180.0)) / 2);
 
   int dim_x = ceil(beta * (*board)->resolution_y) + (*board)->resolution_x;
@@ -390,10 +387,10 @@ int shear_x_experiment(struct board **board, double degrees)
 
 int shear_y_experiment(struct board **board, double degrees){
   if(degrees > 0){
-    shear_y(*board, 0-degrees);
+    shear_y(board, 0-degrees);
   }
   else{
-    shear_y(*board, fabs(degrees));
+    shear_y(board, fabs(degrees));
   }
   return 0;
 }
@@ -485,4 +482,66 @@ int shear_y(struct board **board, double degrees)
   *board = sheared;
 
   return 0;
+}
+
+int rotate(struct board** board, double degrees)
+{
+  if(shear_x(board,degrees)==-1)
+  {
+    return -1;
+  }
+  if(shear_y(board,degrees)==-1)
+  {
+    return -1;
+  }
+  if(shear_x(board,degrees)==-1)
+  {
+    return -1;
+  }
+}
+
+int resize_percent(struct board** board, double percent)
+{
+  int dim_x = ceil((*board)->resolution_x*percent);
+  int dim_y = ceil((*board)->resolution_y*percent);
+
+  struct board* resize = make_board(&dim_x,&dim_y);
+
+  if(resize==NULL)
+  {
+    return -1;
+  }
+
+  struct pixel pixel;
+
+  for (int y = 0; y < dim_y; y++)
+  {
+    for (int x = 0; x < dim_x; x++)
+    {
+      int pos_x = x*(1.0/percent);
+      int pos_y = y*(1.0/percent);
+
+       pixel = get_pixel(*board,&pos_x,&pos_y);
+       set_pixel(resize,&x,&y,pixel.red,pixel.green,pixel.blue);
+    }
+  }
+
+  free_board(board);
+  *board = resize;
+
+  return 0;
+}
+
+void to_grayscale(struct board** board)
+{
+  struct pixel pixel;
+  for (int y = 0; y < (*board)->resolution_y; y++)
+  {
+    for (int x = 0; x < (*board)->resolution_x; x++)
+    {
+      pixel = get_pixel(*board,&x,&y);
+      int gray = (pixel.red+pixel.blue+pixel.green)/3;
+      set_pixel(*board,&x,&y,gray,gray,gray);
+    }
+  }
 }
