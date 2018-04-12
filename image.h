@@ -1,5 +1,6 @@
 #ifndef IMAGE_H
 #define IMAGE_H
+#include <stdint.h>
 
 //http://datagenetics.com/blog/august32013/index.html
 //https://www.ocf.berkeley.edu/~fricke/projects/israel/paeth/rotation_by_shearing.html
@@ -34,9 +35,10 @@ void free_board(struct board** board);
 struct board* load_ppm(const char* file);
 int autocrop_board(struct board** board, int ignore_r, int ignore_g, int ignore_b);
 int shear_x(struct board** board, double degrees);
-int shear_y(struct board** board, double degrees);
+int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, int ignore_b);
 int shear_y_experiment(struct board **board, double degrees);
-int rotate(struct board** board, double degrees);
+int rotate(struct board** board, double degrees,int ignore_r, int ignore_g, int ignore_b);
 int resize_percent(struct board** board, double percent);
-void to_grayscale(struct board** board);
+int to_grayscale(struct board** board);
+uint64_t hash8_gray(struct board** board, int color_avg);
 #endif

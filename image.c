@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdint.h>
 #include <ctype.h>
 #include <math.h>
 #include "image.h"
@@ -491,13 +492,13 @@ int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, in
   return 0;
 }
 
-int rotate(struct board** board, double degrees)
+int rotate(struct board** board, double degrees,int ignore_r, int ignore_g, int ignore_b)
 {
   if(shear_x(board,degrees)==-1)
   {
     return -1;
   }
-  if(shear_y(board,degrees)==-1)
+  if(shear_y(board,degrees,ignore_r,ignore_g,ignore_b)==-1)
   {
     return -1;
   }
@@ -539,8 +540,12 @@ int resize_percent(struct board** board, double percent)
   return 0;
 }
 
-void to_grayscale(struct board** board)
+//returns the average pixel color
+//needed for hashing
+int to_grayscale(struct board** board)
 {
+  int avg_color = 0;
+
   struct pixel pixel;
   for (int y = 0; y < (*board)->resolution_y; y++)
   {
@@ -548,7 +553,39 @@ void to_grayscale(struct board** board)
     {
       pixel = get_pixel(*board,&x,&y);
       int gray = (pixel.red+pixel.blue+pixel.green)/3;
+      avg_color+=gray;
       set_pixel(*board,&x,&y,gray,gray,gray);
     }
   }
+  return avg_color / ((*board)->resolution_x*(*board)->resolution_y);
+}
+
+/*
+  Designed to be ran on a grayscale 8x8 image
+  creates a 64bit hash from an 8x8 board
+  bit position refers to if pixel was brighter than avg
+*/
+uint64_t hash8_gray(struct board** board, int color_avg)
+{
+  uint64_t hash_val;
+  uint64_t mask;
+  int nth = 0;
+  struct pixel pixel;
+  for(int y = 0; y < 8; ++y)
+  {
+      for(int x =0; x < 8; ++x)
+      {
+        pixel = get_pixel(*board,&x,&y);
+        if(pixel.red>=color_avg)
+        {
+          hash_val = hash_val & ~(1<<nth) | (1<<nth);
+        }
+        else
+        {
+          hash_val = hash_val & ~(1<<nth) | (0<<nth);
+        }
+        ++nth;
+      }
+  }
+  return hash_val;
 }
