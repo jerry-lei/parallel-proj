@@ -335,10 +335,11 @@ int shear_x(struct board **board, double degrees, int ignore_r, int ignore_g, in
       set_pixel(sheared, &x, &y, 255, 255, 255);
     }
   }
+
   int max_y = -1;
   int min_y = dim_y + 1;
   int max_x = -1;
-  int min_x = dim_y + 1;
+  int min_x = dim_x + 1;
   for (int y = 0; y < (*board)->resolution_y; ++y)
   {
     double skew = beta * y;
@@ -370,27 +371,53 @@ int shear_x(struct board **board, double degrees, int ignore_r, int ignore_g, in
       if(degrees > 0.0){
         if (x + skewi > 0)
         {
-          int shear_pos_x = x + skewi;
-          set_pixel(sheared, &shear_pos_x, &y, pixel.red, pixel.green, pixel.blue);
+          int new_x = x + skewi;
+          if(pixel.red > 255) pixel.red = 255;
+          if(pixel.green > 255) pixel.green = 255;
+          if(pixel.blue > 255) pixel.blue = 255;
+          set_pixel(sheared, &new_x, &y, pixel.red, pixel.green, pixel.blue);
+          if(pixel.red != ignore_r || pixel.green != ignore_g || pixel.blue != ignore_b){
+            if(y < min_y) min_y = y;
+            if(y > max_y) max_y = y;
+            if(new_x < min_x) min_x = new_x;
+            if(new_x > max_x) max_x = new_x;
+          }
         }
         oleft = left;
       }
       else{
         if ((x + skewi + ((dim_x) - (*board) -> resolution_x)) > 0){
           int new_x = x + skewi + (dim_x) - (*board) -> resolution_x;
+          if(pixel.red > 255) pixel.red = 255;
+          if(pixel.green > 255) pixel.green = 255;
+          if(pixel.blue > 255) pixel.blue = 255;
           set_pixel(sheared, &new_x, &y, pixel.red, pixel.green, pixel.blue);
+          if(pixel.red != ignore_r || pixel.green != ignore_g || pixel.blue != ignore_b){
+            if(y < min_y) min_y = y;
+            if(y > max_y) max_y = y;
+            if(new_x < min_x) min_x = new_x;
+            if(new_x > max_x) max_x = new_x;
+          }
         }
         oleft = left;
       }
     }
-    if (skewi + 1 > 0)
-    {
-      int temp = skewi + 1;
+  }
+
+  int smaller_y = max_y - min_y+1;
+  int smaller_x = max_x - min_x+1;
+  struct board* resized_board = make_board(&smaller_x,&smaller_y);
+  for(int c1 = 0; c1 < smaller_x; c1++){
+    for(int c2 = 0; c2 < smaller_y; c2++){
+      int altered_x = min_x + c1;
+      int altered_y = min_y + c2;
+      struct pixel old = get_pixel(sheared, &altered_x, &altered_y);
+      set_pixel(resized_board,&c1,&c2, old.red, old.green, old.blue);
     }
   }
   free_board(board);
-
-  *board = sheared;
+  free_board(&sheared);
+  *board = resized_board;
 
   return 0;
 }
@@ -420,6 +447,8 @@ int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, in
   }
   int max_y = -1;
   int min_y = dim_y + 1;
+  int max_x = -1;
+  int min_x = dim_x + 1;
   for (int x = 0; x < (*board)->resolution_x; ++x)
   {
 
@@ -454,11 +483,16 @@ int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, in
         if ((y + skewi) > 0)
         {
           int new_y = (y + skewi);
+          if(pixel.red > 255) pixel.red = 255;
+          if(pixel.green > 255) pixel.green = 255;
+          if(pixel.blue > 255) pixel.blue = 255;
+          set_pixel(sheared, &x, &new_y, pixel.red, pixel.green, pixel.blue);
           if(pixel.red != ignore_r || pixel.green != ignore_g || pixel.blue != ignore_b){
             if(new_y < min_y) min_y = new_y;
             if(new_y > max_y) max_y = new_y;
+            if(x < min_x) min_x = x;
+            if(x > max_x) max_x = x;
           }
-          set_pixel(sheared, &x, &new_y, pixel.red, pixel.green, pixel.blue);
         }
         oleft = left;
       }
@@ -466,22 +500,29 @@ int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, in
         if ((y+skewi + ((dim_y) - (*board) -> resolution_y)) > 0 )
         {
           int new_y = (y+skewi + ((dim_y) - (*board) -> resolution_y));
+          if(pixel.red > 255) pixel.red = 255;
+          if(pixel.green > 255) pixel.green = 255;
+          if(pixel.blue > 255) pixel.blue = 255;
+          set_pixel(sheared, &x, &new_y, pixel.red, pixel.green, pixel.blue);
           if(pixel.red != ignore_r || pixel.green != ignore_g || pixel.blue != ignore_b){
             if(new_y < min_y) min_y = new_y;
             if(new_y > max_y) max_y = new_y;
+            if(x < min_x) min_x = x;
+            if(x > max_x) max_x = x;
           }
-          set_pixel(sheared, &x, &new_y, pixel.red, pixel.green, pixel.blue);
         }
         oleft = left;
       }
     }
   }
-  int smaller_y = max_y - min_y;
-  struct board* resized_board = make_board(&dim_x,&smaller_y);
-  for(int c1 = 0; c1 < dim_x; c1++){
+  int smaller_y = max_y - min_y+1;
+  int smaller_x = max_x - min_x+1;
+  struct board* resized_board = make_board(&smaller_x,&smaller_y);
+  for(int c1 = 0; c1 < smaller_x; c1++){
     for(int c2 = 0; c2 < smaller_y; c2++){
-      int altered = min_y + c2;
-      struct pixel old = get_pixel(sheared, &c1, &altered);
+      int altered_x = min_x + c1;
+      int altered_y = min_y + c2;
+      struct pixel old = get_pixel(sheared, &altered_x, &altered_y);
       set_pixel(resized_board,&c1,&c2, old.red, old.green, old.blue);
     }
   }
