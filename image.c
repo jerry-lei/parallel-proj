@@ -315,11 +315,11 @@ int autocrop_board(struct board** board, int ignore_r, int ignore_g, int ignore_
   return 0;
 }
 
-int shear_x(struct board **board, double degrees)
+int shear_x(struct board **board, double degrees, int ignore_r, int ignore_g, int ignore_b)
 {
   double beta = tan((degrees * (PI / 180.0)) / 2);
 
-  int dim_x = ceil(beta * (*board)->resolution_y) + (*board)->resolution_x;
+  int dim_x = ceil(fabs(beta) * (*board)->resolution_y) + (*board)->resolution_x;
   int dim_y = (*board)->resolution_y;
   printf("Shear image dim x:%d y:%d\n", dim_x, dim_y);
 
@@ -335,9 +335,11 @@ int shear_x(struct board **board, double degrees)
       set_pixel(sheared, &x, &y, 255, 255, 255);
     }
   }
-
+  int max_y = -1;
+  int min_y = dim_y + 1;
+  int max_x = -1;
+  int min_x = dim_y + 1;
   for (int y = 0; y < (*board)->resolution_y; ++y)
-  //for(int y = (*board)->resolution_y-1; y >= 0; --y)
   {
     double skew = beta * y;
     int skewi = floor(skew);
@@ -365,18 +367,25 @@ int shear_x(struct board **board, double degrees)
 
       pixel.blue -= left.blue;
       pixel.blue += oleft.blue;
-
-      if (x + skewi > 0)
-      {
-        int shear_pos_x = x + skewi;
-        set_pixel(sheared, &shear_pos_x, &y, pixel.red, pixel.green, pixel.blue);
+      if(degrees > 0.0){
+        if (x + skewi > 0)
+        {
+          int shear_pos_x = x + skewi;
+          set_pixel(sheared, &shear_pos_x, &y, pixel.red, pixel.green, pixel.blue);
+        }
+        oleft = left;
       }
-      oleft = left;
+      else{
+        if ((x + skewi + ((dim_x) - (*board) -> resolution_x)) > 0){
+          int new_x = x + skewi + (dim_x) - (*board) -> resolution_x;
+          set_pixel(sheared, &new_x, &y, pixel.red, pixel.green, pixel.blue);
+        }
+        oleft = left;
+      }
     }
     if (skewi + 1 > 0)
     {
       int temp = skewi + 1;
-      //set_pixel(sheared,&temp,&y,oleft.red,oleft.green,oleft.blue);
     }
   }
   free_board(board);
@@ -411,10 +420,7 @@ int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, in
   }
   int max_y = -1;
   int min_y = dim_y + 1;
-  //for (int y = 0; y < (*board)->resolution_y; ++y)
-  //for(int y = (*board)->resolution_y-1; y >= 0; --y)
   for (int x = 0; x < (*board)->resolution_x; ++x)
-  //for(int x = (*board)->resolution_x; x>=0;--x)
   {
 
     double skew = alpha * x;
@@ -426,9 +432,6 @@ int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, in
     oleft.blue = 255;
 
     for (int y = 0; y < (*board)->resolution_y; ++y)
-    //for(int y = (*board)->resolution_y-1; y >= 0; --y)
-    //for (int x = 0; x < (*board)->resolution_x; ++x)
-    //for(int x = (*board)->resolution_x; x>=0;--x)
     {
       int pos = (*board)->resolution_y - y-1;
       struct pixel pixel = get_pixel(*board, &x, &y);
@@ -447,12 +450,14 @@ int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, in
 
       pixel.blue -= left.blue;
       pixel.blue += oleft.blue;
-      //if ((*board)->resolution_y - (y + skewi) > 0)
       if(degrees < 0.0){
         if ((y + skewi) > 0)
         {
-          //int new_y = (*board)->resolution_y - (y + skewi);
           int new_y = (y + skewi);
+          if(pixel.red != ignore_r || pixel.green != ignore_g || pixel.blue != ignore_b){
+            if(new_y < min_y) min_y = new_y;
+            if(new_y > max_y) max_y = new_y;
+          }
           set_pixel(sheared, &x, &new_y, pixel.red, pixel.green, pixel.blue);
         }
         oleft = left;
@@ -469,11 +474,6 @@ int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, in
         }
         oleft = left;
       }
-  }
-    //if (skewi + 1 > 0)
-    {
-      //int new_x = skewi + 1;
-      // /set_pixel(sheared,&new_x,&y,oleft,oleft,oleft);
     }
   }
   int smaller_y = max_y - min_y;
@@ -494,7 +494,7 @@ int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, in
 
 int rotate(struct board** board, double degrees,int ignore_r, int ignore_g, int ignore_b)
 {
-  if(shear_x(board,degrees)==-1)
+  if(shear_x(board,degrees,ignore_r,ignore_g,ignore_b)==-1)
   {
     return -1;
   }
@@ -502,10 +502,11 @@ int rotate(struct board** board, double degrees,int ignore_r, int ignore_g, int 
   {
     return -1;
   }
-  if(shear_x(board,degrees)==-1)
+  if(shear_x(board,degrees,ignore_r,ignore_g,ignore_b)==-1)
   {
     return -1;
   }
+  return 0;
 }
 
 int resize_percent(struct board** board, double percent)
@@ -568,7 +569,7 @@ int to_grayscale(struct board** board)
 uint64_t hash8_gray(struct board** board, int color_avg)
 {
   uint64_t hash_val;
-  uint64_t mask;
+  int mask;
   int nth = 0;
   struct pixel pixel;
   for(int y = 0; y < 8; ++y)
