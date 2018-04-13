@@ -540,6 +540,37 @@ int resize_percent(struct board** board, double percent)
 
   return 0;
 }
+int resize_dimension(struct board** board, int dim_x, int dim_y)
+{
+  double y_percent = dim_y/(*board)->resolution_y;
+  double x_percent = dim_x/(*board)->resolution_x;
+
+  struct board* resize = make_board(&dim_x,&dim_y);
+
+  if(resize==NULL)
+  {
+    return -1;
+  }
+
+  struct pixel pixel;
+
+  for (int y = 0; y < dim_y; y++)
+  {
+    for (int x = 0; x < dim_x; x++)
+    {
+      int pos_x = x*(1.0/y_percent);
+      int pos_y = y*(1.0/x_percent);
+
+       pixel = get_pixel(*board,&pos_x,&pos_y);
+       set_pixel(resize,&x,&y,pixel.red,pixel.green,pixel.blue);
+    }
+  }
+
+  free_board(board);
+  *board = resize;
+
+  return 0;
+}
 
 //returns the average pixel color
 //needed for hashing
