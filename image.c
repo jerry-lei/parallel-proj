@@ -8,6 +8,8 @@
 #include "image.h"
 #include "boolean.h"
 
+#define MAX_HAMMING 10
+
 //returns the pixel at the given x,y coordinate
 struct pixel get_pixel(const struct board *board, const int *x, const int *y)
 {
@@ -321,7 +323,6 @@ int shear_x(struct board **board, double degrees, int ignore_r, int ignore_g, in
 
   int dim_x = ceil(fabs(beta) * (*board)->resolution_y) + (*board)->resolution_x;
   int dim_y = (*board)->resolution_y;
-  printf("Shear image dim x:%d y:%d\n", dim_x, dim_y);
 
   struct board *sheared = make_board(&dim_x, &dim_y);
   if (sheared == NULL)
@@ -427,11 +428,9 @@ int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, in
 {
   double alpha = sin((0-degrees) * (PI / 180.0));
   //double alpha = 0.34;
-  printf("Alpha: %f\n", alpha);
   //double alpha = tan((degrees * (PI / 180.0)) / 2);
   int dim_x = (*board)->resolution_x;
   int dim_y = ceil(fabs(alpha) * (*board)->resolution_x) + (*board)->resolution_y;
-  printf("Shear image dim x:%d y:%d\n", dim_x, dim_y);
 
   struct board *sheared = make_board(&dim_x, &dim_y);
   if (sheared == NULL)
@@ -615,6 +614,7 @@ int resize_dimension(struct board** board, int dim_x, int dim_y)
 
 //returns the average pixel color
 //needed for hashing
+//should happen after resizing if resizing
 int to_grayscale(struct board** board)
 {
   int avg_color = 0;
@@ -643,13 +643,17 @@ uint64_t hash8_gray(struct board** board, int color_avg)
   uint64_t hash_val;
   int mask;
   int nth = 0;
-  struct pixel pixel;
+  struct pixel pixel1;
+  struct pixel pixel2;
   for(int y = 0; y < 8; ++y)
   {
       for(int x =0; x < 8; ++x)
       {
-        pixel = get_pixel(*board,&x,&y);
-        if(pixel.red>=color_avg)
+        int x2 = x+1;
+        pixel1 = get_pixel(*board,&x,&y);
+        pixel2 = get_pixel(*board,&x2,&y);
+
+        if(pixel1.red <pixel2.red)
         {
           hash_val = hash_val & ~(1<<nth) | (1<<nth);
         }
@@ -662,3 +666,47 @@ uint64_t hash8_gray(struct board** board, int color_avg)
   }
   return hash_val;
 }
+
+int hamming_distance(uint64_t* hash1, uint64_t* hash2)
+{
+  uint64_t xor = (*hash1)^(*hash2);
+  int diff = 0;
+  for(; xor > 0; xor >>=1)
+  {
+    diff +=xor&1;
+  }
+  return diff;
+}
+
+/* WIP
+
+uint64_t hash8_gray(struct board** board, int color_avg)
+{
+  uint64_t hash_val;
+  int mask;
+  int nth = 0;
+  struct pixel pixel1;
+  struct pixel pixel2;
+  for(int y = 0; y < 16; ++y)
+  {
+      for(int x =0; x < 16; ++x)
+      {
+        int x2 = x+1;
+        pixel1 = get_pixel(*board,&x,&y);
+        pixel2 = get_pixel(*board,&x2,&y);
+
+        if((pixel1.red>=color_avg && pixel2.red<color_avg) ||(pixel2.red>=color_avg && pixel1.red<color_avg))
+        {
+          hash_val = hash_val & ~(1<<nth) | (1<<nth);
+        }
+        else
+        {
+          hash_val = hash_val & ~(1<<nth) | (0<<nth);
+        }
+        ++nth;
+      }
+  }
+  printf("nth: %d\n",nth);
+  return hash_val;
+}
+*/
