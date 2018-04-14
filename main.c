@@ -12,7 +12,7 @@
 int main(int argc, char* argv[])
 {
   struct board* img = load_ppm("stripes.ppm");
-  struct board* img_edit = load_ppm("stripes_tilt.ppm");
+  struct board* img_edit = load_ppm("stop_on_white.ppm");
 
   resize_dimension(&img,9,8);
   int gray = to_grayscale(&img);
