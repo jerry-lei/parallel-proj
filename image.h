@@ -44,8 +44,6 @@ int rotate(struct board** board, double degrees,int ignore_r, int ignore_g, int 
 int resize_percent(struct board** board, double percent);
 int resize_dimension(struct board** board, int dim_x, int dim_y);
 int to_grayscale(struct board** board);
-uint64_t hash8_gray(struct board** board, int color_avg);
-int hamming_distance(uint64_t* hash1, uint64_t* hash2);
 #endif
 
 /*

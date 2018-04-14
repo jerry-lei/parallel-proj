@@ -1,6 +1,5 @@
-all: main.c image.c
-	gcc image.c main.c -g -lm
-	./a.out
+all: main.c image.c hash.c
+	gcc hash.c image.c main.c -g -lm -pthread
 run:
 	./a.out
 valgrind:

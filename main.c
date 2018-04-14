@@ -1,4 +1,5 @@
 #include "image.h"
+#include "hash.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,10 +24,10 @@ int main(int argc, char* argv[])
   uint64_t hash2 = hash8_gray(&img_edit,gray);
   int dist = hamming_distance(&hash,&hash2);
   printf("%d\n", dist);
-  
+
   save_ppm(img, "thingy1.ppm");
   save_ppm(img_edit, "thingy2.ppm");
-  
+
   free_board(&img);
   free_board(&img_edit);
 
