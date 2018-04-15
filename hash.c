@@ -635,7 +635,7 @@ void split_avg_hash_color(struct board **search_image, struct color_hash** origi
 			set_pixel(visualizaiton, &x, &y, hitbox[y][x], hitbox[y][x], hitbox[y][x]);
 		}
 	}
-	save_ppm(visualizaiton, "visual_color.ppm");
+	save_ppm(visualizaiton, "visual_avg_color.ppm");
 	free_board(&visualizaiton);
 	////////////////////////////////////
 

@@ -13,15 +13,17 @@
 int main(int argc, char* argv[])
 {
   struct board* search = load_ppm("nick_jerry.ppm");
-  struct board* original = load_ppm("wow.ppm");
+  struct board* original = load_ppm("nick_g.ppm");
 
   //resize_dimension(&search,500,500);
-  resize_percent(&search,.2);
-  resize_percent(&original,.2);
-
 
   int original_dim_x=-1;
   int original_dim_y=-1;
+  struct color_hash** hashed_original_avg = hash_avg_original_color(&original,&original_dim_x,&original_dim_y);
+  split_avg_hash_color(&search,hashed_original_avg, original_dim_x, original_dim_y);
+
+  original_dim_x=-1;
+  original_dim_y=-1;
   struct color_hash** hashed_original = hash_original_color(&original,&original_dim_x,&original_dim_y);
   split_hash_color(&search,hashed_original, original_dim_x, original_dim_y);
 
