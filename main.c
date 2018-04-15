@@ -12,24 +12,23 @@
 
 int main(int argc, char* argv[])
 {
-  struct board* img = load_ppm("stripes.ppm");
-  struct board* img_edit = load_ppm("stop_on_white.ppm");
+  struct board* search = load_ppm("stop.ppm");
+  struct board* original = load_ppm("stop_on_white.ppm");
 
-  resize_dimension(&img,9,8);
-  int gray = to_grayscale(&img);
-  resize_dimension(&img_edit,9,8);
-  to_grayscale(&img_edit);
+  to_grayscale(&search);
+  to_grayscale(&original);
 
-  uint64_t hash = hash8_gray(&img,gray);
-  uint64_t hash2 = hash8_gray(&img_edit,gray);
-  int dist = hamming_distance(&hash,&hash2);
-  printf("%d\n", dist);
+  int original_dim_x=0;
+  int original_dim_y=0;
+  uint64_t** hashed_original = hash_original(&original,&original_dim_x,&original_dim_y);
+  split_hash(&search,hashed_original, original_dim_x, original_dim_y);
 
-  save_ppm(img, "thingy1.ppm");
-  save_ppm(img_edit, "thingy2.ppm");
-
-  free_board(&img);
-  free_board(&img_edit);
-
+  free_board(&search);
+  free_board(&original);
+  for(int y = 0; y < original_dim_y; ++y)
+  {
+    free(hashed_original[y]);
+  }
+  free(hashed_original);
   return EXIT_SUCCESS;
 }
