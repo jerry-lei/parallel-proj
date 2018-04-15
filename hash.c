@@ -593,6 +593,33 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 			counter += 1;
 		}
 	}
+	for (int c1 = 0; c1 < number_of_threads; c1++)
+	{
+		pthread_join(children[c1], NULL);
+	}
+
+	/////SAVE THE HITBOX TO AN IMAGE
+	struct board *visualizaiton = make_board(&original_dim_x, &original_dim_y);
+
+	for (int y = 0; y < original_dim_y; ++y)
+	{
+		for (int x = 0; x < original_dim_x; ++x)
+		{
+			set_pixel(visualizaiton, &x, &y, hitbox[y][x], hitbox[y][x], hitbox[y][x]);
+		}
+	}
+	save_ppm(visualizaiton, "visual_hsv.ppm");
+	free_board(&visualizaiton);
+	////////////////////////////////////
+
+	for (int c1 = 0; c1 < original_dim_y; c1++)
+	{
+		free(hitbox[c1]);
+	}
+	free(hitbox);
+	free(hitbox_mutex);
+	free(children);
+
 }
 
 void * thread_hash_HSV(void * args){
