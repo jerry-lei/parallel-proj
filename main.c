@@ -12,20 +12,25 @@
 
 int main(int argc, char* argv[])
 {
-  struct board* search = load_ppm("stop.ppm");
-  struct board* original = load_ppm("landscape.ppm");
+  struct board* search = load_ppm("nick_jerry.ppm");
+  struct board* original = load_ppm("wow.ppm");
 
-  //resize_dimension(&search,50,50);
+  //resize_dimension(&search,500,500);
+  resize_percent(&search,.2);
+  resize_percent(&original,.2);
 
-  to_grayscale(&search);
-  autocrop_board(&search,255,255,255);
-  to_grayscale(&original);
-  save_ppm(search,"grey.ppm");
 
   int original_dim_x=-1;
   int original_dim_y=-1;
-  uint64_t** hashed_original = hash_original(&original,&original_dim_x,&original_dim_y);
-  split_hash(&search,hashed_original, original_dim_x, original_dim_y);
+  struct color_hash** hashed_original = hash_original_color(&original,&original_dim_x,&original_dim_y);
+  split_hash_color(&search,hashed_original, original_dim_x, original_dim_y);
+
+  to_grayscale(&search);
+  to_grayscale(&original);
+  original_dim_x=-1;
+  original_dim_y=-1;
+  uint64_t** hashed_original2 = hash_original_gray(&original,&original_dim_x,&original_dim_y);
+  split_hash_gray(&search,hashed_original2, original_dim_x, original_dim_y);
 
   free_board(&search);
   free_board(&original);

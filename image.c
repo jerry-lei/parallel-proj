@@ -39,7 +39,7 @@ void set_pixel(const struct board *board, const int *x, const int *y, int r, int
   }
   else
   {
-    (board->image)[*y][*x].red = 255;
+    (board->image)[*y][*x].red = r;
   }
 
   if (r <= 255)
@@ -48,7 +48,7 @@ void set_pixel(const struct board *board, const int *x, const int *y, int r, int
   }
   else
   {
-    (board->image)[*y][*x].blue = 255;
+    (board->image)[*y][*x].blue = b;
   }
 
   if (r <= 255)
@@ -57,7 +57,7 @@ void set_pixel(const struct board *board, const int *x, const int *y, int r, int
   }
   else
   {
-    (board->image)[*y][*x].green = 255;
+    (board->image)[*y][*x].green = g;
   }
 }
 void scale_pixel(struct pixel *pixel, double scale)
