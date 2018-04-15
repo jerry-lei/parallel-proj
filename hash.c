@@ -1,5 +1,6 @@
 #include "hash.h"
 #include "image.h"
+#include "hsv.h"
 #include "boolean.h"
 
 #include <stdio.h>
@@ -16,7 +17,6 @@
 #define HASH_SIZE_X 9
 #define HASH_SIZE_Y 8
 
-#define HASH_ASIZE 8
 
 struct search_thread_params_gray
 {
@@ -134,7 +134,7 @@ void *thread_hash_color(void *args)
 			int ham_blue = hamming_distance(&my_hash.blue, &original_hashed_image[y][x].blue);
 			if (ham_red <= 10 && ham_green <= 10 && ham_blue <= 10)
 			{
-				pthread_mutex_lock(hitbox_mutex); 
+				pthread_mutex_lock(hitbox_mutex);
 				hitbox[y][x]++;
 				pthread_mutex_unlock(hitbox_mutex);
 			}
@@ -404,7 +404,7 @@ uint64_t hash8_gray_pixels(struct pixel **board, int start_x, int start_y)
 	struct pixel pixel1;
 	struct pixel pixel2;
 	for (int y = 0; y < 8; ++y)
-	{ 
+	{
 		for (int x = 0; x < 8; ++x)
 		{
 			int x2 = x + 1;
@@ -477,113 +477,83 @@ struct color_hash hash8_color_pixels(struct pixel **board, int start_x, int star
 }
 
 
-struct color_hash hash8_avg_color_pixels(struct pixel **board, int start_x, int start_y){
-  struct color_hash answer;
-
-  int nth = 0;
-  struct pixel pixel;
-  int total_red=0;
-  int total_green=0;
-  int total_blue = 0;
-
-
-  for(int y = 0; y < HASH_ASIZE; ++y){
-    for(int x = 0; x < HASH_ASIZE; ++x){
-      pixel = board[y+start_y][x+start_x];
-      total_red += pixel.red;
-      total_green += pixel.green;
-      total_blue += pixel.blue;
-    }
-  }
-
-  int avg_red = total_red / 64;
-  int avg_green = total_green /64;
-  int avg_blue = total_blue / 64;
-
-  for (int y = 0; y < HASH_ASIZE; ++y)
-  {
-    for (int x = 0; x < HASH_ASIZE; ++x)
-    {
-      int x2 = x + 1;
-      pixel = board[y + start_y][x + start_x];
-
-      //hash red pixels
-      if (pixel.red < avg_red)
-      {
-        answer.red = (answer.red & ~(1 << nth)) | (1 << nth);
-      }
-      else
-      {
-        answer.red = (answer.red & ~(1 << nth)) | (0 << nth);
-      }
-      //hash green pixels
-      if(pixel.green < avg_green)
-        {
-          answer.green = (answer.green & ~(1<<nth)) | (1<<nth);
-        }
-        else
-        {
-          answer.green = (answer.green & ~(1<<nth)) | (0<<nth);
-        }
-      //hash blue pixels
-      if(pixel.blue < avg_blue)
-        {
-          answer.blue = (answer.blue & ~(1<<nth)) | (1<<nth);
-        }
-        else
-        {
-          answer.blue = (answer.blue & ~(1<<nth)) | (0<<nth);
-        }
-
-      ++nth;
-    }
-  }
-    return answer;
-}
-
-struct color_hash** hash_avg_original_color(struct board** original_image,int* original_dim_x, int* original_dim_y)
+/* ================== HSV HASH ================== */
+struct search_thread_params_HSV
 {
-	*original_dim_x = (*original_image)->resolution_x - HASH_ASIZE;
-	*original_dim_y = (*original_image)->resolution_y - HASH_ASIZE;
+	struct hsv_hash **original_hashed_image;
+	struct pixel **my_search_image;
+	int** hitbox;
+	int original_dim_x;
+	int original_dim_y;
+	int start_x;
+	int start_y;
+	pthread_mutex_t *hitbox_mutex;
+};
 
-	struct color_hash** answer = malloc(sizeof(struct color_hash*) * (*original_dim_y));
-	if (answer == NULL)
-	{
-		fprintf(stderr, "ERROR: Could not malloc in hash_original\n");
-	}
+struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y){
+	struct hsv_hash answer;
 
-	struct pixel **img = (*original_image)->image;
-
-	for (int y = 0; y < *original_dim_y; ++y)
-	{
-		answer[y] = malloc(sizeof(struct color_hash)*(*original_dim_x));
-		if (answer[y] == NULL)
-		{
-			fprintf(stderr, "ERROR: Could not malloc in hash_original\n");
+	int nth = 0;
+	struct hsv hsv1;
+	struct hsv hsv2;
+	struct pixel pixel;
+	for(int y = 0; y < 8; ++y){
+		for(int x = 0; x < 8; ++x){
+			int x2 = x + 1;
+			pixel = board[y + start_y][x + start_x];
+			hsv1 = RGBtoHSV(pixel.red,pixel.green,pixel.blue);
+			pixel = board[y + start_y][x2 + start_x];
+			hsv2 = RGBtoHSV(pixel.red,pixel.green,pixel.blue);
+			//hue
+			if(hsv1.h < hsv2.h) answer.h = (answer.h & ~(1 << nth)) | (1 << nth);
+			else answer.h = (answer.h & ~(1 << nth)) | (0 << nth);
+			//saturation
+			if(hsv1.s < hsv2.s) answer.s = (answer.s & ~(1 << nth)) | (1 << nth);
+			else answer.s = (answer.s & ~(1 << nth)) | (0 << nth);
+			//value
+			if(hsv1.v < hsv2.v) answer.v = (answer.v & ~(1 << nth)) | (1 << nth);
+			else answer.v = (answer.v & ~(1 << nth)) | (0 << nth);
 		}
-		struct color_hash sh;
-		for (int x = 0; x < *original_dim_x; ++x)
-		{
-			sh = hash8_avg_color_pixels(img, x, y);
-			answer[y][x].red = sh.red;
-			answer[y][x].green = sh.green;
-			answer[y][x].blue = sh.blue;
-		}
+		++nth;
 	}
-
 	return answer;
 }
 
-void split_avg_hash_color(struct board **search_image, struct color_hash** original_hashed_image, int original_dim_x, int original_dim_y)
-{
+struct hsv_hash** hash_original_HSV(struct board** original_image,int* original_dim_x, int* original_dim_y){
+
+	*original_dim_x = (*original_image)->resolution_x - HASH_SIZE_X;
+	*original_dim_y = (*original_image)->resolution_y - HASH_SIZE_Y;
+
+	struct hsv_hash** answer = malloc(sizeof(struct hsv_hash*) * (*original_dim_y));
+	if(answer == NULL) fprintf(stderr, "ERROR: Could not malloc in hash_original\n");
+
+	struct pixel ** img = (*original_image) -> image;
+
+	for(int y = 0; y < *original_dim_y; ++y){
+		answer[y] = malloc(sizeof(struct color_hash)*(*original_dim_x));
+		if(answer[y] == NULL) fprintf(stderr, "ERROR: Could not malloc in hash_original\n");
+
+		struct hsv_hash sh;
+		for (int x = 0; x < *original_dim_x; ++x)
+		{
+			sh = hash8_hsv_pixels(img, x, y);
+			answer[y][x].h = sh.h;
+			answer[y][x].s = sh.s;
+			answer[y][x].v = sh.v;
+		}
+	}
+	return answer;
+}
+
+void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hashed_image, int original_dim_x, int original_dim_y){
 	int dim_x = (*search_image)->resolution_x;
 	int dim_y = (*search_image)->resolution_y;
 	int new_dim_x = dim_x;
 	int new_dim_y = dim_y;
-	if (dim_x % HASH_ASIZE > 0)
-		new_dim_x += (HASH_ASIZE - (dim_x % HASH_ASIZE));
-	if (dim_y % HASH_ASIZE > 0)
-		new_dim_y += (HASH_ASIZE - (dim_y % HASH_ASIZE));
+	if (dim_x % HASH_SIZE_X > 0)
+		new_dim_x += (HASH_SIZE_X - (dim_x % HASH_SIZE_X));
+	if (dim_y % HASH_SIZE_Y > 0)
+		new_dim_y += (HASH_SIZE_Y - (dim_y % HASH_SIZE_Y));
 
 	pthread_mutex_t *hitbox_mutex = malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(hitbox_mutex, NULL);
@@ -598,15 +568,19 @@ void split_avg_hash_color(struct board **search_image, struct color_hash** origi
 		if (hitbox[c1] == NULL)
 			fprintf(stderr, "ERROR: Failed to malloc (hitbox)");
 	}
+
 	resize_dimension(search_image, new_dim_x, new_dim_y);
-	int number_of_threads = new_dim_x * new_dim_y / (HASH_ASIZE * HASH_ASIZE);
+
+	int number_of_threads = new_dim_x * new_dim_y / (HASH_SIZE_X * HASH_SIZE_Y);
 	pthread_t *children = malloc(sizeof(pthread_t) * number_of_threads);
 	int counter = 0;
-	for (int c1 = 0; c1 < new_dim_y; c1 += HASH_ASIZE)
+	printf("Threads: %d\n",number_of_threads);
+
+	for (int c1 = 0; c1 < new_dim_y; c1 += HASH_SIZE_Y)
 	{
-		for (int c2 = 0; c2 < new_dim_x; c2 += HASH_ASIZE)
+		for (int c2 = 0; c2 < new_dim_x; c2 += HASH_SIZE_X)
 		{
-			struct search_thread_params_color *thread_params = malloc(sizeof(struct search_thread_params_color));
+			struct search_thread_params_HSV *thread_params = malloc(sizeof(struct search_thread_params_gray));
 			thread_params->original_hashed_image = original_hashed_image;
 			thread_params->my_search_image = (*search_image)->image;
 			thread_params->hitbox = hitbox;
@@ -615,44 +589,15 @@ void split_avg_hash_color(struct board **search_image, struct color_hash** origi
 			thread_params->start_x = c2;
 			thread_params->start_y = c1;
 			thread_params->hitbox_mutex = hitbox_mutex;
-			pthread_create(&children[counter], NULL, thread_avg_hash_color, thread_params); // thread_hash(thread_params);
+			pthread_create(&children[counter], NULL, thread_hash_HSV, thread_params); // thread_hash(thread_params);
 			counter += 1;
 		}
 	}
-
-	for (int c1 = 0; c1 < number_of_threads; c1++)
-	{
-		pthread_join(children[c1], NULL);
-	}
-
-	/////SAVE THE HITBOX TO AN IMAGE
-	struct board *visualizaiton = make_board(&original_dim_x, &original_dim_y);
-
-	for (int y = 0; y < original_dim_y; ++y)
-	{
-		for (int x = 0; x < original_dim_x; ++x)
-		{
-			set_pixel(visualizaiton, &x, &y, hitbox[y][x], hitbox[y][x], hitbox[y][x]);
-		}
-	}
-	save_ppm(visualizaiton, "visual_avg_color.ppm");
-	free_board(&visualizaiton);
-	////////////////////////////////////
-
-	for (int c1 = 0; c1 < original_dim_y; c1++)
-	{
-		free(hitbox[c1]);
-	}
-	free(hitbox);
-	free(hitbox_mutex);
-	free(children);
 }
 
-void *thread_avg_hash_color(void *args)
-{
-
-	struct search_thread_params_color *thread_params = args;
-	struct color_hash **original_hashed_image = thread_params->original_hashed_image;
+void * thread_hash_HSV(void * args){
+	struct search_thread_params_HSV *thread_params = args;
+	struct hsv_hash **original_hashed_image = thread_params->original_hashed_image;
 	struct pixel **my_search_image = thread_params->my_search_image;
 	int **hitbox = thread_params->hitbox;
 	int original_dim_x = thread_params->original_dim_x;
@@ -662,25 +607,17 @@ void *thread_avg_hash_color(void *args)
 	pthread_mutex_t *hitbox_mutex = thread_params->hitbox_mutex;
 	free(thread_params);
 
-	struct color_hash my_hash = hash8_avg_color_pixels(my_search_image, start_x, start_y);
-	//struct pixel corner = my_search_image[0][0];
+	struct hsv_hash my_hash = hash8_hsv_pixels(my_search_image, start_x, start_y);
 
-	/*if (my_hash == 0) // && corner.red == 255 && corner.blue == 255 && corner.green == 255)
-	{
-		return NULL;
-	}*/
-	//printf("My%" PRIu64 "\n", my_hash);
-
-	//search the hashed original image
 	for (int y = 0; y < original_dim_y; ++y)
 	{
 		for (int x = 0; x < original_dim_x; ++x)
 		{
 			//if the hash matches, mark the hitbox
-			int ham_red = hamming_distance(&my_hash.red, &original_hashed_image[y][x].red);
-			int ham_green = hamming_distance(&my_hash.green, &original_hashed_image[y][x].green);
-			int ham_blue = hamming_distance(&my_hash.blue, &original_hashed_image[y][x].blue);
-			if (ham_red <= 20 && ham_green <= 20 && ham_blue <= 20)
+			int ham_h = hamming_distance(&my_hash.h, &original_hashed_image[y][x].h);
+			int ham_s = hamming_distance(&my_hash.s, &original_hashed_image[y][x].s);
+			int ham_v = hamming_distance(&my_hash.v, &original_hashed_image[y][x].v);
+			if (ham_h <= 10 && ham_s <= 10 && ham_v <= 10)
 			{
 				pthread_mutex_lock(hitbox_mutex);
 				hitbox[y][x]++;
@@ -688,13 +625,5 @@ void *thread_avg_hash_color(void *args)
 			}
 		}
 	}
-
-	/*
-      VALGRIND DOESNT LIKE THIS
-       ||
-      _||_
-      \  /
-       \/            */
-	//pthread_exit(NULL);
-	return NULL;
+	pthread_exit(NULL);
 }
