@@ -9,8 +9,8 @@ struct hsv{
   double v;
 };
 
-inline double max(double x, double y);
-inline double min(double x, double y);
+double max(double x, double y);
+double min(double x, double y);
 
 struct hsv RGBtoHSV(int r, int g, int b);
 

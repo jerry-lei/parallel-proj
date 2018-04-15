@@ -513,8 +513,9 @@ struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y){
 			//value
 			if(hsv1.v < hsv2.v) answer.v = (answer.v & ~(1 << nth)) | (1 << nth);
 			else answer.v = (answer.v & ~(1 << nth)) | (0 << nth);
+			++nth;
 		}
-		++nth;
+		
 	}
 	return answer;
 }
@@ -635,6 +636,10 @@ void * thread_hash_HSV(void * args){
 	free(thread_params);
 
 	struct hsv_hash my_hash = hash8_hsv_pixels(my_search_image, start_x, start_y);
+	
+	int diff = 65;
+	int best_x = -1;
+	int best_y = -1;
 
 	for (int y = 0; y < original_dim_y; ++y)
 	{
@@ -644,13 +649,16 @@ void * thread_hash_HSV(void * args){
 			int ham_h = hamming_distance(&my_hash.h, &original_hashed_image[y][x].h);
 			int ham_s = hamming_distance(&my_hash.s, &original_hashed_image[y][x].s);
 			int ham_v = hamming_distance(&my_hash.v, &original_hashed_image[y][x].v);
-			if (ham_h <= 10 && ham_s <= 10 && ham_v <= 10)
+			if (ham_h < diff)
 			{
-				pthread_mutex_lock(hitbox_mutex);
-				hitbox[y][x]++;
-				pthread_mutex_unlock(hitbox_mutex);
+				best_x=x;
+				best_y=y;
+				diff = ham_h;
 			}
 		}
 	}
+	pthread_mutex_lock(hitbox_mutex);
+	hitbox[best_y][best_x]=255;         //WRONG////////////////////////////////////
+	pthread_mutex_unlock(hitbox_mutex);
 	pthread_exit(NULL);
 }
