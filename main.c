@@ -15,6 +15,8 @@ int main(int argc, char* argv[])
   struct board* search = load_ppm("stop.ppm");
   struct board* original = load_ppm("stop_on_white.ppm");
 
+  resize_dimension(&search, 100,100);
+
   to_grayscale(&search);
   to_grayscale(&original);
 

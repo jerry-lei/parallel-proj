@@ -41,12 +41,11 @@ void * thread_hash(void * args){
   pthread_mutex_t* hitbox_mutex = thread_params -> hitbox_mutex;
   free(thread_params);
 
-  
+
 
   uint64_t my_hash = hash8_gray_pixels(my_search_image,start_x,start_y);
   //printf("My%" PRIu64 "\n", my_hash);
   pthread_exit(0);
-  return NULL;
 }
 
 void split_hash(struct board** search_image,uint64_t** original_hashed_image, int original_dim_x, int original_dim_y)
@@ -84,9 +83,13 @@ void split_hash(struct board** search_image,uint64_t** original_hashed_image, in
       thread_params -> hitbox_mutex = hitbox_mutex;
 
       pthread_create(&children[counter], NULL, thread_hash, thread_params);// thread_hash(thread_params);
+      counter+=1;
     }
   }
-  printf("MAX BOARD.dim_x: %d, x: %d, y: %d\n", dim_x, new_dim_x, new_dim_y);
+
+  printf("Number of threads: %d\n", number_of_threads);
+  printf("Number of counter: %d\n", counter);
+  // printf("MAX BOARD.dim_x: %d, x: %d, y: %d\n", dim_x, new_dim_x, new_dim_y);
   for(int c1 = 0; c1 < number_of_threads; c1++){
     pthread_join(children[c1], NULL);
   }
@@ -116,6 +119,8 @@ uint64_t** hash_original(struct board** original_image,int* original_dim_x, int*
       answer[y][x]=hash8_gray_pixels(img,x,y);
     }
   }
+
+  return answer;
 }
 
 /*
