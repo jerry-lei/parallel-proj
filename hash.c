@@ -132,9 +132,9 @@ void *thread_hash_color(void *args)
 			int ham_red = hamming_distance(&my_hash.red, &original_hashed_image[y][x].red);
 			int ham_green = hamming_distance(&my_hash.green, &original_hashed_image[y][x].green);
 			int ham_blue = hamming_distance(&my_hash.blue, &original_hashed_image[y][x].blue);
-			if (ham_red <= 3 && ham_green <= 3 && ham_blue <= 3)
+			if (ham_red <= 10 && ham_green <= 10 && ham_blue <= 10)
 			{
-				pthread_mutex_lock(hitbox_mutex);
+				pthread_mutex_lock(hitbox_mutex); 
 				hitbox[y][x]++;
 				pthread_mutex_unlock(hitbox_mutex);
 			}
@@ -404,7 +404,7 @@ uint64_t hash8_gray_pixels(struct pixel **board, int start_x, int start_y)
 	struct pixel pixel1;
 	struct pixel pixel2;
 	for (int y = 0; y < 8; ++y)
-	{
+	{ 
 		for (int x = 0; x < 8; ++x)
 		{
 			int x2 = x + 1;
@@ -680,7 +680,7 @@ void *thread_avg_hash_color(void *args)
 			int ham_red = hamming_distance(&my_hash.red, &original_hashed_image[y][x].red);
 			int ham_green = hamming_distance(&my_hash.green, &original_hashed_image[y][x].green);
 			int ham_blue = hamming_distance(&my_hash.blue, &original_hashed_image[y][x].blue);
-			if (ham_red <= 3 && ham_green <= 3 && ham_blue <= 3)
+			if (ham_red <= 20 && ham_green <= 20 && ham_blue <= 20)
 			{
 				pthread_mutex_lock(hitbox_mutex);
 				hitbox[y][x]++;
