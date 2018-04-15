@@ -89,8 +89,10 @@ void split_hash(struct board** search_image,uint64_t** original_hashed_image, in
 {
   int dim_x = (*search_image) -> resolution_x;
   int dim_y = (*search_image) -> resolution_y;
-  int new_dim_x = dim_x + (HASH_SIZE_X - (dim_x % HASH_SIZE_X));
-  int new_dim_y = dim_y + (HASH_SIZE_Y - (dim_y % HASH_SIZE_Y));
+  int new_dim_x = dim_x;
+  int new_dim_y = dim_y;
+  if(dim_x % HASH_SIZE_X > 0) new_dim_x += (HASH_SIZE_X - (dim_x % HASH_SIZE_X));
+  if(dim_y % HASH_SIZE_Y > 0) new_dim_y += (HASH_SIZE_Y - (dim_y % HASH_SIZE_Y));
 
   pthread_mutex_t* hitbox_mutex = malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(hitbox_mutex, NULL);
