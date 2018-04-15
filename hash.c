@@ -580,7 +580,7 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 	{
 		for (int c2 = 0; c2 < new_dim_x; c2 += HASH_SIZE_X)
 		{
-			struct search_thread_params_HSV *thread_params = malloc(sizeof(struct search_thread_params_gray));
+			struct search_thread_params_HSV *thread_params = malloc(sizeof(struct search_thread_params_HSV));
 			thread_params->original_hashed_image = original_hashed_image;
 			thread_params->my_search_image = (*search_image)->image;
 			thread_params->hitbox = hitbox;
