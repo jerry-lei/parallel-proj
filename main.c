@@ -12,8 +12,8 @@
 
 int main(int argc, char* argv[])
 {
-  struct board* search = load_ppm("stop.ppm");
-  struct board* original = load_ppm("landscape.ppm");
+  struct board* search = load_ppm("nick_jerry.ppm");
+  struct board* original = load_ppm("wow.ppm");
 
   //resize_dimension(&search,50,50);
 
