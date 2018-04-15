@@ -21,8 +21,11 @@ int main(int argc, char* argv[])
   int original_dim_x=0;
   int original_dim_y=0;
   uint64_t** hashed_original = hash_original(&original,&original_dim_x,&original_dim_y);
+  printf("Completed hash original\n");
   split_hash(&search,hashed_original, original_dim_x, original_dim_y);
 
+  printf("og x:%d, og y:%d\n",original_dim_x,original_dim_y);
+  printf("ending\n");
   free_board(&search);
   free_board(&original);
   for(int y = 0; y < original_dim_y; ++y)

@@ -28,7 +28,7 @@ struct search_thread_params {
 };
 
 void * thread_hash(void * args){
-  pthread_detach(pthread_self());
+  // pthread_detach(pthread_self());
 
   struct search_thread_params * thread_params = args;
   uint64_t** original_hashed_image = thread_params -> original_hashed_image;
@@ -45,6 +45,7 @@ void * thread_hash(void * args){
 
   uint64_t my_hash = hash8_gray_pixels(my_search_image,start_x,start_y);
   //printf("My%" PRIu64 "\n", my_hash);
+  pthread_exit(0);
   return NULL;
 }
 
@@ -67,10 +68,11 @@ void split_hash(struct board** search_image,uint64_t** original_hashed_image, in
   }
 
   resize_dimension(search_image,new_dim_x,new_dim_y);
-
+  int number_of_threads = new_dim_x*new_dim_y/(HASH_SIZE_X*HASH_SIZE_Y);
+  pthread_t children[number_of_threads];
+  int counter = 0;
   for(int c1 = 0; c1 < new_dim_y; c1 += HASH_SIZE_Y){
     for(int c2 = 0; c2 < new_dim_x; c2 += HASH_SIZE_X){
-      printf("start_x: %d, start:y %d\n", c2, c1);
       struct search_thread_params * thread_params = malloc(sizeof(struct search_thread_params));
       thread_params -> original_hashed_image = original_hashed_image;
       thread_params -> my_search_image = (*search_image)->image;
@@ -81,11 +83,13 @@ void split_hash(struct board** search_image,uint64_t** original_hashed_image, in
       thread_params -> start_y = c1;
       thread_params -> hitbox_mutex = hitbox_mutex;
 
-      thread_hash(thread_params);
+      pthread_create(&children[counter], NULL, thread_hash, thread_params);// thread_hash(thread_params);
     }
   }
   printf("MAX BOARD.dim_x: %d, x: %d, y: %d\n", dim_x, new_dim_x, new_dim_y);
-
+  for(int c1 = 0; c1 < number_of_threads; c1++){
+    pthread_join(children[c1], NULL);
+  }
   for(int c1 = 0; c1 < original_dim_y; c1++)
   {
     free(hitbox[c1]);
