@@ -22,4 +22,8 @@ struct color_hash** hash_original_color(struct board** original_image,int* origi
 uint64_t hash8_gray_board(struct board** board);
 uint64_t hash8_gray_pixels(struct pixel** board, int start_x, int start_y);
 struct color_hash hash8_color_pixels(struct pixel** board, int start_x, int start_y);
+struct color_hash hash8_avg_color_pixels(struct pixel **board, int start_x, int start_y);
+struct color_hash** hash_avg_original_color(struct board** original_image,int* original_dim_x, int* original_dim_y);
+void split_avg_hash_color(struct board **search_image, struct color_hash** original_hashed_image, int original_dim_x, int original_dim_y);
+void *thread_avg_hash_color(void *args);
 #endif
