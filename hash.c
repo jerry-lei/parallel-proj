@@ -637,7 +637,7 @@ void * thread_hash_HSV(void * args){
 
 	struct hsv_hash my_hash = hash8_hsv_pixels(my_search_image, start_x, start_y);
 	
-	int diff = 65;
+	int diff = 129;
 	int best_x = -1;
 	int best_y = -1;
 
@@ -649,11 +649,11 @@ void * thread_hash_HSV(void * args){
 			int ham_h = hamming_distance(&my_hash.h, &original_hashed_image[y][x].h);
 			int ham_s = hamming_distance(&my_hash.s, &original_hashed_image[y][x].s);
 			int ham_v = hamming_distance(&my_hash.v, &original_hashed_image[y][x].v);
-			if (ham_h < diff)
-			{
+			if ((ham_h < diff))
+			{/*+(ham_s)+(.5*ham_v))*/
 				best_x=x;
 				best_y=y;
-				diff = ham_h;
+				diff = ham_h;//+(ham_s)+(.5*ham_v);
 			}
 		}
 	}

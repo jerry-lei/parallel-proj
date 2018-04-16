@@ -14,10 +14,10 @@
 int main(int argc, char* argv[])
 {
 
-  struct board* search = load_ppm("eyes.ppm");
-  struct board* original = load_ppm("jazz.ppm");
+  struct board* search = load_ppm("stop_blue.ppm");
+  struct board* original = load_ppm("landscape_bluestop.ppm");
   
-  //resize_dimension(&search,200,200);
+  resize_dimension(&search,240,240);
   
   int original_dim_x=-1;
   int original_dim_y=-1;
