@@ -497,7 +497,7 @@ struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y){
 	struct hsv hsv1;
 	struct hsv hsv2;
 	struct pixel pixel;
-	//int total_hue = 0;
+	int total_hue = 0;
 	for(int y = 0; y < 8; ++y){
 		for(int x = 0; x < 8; ++x){
 			int x2 = x + 1;
@@ -519,7 +519,9 @@ struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y){
 		}
 
 	}
-	//answer.avg_hue = total_hue/64;
+	pixel = board[start_y][start_x];
+	answer.corner_hue = RGBtoHSV(pixel.red, pixel.green, pixel.blue).h;
+	answer.avg_hue = total_hue/64;
 	return answer;
 }
 
@@ -639,13 +641,24 @@ void * thread_hash_HSV(void * args){
 	free(thread_params);
 
 	struct hsv_hash my_hash = hash8_hsv_pixels(my_search_image, start_x, start_y);
-	//int my_avg_hue = my_hash.avg_hue;
+	double my_avg_hue = my_hash.avg_hue;
+	double my_corner_hue = my_hash.corner_hue;
 	struct pixel corner = my_search_image[0][0];
-	if(my_hash.h == 0 && corner.red >= 255 && corner.green >= 255 && corner.blue >= 255){
-		return NULL;
-	}
+	// if(my_hash.h == 0 && corner.red >= 255 && corner.green >= 255 && corner.blue >= 255){
+	// 	return NULL;
+	// }
 
-	double diff = 129;
+	int scale_h = 4;
+	int scale_s = 1;
+	int scale_v = 1;
+
+	double weight = 1.0 / (scale_h + scale_s + scale_v);
+
+	double weight_h = weight * scale_h;
+	double weight_s = weight * scale_s;
+	double weight_v = weight * scale_v;
+
+	double diff = 65;
 	int best_x = -1;
 	int best_y = -1;
 
@@ -658,22 +671,24 @@ void * thread_hash_HSV(void * args){
 			int ham_h = hamming_distance(&my_hash.h, &original_hashed_image[y][x].h);
 			int ham_s = hamming_distance(&my_hash.s, &original_hashed_image[y][x].s);
 			int ham_v = hamming_distance(&my_hash.v, &original_hashed_image[y][x].v);
-			if ((1.7 * ham_h) + (0.15 * ham_s) + (0.15 * ham_v) < diff)
-					//&& abs(my_avg_hue - original_hashed_image[y][x].avg_hue) < 10)
+			double check = (weight_h * ham_h) + (weight_s * ham_s) + (weight_v * ham_v);
+			if (check < diff
+					&& fabs(my_corner_hue - original_hashed_image[y][x].corner_hue) < 40.0
+					&& fabs(my_avg_hue - original_hashed_image[y][x].avg_hue) < 20.0)
 			{
 				best_x=x;
 				best_y=y;
-				diff = (1.7 * ham_h) + (0.15 * ham_s) + (0.15 * ham_v);
+				diff = check;
 			}
 		}
 	}
-	if(diff < 10){
+	if(diff < 20){
 		pthread_mutex_lock(hitbox_mutex);
 		hitbox[best_y][best_x]=255;         //WRONG////////////////////////////////////
 		pthread_mutex_unlock(hitbox_mutex);
 	}
 	else{
-		printf("didn't pass\n");
+		printf("Diff too high %f\n", diff);
 	}
 	pthread_exit(NULL);
 }
