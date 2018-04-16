@@ -497,11 +497,13 @@ struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y){
 	struct hsv hsv1;
 	struct hsv hsv2;
 	struct pixel pixel;
+	//int total_hue = 0;
 	for(int y = 0; y < 8; ++y){
 		for(int x = 0; x < 8; ++x){
 			int x2 = x + 1;
 			pixel = board[y + start_y][x + start_x];
 			hsv1 = RGBtoHSV(pixel.red,pixel.green,pixel.blue);
+			//total_hue += hsv1.h;
 			pixel = board[y + start_y][x2 + start_x];
 			hsv2 = RGBtoHSV(pixel.red,pixel.green,pixel.blue);
 			//hue
@@ -515,8 +517,9 @@ struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y){
 			else answer.v = (answer.v & ~(1 << nth)) | (0 << nth);
 			++nth;
 		}
-		
+
 	}
+	//answer.avg_hue = total_hue/64;
 	return answer;
 }
 
@@ -636,8 +639,13 @@ void * thread_hash_HSV(void * args){
 	free(thread_params);
 
 	struct hsv_hash my_hash = hash8_hsv_pixels(my_search_image, start_x, start_y);
-	
-	int diff = 129;
+	//int my_avg_hue = my_hash.avg_hue;
+	struct pixel corner = my_search_image[0][0];
+	if(my_hash.h == 0 && corner.red >= 255 && corner.green >= 255 && corner.blue >= 255){
+		return NULL;
+	}
+
+	double diff = 129;
 	int best_x = -1;
 	int best_y = -1;
 
@@ -645,20 +653,27 @@ void * thread_hash_HSV(void * args){
 	{
 		for (int x = 0; x < original_dim_x; ++x)
 		{
+			//Idea for better hits, limit the h range
 			//if the hash matches, mark the hitbox
 			int ham_h = hamming_distance(&my_hash.h, &original_hashed_image[y][x].h);
 			int ham_s = hamming_distance(&my_hash.s, &original_hashed_image[y][x].s);
 			int ham_v = hamming_distance(&my_hash.v, &original_hashed_image[y][x].v);
-			if ((ham_h < diff))
-			{/*+(ham_s)+(.5*ham_v))*/
+			if ((1.7 * ham_h) + (0.15 * ham_s) + (0.15 * ham_v) < diff)
+					//&& abs(my_avg_hue - original_hashed_image[y][x].avg_hue) < 10)
+			{
 				best_x=x;
 				best_y=y;
-				diff = ham_h;//+(ham_s)+(.5*ham_v);
+				diff = (1.7 * ham_h) + (0.15 * ham_s) + (0.15 * ham_v);
 			}
 		}
 	}
-	pthread_mutex_lock(hitbox_mutex);
-	hitbox[best_y][best_x]=255;         //WRONG////////////////////////////////////
-	pthread_mutex_unlock(hitbox_mutex);
+	if(diff < 10){
+		pthread_mutex_lock(hitbox_mutex);
+		hitbox[best_y][best_x]=255;         //WRONG////////////////////////////////////
+		pthread_mutex_unlock(hitbox_mutex);
+	}
+	else{
+		printf("didn't pass\n");
+	}
 	pthread_exit(NULL);
 }
