@@ -599,19 +599,30 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 			counter += 1;
 		}
 	}
+
+	printf("# threads created: %d\n", counter);
 	for (int c1 = 0; c1 < number_of_threads; c1++)
 	{
 		pthread_join(children[c1], NULL);
 	}
 
 	/////SAVE THE HITBOX TO AN IMAGE
-	struct board *visualizaiton = make_board(&original_dim_x, &original_dim_y);
+	int new_size_x = original_dim_x + HASH_SIZE_X;
+	int new_size_y = original_dim_y + HASH_SIZE_Y;
+	struct board *visualizaiton = make_board(&new_size_x, &new_size_y);
 
 	for (int y = 0; y < original_dim_y; ++y)
 	{
 		for (int x = 0; x < original_dim_x; ++x)
 		{
-			set_pixel(visualizaiton, &x, &y, hitbox[y][x], hitbox[y][x], hitbox[y][x]);
+			for(int c1 = 0; c1 < HASH_SIZE_Y; c1++){
+				for(int c2 = 0; c2 < HASH_SIZE_X; c2++){
+					int del_x = x+c2;
+					int del_y = y+c1;
+					if(hitbox[y][x] != 0)
+						set_pixel(visualizaiton, &del_x, &del_y, 255,255,255);//hitbox[y][x], hitbox[y][x], hitbox[y][x]);
+				}
+			}
 		}
 	}
 	save_ppm(visualizaiton, "visual_hsv.ppm");
@@ -688,7 +699,7 @@ void * thread_hash_HSV(void * args){
 		pthread_mutex_unlock(hitbox_mutex);
 	}
 	else{
-		printf("Diff too high %f\n", diff);
+		//printf("Diff too high %f\n", diff);
 	}
 	pthread_exit(NULL);
 }

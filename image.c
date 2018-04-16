@@ -7,6 +7,8 @@
 #include <math.h>
 #include "image.h"
 #include "boolean.h"
+#include "hash.h"
+#include "hsv.h"
 
 
 //returns the pixel at the given x,y coordinate
@@ -90,14 +92,14 @@ struct board *make_board(const int *res_x, const int *res_y)
   struct board *bred = malloc(sizeof(struct board));
   struct pixel **image;
 
-  if ((image = malloc(sizeof(struct pixel *) * (*res_y))) == NULL)
+  if ((image = calloc((*res_y), sizeof(struct pixel *) )) == NULL)
   {
     return NULL;
   }
 
   for (int y = 0; y < (*res_y); ++y)
   {
-    if ((image[y] = malloc(sizeof(struct pixel) * (*res_x))) == NULL)
+    if ((image[y] = calloc((*res_x),sizeof(struct pixel)))  == NULL)
     {
       return NULL;
     }
