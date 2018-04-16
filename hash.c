@@ -534,7 +534,7 @@ struct hsv_hash** hash_original_HSV(struct board** original_image,int* original_
 	struct pixel ** img = (*original_image) -> image;
 
 	for(int y = 0; y < *original_dim_y; ++y){
-		answer[y] = malloc(sizeof(struct color_hash)*(*original_dim_x));
+		answer[y] = malloc(sizeof(struct hsv_hash)*(*original_dim_x));
 		if(answer[y] == NULL) fprintf(stderr, "ERROR: Could not malloc in hash_original\n");
 
 		struct hsv_hash sh;
