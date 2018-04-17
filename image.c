@@ -571,8 +571,8 @@ int resize_percent(struct board** board, double percent)
       int pos_x = x*(1.0/percent);
       int pos_y = y*(1.0/percent);
 
-       pixel = get_pixel(*board,&pos_x,&pos_y);
-       set_pixel(resize,&x,&y,pixel.red,pixel.green,pixel.blue);
+      pixel = get_pixel(*board,&pos_x,&pos_y);
+      set_pixel(resize,&x,&y,pixel.red,pixel.green,pixel.blue);
     }
   }
 

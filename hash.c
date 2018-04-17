@@ -566,6 +566,8 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 	if (dim_y % HASH_SIZE > 0)
 		new_dim_y += (HASH_SIZE - (dim_y % HASH_SIZE));
 
+	printf("Search new dim size-- x: %d, y: %d\n", new_dim_x, new_dim_y);
+
 	pthread_mutex_t *hitbox_mutex = malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(hitbox_mutex, NULL);
 
@@ -582,14 +584,14 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 
 	resize_dimension(search_image, new_dim_x, new_dim_y);
 
-	int number_of_threads = new_dim_x * new_dim_y / (HASH_SIZE * HASH_SIZE);
+	int number_of_threads = (new_dim_x-1) * new_dim_y / (HASH_SIZE * HASH_SIZE);
 	pthread_t *children = malloc(sizeof(pthread_t) * number_of_threads);
 	int counter = 0;
 	printf("Threads: %d\n",number_of_threads);
 
 	for (int c1 = 0; c1 < new_dim_y; c1 += HASH_SIZE)
 	{
-		for (int c2 = 0; c2 < new_dim_x; c2 += HASH_SIZE)
+		for (int c2 = 0; c2 < new_dim_x-1; c2 += HASH_SIZE)
 		{
 			struct search_thread_params_HSV *thread_params = malloc(sizeof(struct search_thread_params_HSV));
 			thread_params->original_hashed_image = original_hashed_image;
@@ -604,12 +606,14 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 			counter += 1;
 		}
 	}
-
 	printf("# threads created: %d\n", counter);
+	int num_threads = 0;
 	for (int c1 = 0; c1 < number_of_threads; c1++)
 	{
 		pthread_join(children[c1], NULL);
+		num_threads += 1;
 	}
+	printf("Threads joined: %d\n", num_threads);
 
 	/////SAVE THE HITBOX TO AN IMAGE
 	int new_size_x = original_dim_x + HASH_SIZE;
