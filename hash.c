@@ -17,6 +17,7 @@
 #define HASH_SIZE_X 9
 #define HASH_SIZE_Y 8
 
+#define HASH_SIZE 8
 
 struct search_thread_params_gray
 {
@@ -256,7 +257,7 @@ void split_hash_color(struct board **search_image, struct color_hash** original_
 	int counter = 0;
 	for (int c1 = 0; c1 < new_dim_y; c1 += HASH_SIZE_Y)
 	{
-		for (int c2 = 0; c2 < new_dim_x; c2 += HASH_SIZE_X)
+		for (int c2 = 0; c2 < new_dim_x; c2 += HASH_SIZE_Y)
 		{
 			struct search_thread_params_color *thread_params = malloc(sizeof(struct search_thread_params_color));
 			thread_params->original_hashed_image = original_hashed_image;
@@ -503,7 +504,7 @@ struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y){
 			int x2 = x + 1;
 			pixel = board[y + start_y][x + start_x];
 			hsv1 = RGBtoHSV(pixel.red,pixel.green,pixel.blue);
-			//total_hue += hsv1.h;
+			total_hue += hsv1.h;
 			pixel = board[y + start_y][x2 + start_x];
 			hsv2 = RGBtoHSV(pixel.red,pixel.green,pixel.blue);
 			//hue
@@ -556,10 +557,10 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 	int dim_y = (*search_image)->resolution_y;
 	int new_dim_x = dim_x;
 	int new_dim_y = dim_y;
-	if (dim_x % HASH_SIZE_X > 0)
-		new_dim_x += (HASH_SIZE_X - (dim_x % HASH_SIZE_X));
-	if (dim_y % HASH_SIZE_Y > 0)
-		new_dim_y += (HASH_SIZE_Y - (dim_y % HASH_SIZE_Y));
+	if (dim_x % HASH_SIZE > 0)
+		new_dim_x += (HASH_SIZE - (dim_x % HASH_SIZE)) + 1;
+	if (dim_y % HASH_SIZE > 0)
+		new_dim_y += (HASH_SIZE - (dim_y % HASH_SIZE));
 
 	pthread_mutex_t *hitbox_mutex = malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(hitbox_mutex, NULL);
@@ -577,14 +578,14 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 
 	resize_dimension(search_image, new_dim_x, new_dim_y);
 
-	int number_of_threads = new_dim_x * new_dim_y / (HASH_SIZE_X * HASH_SIZE_Y);
+	int number_of_threads = new_dim_x * new_dim_y / (HASH_SIZE * HASH_SIZE);
 	pthread_t *children = malloc(sizeof(pthread_t) * number_of_threads);
 	int counter = 0;
 	printf("Threads: %d\n",number_of_threads);
 
-	for (int c1 = 0; c1 < new_dim_y; c1 += HASH_SIZE_Y)
+	for (int c1 = 0; c1 < new_dim_y; c1 += HASH_SIZE)
 	{
-		for (int c2 = 0; c2 < new_dim_x; c2 += HASH_SIZE_X)
+		for (int c2 = 0; c2 < new_dim_x; c2 += HASH_SIZE)
 		{
 			struct search_thread_params_HSV *thread_params = malloc(sizeof(struct search_thread_params_HSV));
 			thread_params->original_hashed_image = original_hashed_image;
@@ -607,20 +608,20 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 	}
 
 	/////SAVE THE HITBOX TO AN IMAGE
-	int new_size_x = original_dim_x + HASH_SIZE_X;
-	int new_size_y = original_dim_y + HASH_SIZE_Y;
+	int new_size_x = original_dim_x + HASH_SIZE;
+	int new_size_y = original_dim_y + HASH_SIZE;
 	struct board *visualizaiton = make_board(&new_size_x, &new_size_y);
 
 	for (int y = 0; y < original_dim_y; ++y)
 	{
 		for (int x = 0; x < original_dim_x; ++x)
 		{
-			for(int c1 = 0; c1 < HASH_SIZE_Y; c1++){
-				for(int c2 = 0; c2 < HASH_SIZE_X; c2++){
+			for(int c1 = 0; c1 < HASH_SIZE; c1++){
+				for(int c2 = 0; c2 < HASH_SIZE; c2++){
 					int del_x = x+c2;
 					int del_y = y+c1;
 					if(hitbox[y][x] != 0)
-						set_pixel(visualizaiton, &del_x, &del_y, 255,255,255);//hitbox[y][x], hitbox[y][x], hitbox[y][x]);
+						set_pixel(visualizaiton, &del_x, &del_y, hitbox[y][x], hitbox[y][x], hitbox[y][x]);
 				}
 			}
 		}
@@ -684,7 +685,7 @@ void * thread_hash_HSV(void * args){
 			int ham_v = hamming_distance(&my_hash.v, &original_hashed_image[y][x].v);
 			double check = (weight_h * ham_h) + (weight_s * ham_s) + (weight_v * ham_v);
 			if (check < diff
-					&& fabs(my_corner_hue - original_hashed_image[y][x].corner_hue) < 40.0
+					&& fabs(my_corner_hue - original_hashed_image[y][x].corner_hue) < 20.0
 					&& fabs(my_avg_hue - original_hashed_image[y][x].avg_hue) < 20.0)
 			{
 				best_x=x;
