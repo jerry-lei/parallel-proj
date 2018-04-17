@@ -18,6 +18,7 @@ struct hsv_hash{
   uint64_t v;
   double avg_hue;
   double corner_hue;
+  double hash2;
 };
 
 int hamming_distance(uint64_t* hash1, uint64_t* hash2);

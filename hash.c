@@ -499,6 +499,7 @@ struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y){
 	struct hsv hsv2;
 	struct pixel pixel;
 	int total_hue = 0;
+	double hash2 = 0.0;
 	for(int y = 0; y < 8; ++y){
 		for(int x = 0; x < 8; ++x){
 			int x2 = x + 1;
@@ -507,6 +508,8 @@ struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y){
 			total_hue += hsv1.h;
 			pixel = board[y + start_y][x2 + start_x];
 			hsv2 = RGBtoHSV(pixel.red,pixel.green,pixel.blue);
+
+			hash2 += hsv1.h/360;// * (y * 8 + x2);
 			//hue
 			if(hsv1.h < hsv2.h) answer.h = (answer.h & ~(1 << nth)) | (1 << nth);
 			else answer.h = (answer.h & ~(1 << nth)) | (0 << nth);
@@ -523,6 +526,7 @@ struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y){
 	pixel = board[start_y][start_x];
 	answer.corner_hue = RGBtoHSV(pixel.red, pixel.green, pixel.blue).h;
 	answer.avg_hue = total_hue/64;
+	answer.hash2 = hash2;
 	return answer;
 }
 
@@ -655,6 +659,7 @@ void * thread_hash_HSV(void * args){
 	struct hsv_hash my_hash = hash8_hsv_pixels(my_search_image, start_x, start_y);
 	double my_avg_hue = my_hash.avg_hue;
 	double my_corner_hue = my_hash.corner_hue;
+	double my_hash2 = my_hash.hash2;
 	struct pixel corner = my_search_image[0][0];
 	// if(my_hash.h == 0 && corner.red >= 255 && corner.green >= 255 && corner.blue >= 255){
 	// 	return NULL;
@@ -685,8 +690,10 @@ void * thread_hash_HSV(void * args){
 			int ham_v = hamming_distance(&my_hash.v, &original_hashed_image[y][x].v);
 			double check = (weight_h * ham_h) + (weight_s * ham_s) + (weight_v * ham_v);
 			if (check < diff
-					&& fabs(my_corner_hue - original_hashed_image[y][x].corner_hue) < 20.0
-					&& fabs(my_avg_hue - original_hashed_image[y][x].avg_hue) < 20.0)
+					//&& fabs(my_corner_hue - original_hashed_image[y][x].corner_hue) < 20.0
+					&& fabs(my_avg_hue - original_hashed_image[y][x].avg_hue) < 20.0
+					&& fabs(my_hash2 - original_hashed_image[y][x].hash2) < 20.0
+				)
 			{
 				best_x=x;
 				best_y=y;
