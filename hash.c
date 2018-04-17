@@ -562,9 +562,10 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 	int new_dim_x = dim_x;
 	int new_dim_y = dim_y;
 	if (dim_x % HASH_SIZE > 0)
-		new_dim_x += (HASH_SIZE - (dim_x % HASH_SIZE)) + 1;
+		new_dim_x += (HASH_SIZE - (dim_x % HASH_SIZE));
 	if (dim_y % HASH_SIZE > 0)
 		new_dim_y += (HASH_SIZE - (dim_y % HASH_SIZE));
+	new_dim_x += 1;
 
 	printf("Search new dim size-- x: %d, y: %d\n", new_dim_x, new_dim_y);
 
