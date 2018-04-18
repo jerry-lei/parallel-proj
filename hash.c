@@ -86,8 +86,8 @@ struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y){
 
 struct hsv_hash** hash_original_HSV(struct board** original_image,int* original_dim_x, int* original_dim_y){
 
-	*original_dim_x = (*original_image)->resolution_x - HASH_SIZE_X;
-	*original_dim_y = (*original_image)->resolution_y - HASH_SIZE_Y;
+	*original_dim_x = (*original_image)->resolution_x - HASH_SIZE;
+	*original_dim_y = (*original_image)->resolution_y - HASH_SIZE;
 
 	struct hsv_hash** answer = malloc(sizeof(struct hsv_hash*) * (*original_dim_y));
 	if(answer == NULL) fprintf(stderr, "ERROR: Could not malloc in hash_original\n");
@@ -105,6 +105,9 @@ struct hsv_hash** hash_original_HSV(struct board** original_image,int* original_
 			answer[y][x].h = sh.h;
 			answer[y][x].s = sh.s;
 			answer[y][x].v = sh.v;
+			answer[y][x].avg_hue = sh.avg_hue;
+			answer[y][x].corner_hue = sh.corner_hue;
+			answer[y][x].hash2 = sh.hash2;
 		}
 	}
 	return answer;
@@ -165,8 +168,11 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 	int num_threads = 0;
 	for (int c1 = 0; c1 < number_of_threads; c1++)
 	{
-		pthread_join(children[c1], NULL);
-		num_threads += 1;
+		if(0!=pthread_join(children[c1], NULL))
+		{
+			fprintf(stderr,"ERROR\n");	
+		}
+		num_threads+=1;
 	}
 	printf("Threads joined: %d\n", num_threads);
 
@@ -220,9 +226,9 @@ void * thread_hash_HSV(void * args){
 	double my_corner_hue = my_hash.corner_hue;
 	double my_hash2 = my_hash.hash2;
 	struct pixel corner = my_search_image[0][0];
-	// if(my_hash.h == 0 && corner.red >= 255 && corner.green >= 255 && corner.blue >= 255){
-	// 	return NULL;
-	// }
+	 if(my_hash.h == 0 && corner.red >= 255 && corner.green >= 255 && corner.blue >= 255){
+	 	return NULL;
+	 }
 
 	int scale_h = 4;
 	int scale_s = 1;
@@ -253,9 +259,9 @@ void * thread_hash_HSV(void * args){
 			double check_average = fabs(my_avg_hue - original_hashed_image[y][x].avg_hue);
 			double check_total = fabs(my_hash2 - original_hashed_image[y][x].hash2);
 			if (check_weight < best_weighted
-					//&& fabs(my_corner_hue - original_hashed_image[y][x].corner_hue) < 20.0
-					&&  check_average < 20.0
-					&& 	check_total < 20.0
+					&& fabs(my_corner_hue - original_hashed_image[y][x].corner_hue) < 20.0
+					&&  check_average < 10.0
+					&& 	check_total < 10.0
 				)
 			{
 				best_x=x;
