@@ -14,26 +14,16 @@
 
 int main(int argc, char* argv[])
 {
+  struct board* search = load_ppm("left_windy.ppm");
+  struct board* original = load_ppm("weird.ppm");
 
-  struct board* search = load_ppm("cross_road.ppm");
-  struct board* original = load_ppm("blind_driveway.ppm");
-
-  resize_dimension(&search,200,200);
-
-  // struct board* search = load_ppm("nick_jerry.ppm");
-  // struct board* original = load_ppm("nick_jerry.ppm");
+  //autocrop_board(&search,255,255,255);
+  resize_dimension(&search,160,160);
 
   int original_dim_x=-1;
   int original_dim_y=-1;
   struct hsv_hash** hashed_original = hash_original_HSV(&original,&original_dim_x,&original_dim_y);
   split_hash_HSV(&search,hashed_original, original_dim_x, original_dim_y);
-
-  /*to_grayscale(&search);
-  to_grayscale(&original);
-  original_dim_x=-1;
-  original_dim_y=-1;
-  uint64_t** hashed_original2 = hash_original_gray(&original,&original_dim_x,&original_dim_y);
-  split_hash_gray(&search,hashed_original2, original_dim_x, original_dim_y);*/
 
   free_board(&search);
   free_board(&original);
