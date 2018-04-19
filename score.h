@@ -18,10 +18,10 @@ int calc_distance(int** hitbox, int hitbox_dimx, int hitbox_dimy,
                  int search_dimx, int search_dimy, int search_start_x, int search_start_y,
                  int pos_x, int pos_y);
 
-struct best_score_info* calc_score(int** hitbox, int hitbox_dimx, int hitbox_dimy,
+struct best_score_info calc_score(int** hitbox, int hitbox_dimx, int hitbox_dimy,
                 int search_dimx, int search_dimy, int search_start_x, int search_start_y);
 
-struct best_score_info* calc_best_score(int** hitbox, int hitbox_dimx, int hitbox_dimy,
+struct best_score_info calc_best_score(int** hitbox, int hitbox_dimx, int hitbox_dimy,
                 int search_dimx, int search_dimy);
 
 #endif

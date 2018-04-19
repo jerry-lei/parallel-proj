@@ -171,7 +171,7 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 	{
 		if(0!=pthread_join(children[c1], NULL))
 		{
-			fprintf(stderr,"ERROR\n");	
+			fprintf(stderr,"ERROR\n");
 		}
 		num_threads+=1;
 	}
@@ -180,7 +180,29 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 	/////SAVE THE HITBOX TO AN IMAGE
 	int new_size_x = original_dim_x + HASH_SIZE;
 	int new_size_y = original_dim_y + HASH_SIZE;
-	struct board *visualizaiton = make_board(&new_size_x, &new_size_y);
+	struct board *visualization = make_board(&new_size_x, &new_size_y);
+
+
+
+	//calculate the score:
+	struct best_score_info best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_dim_x, new_dim_y);
+	double score = best_score.score;
+	int search_start_x = best_score.search_start_x;
+	int search_start_y = best_score.search_start_y;
+	double avg_distance_from_closest_point = best_score.avg_distance_from_closest_point;
+	int total_hits = best_score.total_hits;
+
+	printf("Score: %f\nStart x: %d, y: %d\nDim x: %d, y: %d\nAvg dist: %f\nTotal Hits:%d\n",
+					score, search_start_x, search_start_y, new_dim_x, new_dim_y, avg_distance_from_closest_point, total_hits);
+
+	for(int row = 0; row < new_dim_y; row++){
+		for(int col = 0; col < new_dim_x; col++){
+			int del_x = col + search_start_x;
+			int del_y = row + search_start_y;
+			set_pixel(visualization, &del_x, &del_y, 255, 0, 0);
+		}
+	}
+
 
 	for (int y = 0; y < original_dim_y; ++y)
 	{
@@ -191,25 +213,14 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 					int del_x = x+c2;
 					int del_y = y+c1;
 					if(hitbox[y][x] != 0)
-						set_pixel(visualizaiton, &del_x, &del_y, hitbox[y][x], hitbox[y][x], hitbox[y][x]);
+						set_pixel(visualization, &del_x, &del_y, hitbox[y][x], hitbox[y][x], hitbox[y][x]);
 				}
 			}
 		}
 	}
 
-	//calculate the score:
-	struct best_score_info* best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_dim_x, new_dim_y);
-	double score = best_score -> score;
-	int search_start_x = best_score -> search_start_x;
-	int search_start_y = best_score -> search_start_y;
-	double avg_distance_from_closest_point = best_score -> avg_distance_from_closest_point;
-	int total_hits = best_score -> total_hits;
-
-	printf("Score: %f\nStart x: %d, y: %d\nDim x: %d, y: %d\nAvg dist: %f\nTotal Hits:%d\n",
-					score, search_start_x, search_start_y, new_dim_x, new_dim_y, avg_distance_from_closest_point, total_hits);
-
-	save_ppm(visualizaiton, "visual_hsv.ppm");
-	free_board(&visualizaiton);
+	save_ppm(visualization, "visual_hsv.ppm");
+	free_board(&visualization);
 	////////////////////////////////////
 
 	for (int c1 = 0; c1 < original_dim_y; c1++)
