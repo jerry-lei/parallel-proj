@@ -86,18 +86,29 @@ struct best_score_info calc_score(int** hitbox, int** distance_box, int hitbox_d
 {
   int total_distance = 0;
   int total_hits = 0;
+  int max_distance = -1;
+  int min_distance = INT_MAX;
   for(int row = 0; row < search_dimy; row++){
     for(int col = 0; col < search_dimx; col++){
       if(hitbox[row+search_start_y][col+search_start_x] != 0){
         int distance = calc_distance(hitbox, distance_box, hitbox_dimx, hitbox_dimy, search_dimx, search_dimy, search_start_x, search_start_y, col + search_start_x, row + search_start_y);
         total_distance += distance;
+        if(distance > max_distance) max_distance = distance;
+        if(distance < min_distance) min_distance = distance;
         total_hits += 1;
       }
     }
   }
   double average_distance = total_distance/(double)total_hits;
+  int range = max_distance - min_distance;
+  double score = -1;
+  double inverted_range = -1;
+  if(range != 0){
+    inverted_range = 1.0/range;
+    score = total_hits * inverted_range;
+  }
   double inverted_avg_distance = 1.0/average_distance;
-  int score = total_hits;///inverted_avg_distance * total_hits;
+  //int score = total_hits * ;///inverted_avg_distance * total_hits;
   // if(total_hits > 1)
   //   printf("Total: %f\n", score);
   struct best_score_info return_score_info;
