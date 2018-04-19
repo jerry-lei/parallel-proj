@@ -3,6 +3,7 @@
 
 #include "image.h"
 #include "boolean.h"
+#include "score.h"
 #include <stdint.h>
 #include <inttypes.h>
 

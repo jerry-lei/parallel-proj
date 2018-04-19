@@ -1,6 +1,7 @@
 #include "hash.h"
 #include "image.h"
 #include "hsv.h"
+#include "score.h"
 #include "boolean.h"
 
 #include <stdio.h>
@@ -189,6 +190,18 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 			}
 		}
 	}
+
+	//calculate the score:
+	struct best_score_info* best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_dim_x, new_dim_y);
+	double score = best_score -> score;
+	int search_start_x = best_score -> search_start_x;
+	int search_start_y = best_score -> search_start_y;
+	double avg_distance_from_closest_point = best_score -> avg_distance_from_closest_point;
+	int total_hits = best_score -> total_hits;
+
+	printf("Score: %f\nStart x: %d, y: %d\nDim x: %d, y: %d\nAvg dist: %f\nTotal Hits:%d\n",
+					score, search_start_x, search_start_y, new_dim_x, new_dim_y, avg_distance_from_closest_point, total_hits);
+
 	save_ppm(visualizaiton, "visual_hsv.ppm");
 	free_board(&visualizaiton);
 	////////////////////////////////////
