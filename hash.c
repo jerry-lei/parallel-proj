@@ -182,8 +182,6 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 	int new_size_y = original_dim_y + HASH_SIZE;
 	struct board *visualization = make_board(&new_size_x, &new_size_y);
 
-
-
 	//calculate the score:
 	struct best_score_info best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_dim_x, new_dim_y);
 	double score = best_score.score;

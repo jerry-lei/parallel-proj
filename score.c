@@ -67,20 +67,21 @@ struct best_score_info calc_score(int** hitbox, int hitbox_dimx, int hitbox_dimy
                 int search_dimx, int search_dimy, int search_start_x, int search_start_y)
 {
   int total_distance = 0;
-  double total_hits = 0;
+  int total_hits = 0;
   for(int row = 0; row < search_dimy; row++){
     for(int col = 0; col < search_dimx; col++){
       if(hitbox[row][col] != 0){
-        int distance = calc_distance(hitbox, hitbox_dimx, hitbox_dimy, search_dimx, search_dimy, search_start_x, search_start_y, col + search_start_x, col + search_start_y);
+        int distance = calc_distance(hitbox, hitbox_dimx, hitbox_dimy, search_dimx, search_dimy, search_start_x, search_start_y, col + search_start_x, row + search_start_y);
         total_distance += distance;
-        total_hits += 1.0;
+        total_hits += 1;
       }
     }
   }
-  double average_distance = total_distance/total_hits;
+  double average_distance = total_distance/(double)total_hits;
   double inverted_avg_distance = 1.0/average_distance;
-  double score = total_hits;///inverted_avg_distance * total_hits;
-  //printf("Score: %f\n", score);
+  int score = total_hits;///inverted_avg_distance * total_hits;
+  // if(total_hits > 1)
+  //   printf("Total: %f\n", score);
   struct best_score_info return_score_info;
   return_score_info.score = score;
   return_score_info.search_start_x = search_start_x;
@@ -96,11 +97,17 @@ struct best_score_info calc_best_score(int** hitbox, int hitbox_dimx, int hitbox
 {
   struct best_score_info curr_best;
   curr_best.score = -1;
-  for(int col = 0; col < hitbox_dimy - search_dimy; ++col){
-    for(int row = 0; row < hitbox_dimx - search_dimx; ++row){
-      struct best_score_info check_score = calc_score(hitbox, hitbox_dimx, hitbox_dimy, search_dimx, search_dimy, row, col);
+  for(int row = 0; row < hitbox_dimy - search_dimy; row++){
+    for(int col = 0; col < hitbox_dimx - search_dimx; col++){
+      //printf("Row: %d, col: %d\n", row, col);
+      struct best_score_info check_score = calc_score(hitbox, hitbox_dimx, hitbox_dimy, search_dimx, search_dimy, col, row);
       if(check_score.score > curr_best.score){
-        curr_best = check_score;
+        curr_best.score = check_score.score;
+        curr_best.search_start_x = check_score.search_start_x;
+        curr_best.search_start_y = check_score.search_start_y;
+        curr_best.avg_distance_from_closest_point = check_score.avg_distance_from_closest_point;
+        int total_hits;
+
       }
     }
   }
