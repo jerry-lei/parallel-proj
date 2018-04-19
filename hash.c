@@ -183,6 +183,7 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 	struct board *visualization = make_board(&new_size_x, &new_size_y);
 
 	//calculate the score:
+
 	struct best_score_info best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_dim_x, new_dim_y);
 	double score = best_score.score;
 	int search_start_x = best_score.search_start_x;
@@ -193,14 +194,19 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 	printf("Score: %f\nStart x: %d, y: %d\nDim x: %d, y: %d\nAvg dist: %f\nTotal Hits:%d\n",
 					score, search_start_x, search_start_y, new_dim_x, new_dim_y, avg_distance_from_closest_point, total_hits);
 
-	for(int row = 0; row < new_dim_y; row++){
-		for(int col = 0; col < new_dim_x; col++){
-			int del_x = col + search_start_x;
-			int del_y = row + search_start_y;
-			set_pixel(visualization, &del_x, &del_y, 255, 0, 0);
+	//modify visualization to show the best score location
+	if(score > -1){
+		for(int row = 0; row < new_dim_y; row++){
+			for(int col = 0; col < new_dim_x; col++){
+				int del_x = col + search_start_x;
+				int del_y = row + search_start_y;
+				set_pixel(visualization, &del_x, &del_y, 255, 0, 0);
+			}
 		}
 	}
-
+	else{
+		printf("Did not find the image! \n");
+	}
 
 	for (int y = 0; y < original_dim_y; ++y)
 	{

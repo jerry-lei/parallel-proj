@@ -148,6 +148,10 @@ struct best_score_info calc_best_score(int** hitbox, int original_dimx, int orig
 {
   struct best_score_info curr_best;
   curr_best.score = -1;
+  curr_best.search_start_x = -1;
+  curr_best.search_start_y = -1;
+  curr_best.avg_distance_from_closest_point = -1;
+  curr_best.total_hits = -1;
   struct opt_dist** distance_box = malloc(original_dimy * sizeof(struct opt_dist*));
   for(int c1 = 0; c1 < original_dimy; c1++){
     distance_box[c1] = malloc(original_dimx * sizeof(struct opt_dist));
