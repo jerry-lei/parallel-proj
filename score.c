@@ -19,7 +19,7 @@ int min_int(int x, int y){
 }
 
 
-double distance(double x1, double x2, double y1, double y2){
+double distance(double x1, double y1, double x2, double y2){
   return sqrt(((x2-x1) * (x2-x1)) + ((y2-y1) * (y2-y1)));
 }
 
@@ -30,9 +30,9 @@ int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx,
                  int pos_x, int pos_y)
 {
   struct opt_dist current = distance_box[pos_y][pos_x];
-  // if(current.set_itself == 1){
-  //   return current.distance;
-  // }
+  if(current.set_itself == 1){
+    return current.distance;
+  }
   int current_min = current.distance;
   int max_distance = max_int(search_dimx, search_dimy);
   for(int n = 1; n < min_int(max_distance, current_min); n++){
@@ -60,12 +60,12 @@ int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx,
       int find_end = min_int(hitbox_dimx, min_int((search_start_x + search_dimx), (pos_x + n)));
       for(int c1 = find_start; c1 < find_end; c1++){
         if(hitbox[pos_y+n][c1] != 0) {
-          // struct opt_dist change = distance_box[pos_y+n][c1];
-          // if(change.set_itself == 0){
-          //   distance_box[pos_y+n][c1].distance = n;
-          // }
-          // distance_box[pos_y][c1].distance = n;
-          // distance_box[pos_y][c1].set_itself = 1;
+          struct opt_dist change = distance_box[pos_y+n][c1];
+          if(change.set_itself == 0){
+            distance_box[pos_y+n][c1].distance = n;
+          }
+          distance_box[pos_y][c1].distance = n;
+          distance_box[pos_y][c1].set_itself = 1;
           return n;
         }
       }
@@ -77,12 +77,12 @@ int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx,
       int find_end = min_int(hitbox_dimy, min_int((search_start_y + search_dimy), (pos_y+n)));
       for(int c1 = find_start; c1 < find_end; c1++){
         if(hitbox[c1][pos_x-n] != 0) {
-          // struct opt_dist change = distance_box[c1][pos_x-n];
-          // if(change.set_itself == 0){
-          //   distance_box[c1][pos_x-n].distance = n;
-          // }
-          // distance_box[c1][pos_x].distance = n;
-          // distance_box[c1][pos_x].set_itself = 1;
+          struct opt_dist change = distance_box[c1][pos_x-n];
+          if(change.set_itself == 0){
+            distance_box[c1][pos_x-n].distance = n;
+          }
+          distance_box[c1][pos_x].distance = n;
+          distance_box[c1][pos_x].set_itself = 1;
           return n;
         }
       }
@@ -94,13 +94,13 @@ int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx,
       int find_end = min_int(hitbox_dimy, min_int((search_start_y + search_dimy), (pos_y+n)));
       for(int c1 = find_start; c1 < find_end; c1++){
         if(hitbox[c1][pos_x+n] != 0) {
-          // struct opt_dist change = distance_box[c1][pos_x+n];
-          // if(change.set_itself == 0){
-          //   distance_box[c1][pos_x+n].distance = n;
-          // }
-          // distance_box[c1][pos_x].distance = n;
-          // distance_box[c1][pos_x].set_itself = 1;
-          // return n;
+          struct opt_dist change = distance_box[c1][pos_x+n];
+          if(change.set_itself == 0){
+            distance_box[c1][pos_x+n].distance = n;
+          }
+          distance_box[c1][pos_x].distance = n;
+          distance_box[c1][pos_x].set_itself = 1;
+          return n;
         }
       }
     }
@@ -139,6 +139,7 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
       }
     }
   }
+  //printf("TL: %f, TR: %f, BL: %f, BR: %f\n", from_top_left, from_top_right, from_bottom_left, from_bottom_right);
   double average_distance = total_distance/(double)total_hits;
   int range = max_distance - min_distance;
   double score = -1;
@@ -146,17 +147,21 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   double total_corner_distance = from_top_left + from_top_right + from_bottom_left + from_bottom_right;
   double avg_min_distance_from_corners = total_corner_distance/4;
   double inverted_avg_min_distance_from_corners = -1;
+  double inverted_avg_distance = 1.0/average_distance;
+  double inverted_max_distance = -1;
+  double inverted_min_distance = -1;
   if(range != 0 && avg_min_distance_from_corners != 0){
     inverted_range = 1.0/range;
+    inverted_max_distance = 1.0/max_distance;
+    inverted_min_distance = 1.0/min_distance;
     inverted_avg_min_distance_from_corners = 1.0/avg_min_distance_from_corners;
-    score = total_hits * inverted_range * inverted_avg_min_distance_from_corners;
+    score = total_hits * inverted_avg_min_distance_from_corners * inverted_max_distance * inverted_min_distance;
   }
-  double inverted_avg_distance = 1.0/average_distance;
   struct best_score_info return_score_info;
   return_score_info.score = score;
   return_score_info.search_start_x = search_start_x;
   return_score_info.search_start_y = search_start_y;
-  return_score_info.extra_info = range;
+  return_score_info.extra_info = avg_min_distance_from_corners;
   return_score_info.total_hits = (int)total_hits;
   return return_score_info;
 }
@@ -193,10 +198,16 @@ struct best_score_info calc_best_score(int** hitbox, int original_dimx, int orig
       }
     }
   }
-  // for(int c1 = 0; c1 < original_dimy; c1++){
-  //   free(distance_box[c1]);
-  // }
-  // free(distance_box);
+
+  //case 1: search_x > original_x && search_y < original_y
+  //case 2: search_y > original_y && search_x < original_x
+  //case 2: search_x > original_x && search_y > original_y
+
+
+  for(int c1 = 0; c1 < original_dimy; c1++){
+    free(distance_box[c1]);
+  }
+  free(distance_box);
 
 
   return curr_best;

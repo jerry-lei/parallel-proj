@@ -18,7 +18,7 @@ struct best_score_info {
   int total_hits;
 };
 
-double distance(double x1, double x2, double y1, double y2);
+double distance(double x1, double y1, double x2, double y2);
 
 int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx, int hitbox_dimy,
                  int search_dimx, int search_dimy, int search_start_x, int search_start_y,
