@@ -188,11 +188,11 @@ void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hash
 	double score = best_score.score;
 	int search_start_x = best_score.search_start_x;
 	int search_start_y = best_score.search_start_y;
-	double avg_distance_from_closest_point = best_score.avg_distance_from_closest_point;
+	double extra_info = best_score.extra_info;
 	int total_hits = best_score.total_hits;
 
-	printf("Score: %f\nStart x: %d, y: %d\nDim x: %d, y: %d\nAvg dist: %f\nTotal Hits:%d\n",
-					score, search_start_x, search_start_y, new_dim_x, new_dim_y, avg_distance_from_closest_point, total_hits);
+	printf("Score: %f\nStart x: %d, y: %d\nDim x: %d, y: %d\nExtra Info: %f\nTotal Hits:%d\n",
+					score, search_start_x, search_start_y, new_dim_x, new_dim_y, extra_info, total_hits);
 
 	//modify visualization to show the best score location
 	if(score > -1){
@@ -307,7 +307,6 @@ void * thread_hash_HSV(void * args){
 
 		//printf("AVG HUE: %f<vs>%f\n",my_avg_hue,original_hashed_image[best_y][best_x].avg_hue);
 		//printf("corner HUE: %f<vs>%f\n",my_corner_hue,original_hashed_image[best_y][best_x].corner_hue);
-		printf("\n");
 	}
 	else{
 		//printf("Diff too high %f\n", diff);

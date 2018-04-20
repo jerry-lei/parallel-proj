@@ -8,6 +8,7 @@
 #include <math.h>
 #include <limits.h>
 #include <inttypes.h>
+#include <float.h>
 
 int max_int(int x, int y){
   return (x > y) ? x : y;
@@ -18,15 +19,20 @@ int min_int(int x, int y){
 }
 
 
+double distance(double x1, double x2, double y1, double y2){
+  return sqrt(((x2-x1) * (x2-x1)) + ((y2-y1) * (y2-y1)));
+}
+
+
 //diagram in case i forget: https://photos.app.goo.gl/hQTDLXTIxD9PWgj53
 int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx, int hitbox_dimy,
                  int search_dimx, int search_dimy, int search_start_x, int search_start_y,
                  int pos_x, int pos_y)
 {
   struct opt_dist current = distance_box[pos_y][pos_x];
-  if(current.set_itself == 1){
-    return current.distance;
-  }
+  // if(current.set_itself == 1){
+  //   return current.distance;
+  // }
   int current_min = current.distance;
   int max_distance = max_int(search_dimx, search_dimy);
   for(int n = 1; n < min_int(max_distance, current_min); n++){
@@ -54,12 +60,12 @@ int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx,
       int find_end = min_int(hitbox_dimx, min_int((search_start_x + search_dimx), (pos_x + n)));
       for(int c1 = find_start; c1 < find_end; c1++){
         if(hitbox[pos_y+n][c1] != 0) {
-          struct opt_dist change = distance_box[pos_y+n][c1];
-          if(change.set_itself == 0){
-            distance_box[pos_y+n][c1].distance = n;
-          }
-          distance_box[pos_y][c1].distance = n;
-          distance_box[pos_y][c1].set_itself = 1;
+          // struct opt_dist change = distance_box[pos_y+n][c1];
+          // if(change.set_itself == 0){
+          //   distance_box[pos_y+n][c1].distance = n;
+          // }
+          // distance_box[pos_y][c1].distance = n;
+          // distance_box[pos_y][c1].set_itself = 1;
           return n;
         }
       }
@@ -71,12 +77,12 @@ int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx,
       int find_end = min_int(hitbox_dimy, min_int((search_start_y + search_dimy), (pos_y+n)));
       for(int c1 = find_start; c1 < find_end; c1++){
         if(hitbox[c1][pos_x-n] != 0) {
-          struct opt_dist change = distance_box[c1][pos_x-n];
-          if(change.set_itself == 0){
-            distance_box[c1][pos_x-n].distance = n;
-          }
-          distance_box[c1][pos_x].distance = n;
-          distance_box[c1][pos_x].set_itself = 1;
+          // struct opt_dist change = distance_box[c1][pos_x-n];
+          // if(change.set_itself == 0){
+          //   distance_box[c1][pos_x-n].distance = n;
+          // }
+          // distance_box[c1][pos_x].distance = n;
+          // distance_box[c1][pos_x].set_itself = 1;
           return n;
         }
       }
@@ -88,13 +94,13 @@ int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx,
       int find_end = min_int(hitbox_dimy, min_int((search_start_y + search_dimy), (pos_y+n)));
       for(int c1 = find_start; c1 < find_end; c1++){
         if(hitbox[c1][pos_x+n] != 0) {
-          struct opt_dist change = distance_box[c1][pos_x+n];
-          if(change.set_itself == 0){
-            distance_box[c1][pos_x+n].distance = n;
-          }
-          distance_box[c1][pos_x].distance = n;
-          distance_box[c1][pos_x].set_itself = 1;
-          return n;
+          // struct opt_dist change = distance_box[c1][pos_x+n];
+          // if(change.set_itself == 0){
+          //   distance_box[c1][pos_x+n].distance = n;
+          // }
+          // distance_box[c1][pos_x].distance = n;
+          // distance_box[c1][pos_x].set_itself = 1;
+          // return n;
         }
       }
     }
@@ -110,13 +116,25 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   int total_hits = 0;
   int max_distance = -1;
   int min_distance = INT_MAX;
+  double from_top_left = DBL_MAX;
+  double from_top_right = DBL_MAX;
+  double from_bottom_left = DBL_MAX;
+  double from_bottom_right = DBL_MAX;
   for(int row = 0; row < search_dimy; row++){
     for(int col = 0; col < search_dimx; col++){
       if(hitbox[row+search_start_y][col+search_start_x] != 0){
-        int distance = calc_distance(hitbox, distance_box, hitbox_dimx, hitbox_dimy, search_dimx, search_dimy, search_start_x, search_start_y, col + search_start_x, row + search_start_y);
-        total_distance += distance;
-        if(distance > max_distance) max_distance = distance;
-        if(distance < min_distance) min_distance = distance;
+        int check_dist = calc_distance(hitbox, distance_box, hitbox_dimx, hitbox_dimy, search_dimx, search_dimy, search_start_x, search_start_y, col + search_start_x, row + search_start_y);
+        total_distance += check_dist;
+        double check_tl = distance(0,0,col,row);
+        double check_tr = distance(search_dimx-1,0,col,row);
+        double check_bl = distance(0,search_dimy-1,col,row);
+        double check_br = distance(search_dimx-1,search_dimy-1,col,row);
+        if(check_tl < from_top_left) from_top_left = check_tl;
+        if(check_tr < from_top_right) from_top_right = check_tr;
+        if(check_bl < from_bottom_left) from_bottom_left = check_bl;
+        if(check_br < from_bottom_right) from_bottom_right = check_br;
+        if(check_dist > max_distance) max_distance = check_dist;
+        if(check_dist < min_distance) min_distance = check_dist;
         total_hits += 1;
       }
     }
@@ -125,19 +143,20 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   int range = max_distance - min_distance;
   double score = -1;
   double inverted_range = -1;
-  if(range != 0){
+  double total_corner_distance = from_top_left + from_top_right + from_bottom_left + from_bottom_right;
+  double avg_min_distance_from_corners = total_corner_distance/4;
+  double inverted_avg_min_distance_from_corners = -1;
+  if(range != 0 && avg_min_distance_from_corners != 0){
     inverted_range = 1.0/range;
-    score = total_hits * inverted_range;
+    inverted_avg_min_distance_from_corners = 1.0/avg_min_distance_from_corners;
+    score = total_hits * inverted_range * inverted_avg_min_distance_from_corners;
   }
   double inverted_avg_distance = 1.0/average_distance;
-  //int score = total_hits * ;///inverted_avg_distance * total_hits;
-  // if(total_hits > 1)
-  //   printf("Total: %f\n", score);
   struct best_score_info return_score_info;
   return_score_info.score = score;
   return_score_info.search_start_x = search_start_x;
   return_score_info.search_start_y = search_start_y;
-  return_score_info.avg_distance_from_closest_point = average_distance;
+  return_score_info.extra_info = range;
   return_score_info.total_hits = (int)total_hits;
   return return_score_info;
 }
@@ -150,7 +169,7 @@ struct best_score_info calc_best_score(int** hitbox, int original_dimx, int orig
   curr_best.score = -1;
   curr_best.search_start_x = -1;
   curr_best.search_start_y = -1;
-  curr_best.avg_distance_from_closest_point = -1;
+  curr_best.extra_info = -1;
   curr_best.total_hits = -1;
   struct opt_dist** distance_box = malloc(original_dimy * sizeof(struct opt_dist*));
   for(int c1 = 0; c1 < original_dimy; c1++){
@@ -169,7 +188,7 @@ struct best_score_info calc_best_score(int** hitbox, int original_dimx, int orig
         curr_best.score = check_score.score;
         curr_best.search_start_x = check_score.search_start_x;
         curr_best.search_start_y = check_score.search_start_y;
-        curr_best.avg_distance_from_closest_point = check_score.avg_distance_from_closest_point;
+        curr_best.extra_info = check_score.extra_info;
         curr_best.total_hits = check_score.total_hits;
       }
     }
