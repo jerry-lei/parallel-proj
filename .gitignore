@@ -1,4 +1,6 @@
 a.out
+Makefile
+main.c
 bred.ppm
 
 \.vscode/settings\.json
@@ -8,3 +10,13 @@ shear_stripes\.ppm
 square_shear\.ppm
 
 square\.ppm
+
+visual_avg_color\.ppm
+
+visual_color\.ppm
+
+visual_gray\.ppm
+
+results/
+
+visual_hsv\.ppm

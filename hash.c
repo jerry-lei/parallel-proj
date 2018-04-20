@@ -304,6 +304,10 @@ void * thread_hash_HSV(void * args){
 		pthread_mutex_lock(hitbox_mutex);
 		hitbox[best_y][best_x]=255;         //WRONG////////////////////////////////////
 		pthread_mutex_unlock(hitbox_mutex);
+
+		//printf("AVG HUE: %f<vs>%f\n",my_avg_hue,original_hashed_image[best_y][best_x].avg_hue);
+		//printf("corner HUE: %f<vs>%f\n",my_corner_hue,original_hashed_image[best_y][best_x].corner_hue);
+		printf("\n");
 	}
 	else{
 		//printf("Diff too high %f\n", diff);

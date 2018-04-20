@@ -14,11 +14,11 @@
 
 int main(int argc, char* argv[])
 {
-  struct board* search = load_ppm("left_windy.ppm");
-  struct board* original = load_ppm("weird.ppm");
+  struct board* search = load_ppm("nick_jerry.ppm");
+  struct board* original = load_ppm("wow.ppm");
 
+  resize_dimension(&search,200,200);
   //autocrop_board(&search,255,255,255);
-  resize_dimension(&search,160,160);
 
   int original_dim_x=-1;
   int original_dim_y=-1;
