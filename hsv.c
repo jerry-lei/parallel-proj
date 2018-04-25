@@ -1,6 +1,7 @@
 #include "hsv.h"
 
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 double min(double x, double y)
@@ -33,7 +34,7 @@ struct hsv RGBtoHSV(int r, int g, int b){
   else if(maximum == in_b){
     hp = ((in_r-in_g)/chroma) + 4;
   }
-  if(chroma > 0.0000001){
+  if(chroma > 0.000000001){
     returnHSV.h = hp * 60;
   }
   else{ //chroma == 0

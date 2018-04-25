@@ -120,15 +120,16 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   double from_top_right = DBL_MAX;
   double from_bottom_left = DBL_MAX;
   double from_bottom_right = DBL_MAX;
-  for(int row = 0; row < search_dimy; row++){
-    for(int col = 0; col < search_dimx; col++){
-      if(hitbox[row+search_start_y][col+search_start_x] != 0){
-        int check_dist = calc_distance(hitbox, distance_box, hitbox_dimx, hitbox_dimy, search_dimx, search_dimy, search_start_x, search_start_y, col + search_start_x, row + search_start_y);
+  for(int row = search_start_y; row < min_int(search_dimy + search_start_y, hitbox_dimy); row++){
+    for(int col = search_start_x; col < min_int(search_dimx + search_start_x, hitbox_dimx); col++){
+      //if(search_start_x == 0 && search_start_y == 1) printf("2: Row: %d, Col %d\n", row, col);
+      if(hitbox[row][col] != 0){
+        int check_dist = calc_distance(hitbox, distance_box, hitbox_dimx, hitbox_dimy, search_dimx, search_dimy, search_start_x, search_start_y, col, row);
         total_distance += check_dist;
-        double check_tl = distance(0,0,col,row);
-        double check_tr = distance(search_dimx-1,0,col,row);
-        double check_bl = distance(0,search_dimy-1,col,row);
-        double check_br = distance(search_dimx-1,search_dimy-1,col,row);
+        double check_tl = distance(search_start_x,search_start_y,col,row);
+        double check_tr = distance(search_start_x + search_dimx-1,search_start_y,col,row);
+        double check_bl = distance(search_start_x,search_start_y + search_dimy-1,col,row);
+        double check_br = distance(search_start_x + search_dimx-1,search_start_y + search_dimy-1,col,row);
         if(check_tl < from_top_left) from_top_left = check_tl;
         if(check_tr < from_top_right) from_top_right = check_tr;
         if(check_bl < from_bottom_left) from_bottom_left = check_bl;
@@ -150,18 +151,18 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   double inverted_avg_distance = 1.0/average_distance;
   double inverted_max_distance = -1;
   double inverted_min_distance = -1;
-  if(range != 0 && avg_min_distance_from_corners != 0){
+  if(range != 0 && avg_min_distance_from_corners > 0){
     inverted_range = 1.0/range;
     inverted_max_distance = 1.0/max_distance;
     inverted_min_distance = 1.0/min_distance;
     inverted_avg_min_distance_from_corners = 1.0/avg_min_distance_from_corners;
-    score = total_hits * inverted_avg_min_distance_from_corners * inverted_max_distance * inverted_min_distance;
+    score = total_hits * inverted_max_distance * inverted_min_distance * inverted_avg_min_distance_from_corners;
   }
   struct best_score_info return_score_info;
   return_score_info.score = score;
   return_score_info.search_start_x = search_start_x;
   return_score_info.search_start_y = search_start_y;
-  return_score_info.extra_info = avg_min_distance_from_corners;
+  return_score_info.extra_info = max_distance;
   return_score_info.total_hits = (int)total_hits;
   return return_score_info;
 }
@@ -185,9 +186,10 @@ struct best_score_info calc_best_score(int** hitbox, int original_dimx, int orig
     }
   }
 
-  for(int row = 0; row < original_dimy - search_dimy; row++){
-    for(int col = 0; col < original_dimx - search_dimx; col++){
-      //printf("Row: %d, col: %d\n", row, col);
+
+
+  for(int row = 0; row < min_int(original_dimy, max_int(original_dimy - search_dimy, search_dimy)); row++){
+    for(int col = 0; col < min_int(original_dimx, max_int(original_dimx - search_dimx, search_dimx)); col++){
       struct best_score_info check_score = calc_score(hitbox, distance_box, original_dimx, original_dimy, search_dimx, search_dimy, col, row);
       if(check_score.score > curr_best.score){
         curr_best.score = check_score.score;
@@ -199,9 +201,6 @@ struct best_score_info calc_best_score(int** hitbox, int original_dimx, int orig
     }
   }
 
-  //case 1: search_x > original_x && search_y < original_y
-  //case 2: search_y > original_y && search_x < original_x
-  //case 2: search_x > original_x && search_y > original_y
 
 
   for(int c1 = 0; c1 < original_dimy; c1++){
