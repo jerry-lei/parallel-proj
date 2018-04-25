@@ -9,6 +9,7 @@
 #include "boolean.h"
 #include "hash.h"
 #include "hsv.h"
+#include "score.h"
 
 
 //returns the pixel at the given x,y coordinate
@@ -670,7 +671,7 @@ void bounding_box(struct board** board, struct best_score_info* score)
 			int border_y = thick+start_y;
 			set_pixel(*board,&border_x,&border_y,r,g,b);
 			border_y = thick+start_y+bounding_box_y;
-			
+
 			set_pixel(*board,&border_x2,&border_y,r,g,b);
 		}
 		hsv.h+=adder;

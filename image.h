@@ -1,7 +1,8 @@
 #ifndef IMAGE_H
 #define IMAGE_H
-#include "score.h"
+
 #include <stdint.h>
+#include "score.h"
 
 
 /*

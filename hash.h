@@ -1,13 +1,13 @@
 #ifndef HASH_H
 #define HASH_H
 
-#include "image.h"
-#include "boolean.h"
-#include "score.h"
 #include <stdint.h>
 #include <inttypes.h>
 #include <pthread.h>
 
+
+#include "image.h"
+#include "score.h"
 
 struct hsv_hash{
   uint64_t h;

@@ -61,7 +61,7 @@ void HSVtoRGB (struct hsv hsv, int* r_out, int* g_out, int* b_out)
   if(abs_hp<0){abs_hp*=-1;}
   double x = c*(1.0-abs_hp);
   double r,g,b;
-  
+
   if(hp>=0&& hp<1)
   {
     r=c;g=x;b=0;
@@ -89,7 +89,7 @@ void HSVtoRGB (struct hsv hsv, int* r_out, int* g_out, int* b_out)
     r=0;g=0;b=0;
   }
   double m = hsv.v-c;
-  
+
   *r_out = 255*(r+m);
   *g_out = 255*(g+m);
   *b_out = 255*(b+m);

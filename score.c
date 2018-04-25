@@ -1,5 +1,5 @@
 
-#include "score.h"
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +9,8 @@
 #include <limits.h>
 #include <inttypes.h>
 #include <float.h>
+
+#include "score.h"
 
 int max_int(int x, int y){
   return (x > y) ? x : y;
@@ -201,7 +203,8 @@ struct best_score_info calc_best_score(int** hitbox, int original_dimx, int orig
     }
   }
 
-
+  curr_best.dimension_x = min_int(original_dimx, search_dimx);
+  curr_best.dimension_y = min_int(original_dimy, search_dimy);
 
   for(int c1 = 0; c1 < original_dimy; c1++){
     free(distance_box[c1]);

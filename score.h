@@ -1,10 +1,6 @@
 #ifndef SCORE_H
 #define SCORE_H
 
-#include "image.h"
-#include "boolean.h"
-#include "hash.h"
-
 struct opt_dist{
   int set_itself;
   int distance;
@@ -14,6 +10,8 @@ struct best_score_info {
   double score;
   int search_start_x;
   int search_start_y;
+  int dimension_x;
+  int dimension_y;
   double extra_info;
   int total_hits;
 };

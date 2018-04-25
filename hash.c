@@ -56,7 +56,7 @@ struct best_score_info find_image(struct board** original_image, struct board** 
 
   struct hsv_hash** hashed_original = hash_original_HSV(original_image,&original_dim_x,&original_dim_y);
   struct best_score_info result = hash_thread_allocator(search_image,hashed_original, original_dim_x, original_dim_y);
-	
+
 	for(int y = 0; y < original_dim_y; ++y)
   {
    free(hashed_original[y]);
