@@ -57,8 +57,8 @@ int main(int argc, char* argv[])
   **/
 
   /* Define key variables for the problem */
-  float upper_bound = 5;
-  float lower_bound = 0.2;
+  float upper_bound = 0.7;
+  float lower_bound = 0.1;
   int number_scales = 10; //we will be doing number_scales + 1 total
   float distance_between = (upper_bound - lower_bound)/number_scales;
 
@@ -131,7 +131,8 @@ int main(int argc, char* argv[])
     counter += 1;
   }
 
-  printf("Rank: %d, best score: %f, #hits: %d\n", mpi_taskid, best_current_score.score, best_current_score.total_hits);
+  MPI_Barrier(MPI_COMM_WORLD);
+  printf("Rank: %d -- Score: %f -- Total hits: %d -- Pos: (%d, %d) -- Size: (%d, %d)\n", mpi_taskid, best_current_score.score, best_current_score.total_hits, best_current_score.search_start_x, best_current_score.search_start_y, best_current_score.dimension_x, best_current_score.dimension_y);
 
   free_board(&search);
   free_board(&original);
