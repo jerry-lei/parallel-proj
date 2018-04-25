@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
   /* Define key variables for the problem */
   float upper_bound = 5;
   float lower_bound = 0.2;
-  int number_scales = 3; //we will be doing number_scales + 1 total
+  int number_scales = 10; //we will be doing number_scales + 1 total
   float distance_between = (upper_bound - lower_bound)/number_scales;
 
   /* Storing the work load [rank_responsible_for_load][scales_responsible_for] */
@@ -110,6 +110,7 @@ int main(int argc, char* argv[])
   best_current_score.search_start_y = -1;
   best_current_score.dimension_x = -1;
   best_current_score.dimension_y = -1;
+  best_current_score.total_hits = -1;
 
 
   struct board* search = load_ppm("nick_jerry.ppm");
@@ -125,9 +126,12 @@ int main(int argc, char* argv[])
       best_current_score.search_start_y = result.search_start_y;
       best_current_score.dimension_x = result.dimension_x;
       best_current_score.dimension_y = result.dimension_y;
+      best_current_score.total_hits = result.total_hits;
     }
     counter += 1;
   }
+
+  printf("Rank: %d, best score: %f, #hits: %d\n", mpi_taskid, best_current_score.score, best_current_score.total_hits);
 
   free_board(&search);
   free_board(&original);
