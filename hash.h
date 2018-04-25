@@ -20,8 +20,10 @@ struct hsv_hash{
 int hamming_distance(uint64_t* hash1, uint64_t* hash2);
 
 
-void * thread_hash_HSV(void * args);
-void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hashed_image, int original_dim_x, int original_dim_y);
+//void * thread_hash_HSV(void * args);
+void hash_thread_allocator(struct board **search_image, struct hsv_hash **original_hashed_image, int original_dim_x, int original_dim_y);
+//void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hashed_image, int original_dim_x, int original_dim_y);
 struct hsv_hash** hash_original_HSV(struct board** original_image,int* original_dim_x, int* original_dim_y);
+void* hash_worker(void* args);
 struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y);
 #endif

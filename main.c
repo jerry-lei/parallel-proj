@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
   int original_dim_x=-1;
   int original_dim_y=-1;
   struct hsv_hash** hashed_original = hash_original_HSV(&original,&original_dim_x,&original_dim_y);
-  split_hash_HSV(&search,hashed_original, original_dim_x, original_dim_y);
+  hash_thread_allocator(&search,hashed_original, original_dim_x, original_dim_y);
 
   free_board(&search);
   free_board(&original);
