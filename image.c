@@ -638,6 +638,8 @@ void bounding_box(struct board** board, struct best_score_info* score)
 {
   int start_x = score->search_start_x;
   int start_y = score->search_start_y;
+  int bounding_box_x = score->dimension_x;
+  int bounding_box_y = score->dimension_y;
 
 	//change maybe?
 	int border_thickness = 4;

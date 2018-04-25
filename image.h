@@ -1,6 +1,8 @@
 #ifndef IMAGE_H
 #define IMAGE_H
+#include "score.h"
 #include <stdint.h>
+
 
 /*
 http://datagenetics.com/blog/august32013/index.html
@@ -45,7 +47,7 @@ int rotate(struct board** board, double degrees,int ignore_r, int ignore_g, int 
 int resize_percent(struct board** board, double percent);
 int resize_dimension(struct board** board, int dim_x, int dim_y);
 int to_grayscale(struct board** board);
-void bounding_box(struct board** board, int start_x, int start_y, int bounding_box_x, int bounding_box_y);
+void bounding_box(struct board** board, struct best_score_info* score);
 #endif
 
 /*
