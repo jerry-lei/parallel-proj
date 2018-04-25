@@ -47,7 +47,24 @@ struct search_thread_params_HSV
 	int start_y;
 	pthread_mutex_t *hitbox_mutex;
 };
+struct best_score_info find_image(struct board** original_image, struct board** search_image,double scale)
+{
+	int original_dim_x=-1;
+  int original_dim_y=-1;
 
+	resize_percent(search_image, scale);
+
+  struct hsv_hash** hashed_original = hash_original_HSV(original_image,&original_dim_x,&original_dim_y);
+  struct best_score_info result = hash_thread_allocator(search_image,hashed_original, original_dim_x, original_dim_y);
+	
+	for(int y = 0; y < original_dim_y; ++y)
+  {
+   free(hashed_original[y]);
+  }
+  free(hashed_original);
+
+	return result;
+}
 struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y){
 	struct hsv_hash answer;
 
@@ -123,7 +140,7 @@ struct hsv_hash** hash_original_HSV(struct board** original_image, int* original
 	return answer;
 }
 
-void hash_thread_allocator(struct board **search_image, struct hsv_hash **original_hashed_image, int original_dim_x, int original_dim_y)
+struct best_score_info hash_thread_allocator(struct board **search_image, struct hsv_hash **original_hashed_image, int original_dim_x, int original_dim_y)
 {
 	/* resize the search image */
 	int search_dim_x = (*search_image)->resolution_x;
@@ -213,12 +230,14 @@ void hash_thread_allocator(struct board **search_image, struct hsv_hash **origin
 		num_threads+=1;
 	}
 	printf("Threads joined: %d\n", num_threads);
-		/////SAVE THE HITBOX TO AN IMAGE
-	struct board *visualization = make_board(&original_dim_x, &original_dim_y);
 
 	//calculate the score:
 
 	struct best_score_info best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_search_dim_x, new_search_dim_y);
+	return best_score;
+	/* VISUALIZATION CODE
+	/////SAVE THE HITBOX TO AN IMAGE
+	struct board *visualization = make_board(&original_dim_x, &original_dim_y);
 	double score = best_score.score;
 	int search_start_x = best_score.search_start_x;
 	int search_start_y = best_score.search_start_y;
@@ -260,7 +279,7 @@ void hash_thread_allocator(struct board **search_image, struct hsv_hash **origin
 	save_ppm(visualization, "visual_hsv.ppm");
 	free_board(&visualization);
 	////////////////////////////////////
-
+	*/
 	for (int c1 = 0; c1 < original_dim_y; c1++)
 	{
 		free(hitbox[c1]);

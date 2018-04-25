@@ -633,3 +633,61 @@ int to_grayscale(struct board** board)
   }
   return avg_color / ((*board)->resolution_x*(*board)->resolution_y);
 }
+
+void bounding_box(struct board** board, struct best_score_info* score)
+{
+  int start_x = score->search_start_x;
+  int start_y = score->search_start_y;
+
+	//change maybe?
+	int border_thickness = 4;
+	int x = 0;
+	int y = 0;
+
+	struct hsv hsv;
+	hsv.h=0;
+	hsv.s=1;
+	hsv.v=1;
+
+	int r=0;
+	int g=0;
+	int b=0;
+
+	double adder = 6.0/(double)bounding_box_x;
+	//double adder = (double)bounding_box_x/360.0;
+	printf("The adder is %f\n",adder);
+
+	//horizontal
+	for (x = 0; x < bounding_box_x; ++x)
+	{
+		HSVtoRGB(hsv,&r,&g,&b);
+		int border_x = x+start_x;
+		int border_x2 = bounding_box_x-x+start_x;
+		for(int thick = 0; thick < border_thickness; ++thick)
+		{
+			int border_y = thick+start_y;
+			set_pixel(*board,&border_x,&border_y,r,g,b);
+			border_y = thick+start_y+bounding_box_y;
+			
+			set_pixel(*board,&border_x2,&border_y,r,g,b);
+		}
+		hsv.h+=adder;
+	}
+
+	//vertical
+	adder = 6.0/(double)bounding_box_y;
+	for (y = 0; y < bounding_box_y+border_thickness; ++y)
+	{
+		HSVtoRGB(hsv,&r,&g,&b);
+		int border_y = y+start_y;
+		int border_y2 = bounding_box_y-y+start_y+border_thickness-1;
+		for(int thick = 0; thick < border_thickness; ++thick)
+		{
+			int border_x = thick+start_x;
+			set_pixel(*board,&border_x,&border_y2,r,g,b);
+			border_x = thick+start_x+bounding_box_x;
+			set_pixel(*board,&border_x,&border_y,r,g,b);
+		}
+		hsv.h+=adder;
+	}
+}

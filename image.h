@@ -45,6 +45,7 @@ int rotate(struct board** board, double degrees,int ignore_r, int ignore_g, int 
 int resize_percent(struct board** board, double percent);
 int resize_dimension(struct board** board, int dim_x, int dim_y);
 int to_grayscale(struct board** board);
+void bounding_box(struct board** board, int start_x, int start_y, int bounding_box_x, int bounding_box_y);
 #endif
 
 /*

@@ -50,6 +50,47 @@ struct hsv RGBtoHSV(int r, int g, int b){
 
   //value:
   returnHSV.v = maximum;
-
   return returnHSV;
+}
+
+void HSVtoRGB (struct hsv hsv, int* r_out, int* g_out, int* b_out)
+{
+  double c = hsv.v*hsv.s;
+  double hp = fmod(hsv.h,6);
+  double abs_hp =fmod(hp,2)-1;
+  if(abs_hp<0){abs_hp*=-1;}
+  double x = c*(1.0-abs_hp);
+  double r,g,b;
+  
+  if(hp>=0&& hp<1)
+  {
+    r=c;g=x;b=0;
+  }
+  else if(hp>=1&& hp<2)
+  {
+    r=x;g=c;b=0;
+  }
+  else if(hp>=2&& hp<3)
+  {
+    r=0;g=c;b=x;
+  }
+  else if(hp>=3&& hp<4)
+  {
+    r=0;g=x;b=c;
+  }
+  else if(hp>=4&& hp<5)
+  {
+    r=x;g=0;b=c;
+  }else if(hp>=5&& hp<6)
+  {
+    r=c;g=0;b=x;
+  }else
+  {
+    r=0;g=0;b=0;
+  }
+  double m = hsv.v-c;
+  
+  *r_out = 255*(r+m);
+  *g_out = 255*(g+m);
+  *b_out = 255*(b+m);
 }
