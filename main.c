@@ -26,8 +26,8 @@ int main(int argc, char* argv[])
 
 
 
-  struct board* search = load_ppm("left_windy.ppm");
-  struct board* original = load_ppm("desert.ppm");
+  struct board* search = load_ppm("nick_jerry.ppm");
+  struct board* original = load_ppm("wow.ppm");
   //resize_percent(&original,.5);
 
 
@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
   /* Define key variables for the problem */
   float upper_bound = min(max_scale_x, max_scale_y);
   float lower_bound = 0.1;
-  int number_scales = 2; //we will be doing number_scales + 1 total
+  int number_scales = 10; //we will be doing number_scales + 1 total
   float distance_between = (upper_bound - lower_bound)/number_scales;
 
   /* Storing the work load [rank_responsible_for_load][scales_responsible_for] */
@@ -102,13 +102,13 @@ int main(int argc, char* argv[])
   /* Print to check our distributed workload */
   if(mpi_taskid == 0){
     for(int c1 = 0; c1 < mpi_numtasks; c1++){
-      printf("Rank %d - Total %f: ", c1, current_total[c1]);
-      int c2 = 0;
-      while(work_load[c1][c2] != 0){
-        printf("%f ", work_load[c1][c2]);
-        c2++;
-      }
-      printf("\n");
+      printf("Rank %d - Total %f\n", c1, current_total[c1]);
+      // int c2 = 0;
+      // while(work_load[c1][c2] != 0){
+      //   printf("%f ", work_load[c1][c2]);
+      //   c2++;
+      // }
+      // printf("\n");
     }
   }
 
@@ -125,6 +125,7 @@ int main(int argc, char* argv[])
   while(work_load[mpi_taskid][counter] != 0){
     struct board* copied_search = copy_board(search);
     float scale = work_load[mpi_taskid][counter];
+    printf("Rank: %d -- Started scale: %f\n", mpi_taskid, scale);
     struct best_score_info result = find_image(&original,&copied_search, scale);
     if(result.score > best_current_score.score){
       best_current_score.score = result.score;
@@ -134,8 +135,11 @@ int main(int argc, char* argv[])
       best_current_score.dimension_y = result.dimension_y;
       best_current_score.total_hits = result.total_hits;
     }
+    printf("Rank: %d -- Finished scale: %f\n", mpi_taskid, scale);
     counter += 1;
   }
+
+  printf("Rank: %d finished computations\n", mpi_taskid);
 
   MPI_Barrier(MPI_COMM_WORLD);
   printf("Rank: %d -- Score: %f -- Total hits: %d -- Pos: (%d, %d) -- Size: (%d, %d)\n", mpi_taskid, best_current_score.score, best_current_score.total_hits, best_current_score.search_start_x, best_current_score.search_start_y, best_current_score.dimension_x, best_current_score.dimension_y);
@@ -148,12 +152,13 @@ int main(int argc, char* argv[])
   //we need to define a struct with a double and int
   MPI_Allreduce(local_res,global_res,1,MPI_DOUBLE_INT,MPI_MAXLOC,MPI_COMM_WORLD);
 
-  printf("%f and %f",global_res[0],global_res[1]);
+  printf("%f and %f\n",global_res[0],global_res[1]);
 
   if(mpi_taskid == (int)global_res[1])
   {
-    bounding_box(&original,&best_current_score);
-    save_ppm(original,"boxed.ppm");
+    printf("Rank %d has the best score\n", mpi_taskid);
+    // bounding_box(&original,&best_current_score);
+    // save_ppm(original,"boxed.ppm");
   }
 
   free_board(&search);

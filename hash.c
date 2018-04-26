@@ -155,7 +155,7 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	//resize the search image
 	resize_dimension(search_image, new_search_dim_x, new_search_dim_y);
 
-	printf("Search new dim size-- x: %d, y: %d\n", new_search_dim_x, new_search_dim_y);
+	printf("Search dim size-- x: %d, y: %d\n", new_search_dim_x, new_search_dim_y);
 
 	pthread_mutex_t *hitbox_mutex = malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(hitbox_mutex, NULL);
@@ -184,7 +184,7 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	int start_x = 8;
 	int start_y = 0;
 
-	printf("there will be %d threads created\n",max_possible_threads);
+	// printf("there will be %d threads created\n",max_possible_threads);
 
 	for(int thread = 0; thread < max_possible_threads; ++thread)
 	{
@@ -245,51 +245,6 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 
 
 	return best_score;
-	/* VISUALIZATION CODE
-	/////SAVE THE HITBOX TO AN IMAGE
-	struct board *visualization = make_board(&original_dim_x, &original_dim_y);
-	double score = best_score.score;
-	int search_start_x = best_score.search_start_x;
-	int search_start_y = best_score.search_start_y;
-	double extra_info = best_score.extra_info;
-	int total_hits = best_score.total_hits;
-
-	printf("Score: %f\nStart x: %d, y: %d\nDim x: %d, y: %d\nExtra Info: %f\nTotal Hits:%d\n",
-					score, search_start_x, search_start_y, new_search_dim_x, new_search_dim_y, extra_info, total_hits);
-
-	//modify visualization to show the best score location
-	if(score > -1){
-		for(int row = 0; row < new_search_dim_y; row++){
-			for(int col = 0; col < new_search_dim_x; col++){
-				int del_x = min_int(col + search_start_x,original_dim_x-1);
-				int del_y = min_int(row + search_start_y,original_dim_y-1);
-				set_pixel(visualization, &del_x, &del_y, 255, 0, 0);
-			}
-		}
-	}
-	else{
-		printf("Did not find the image! \n");
-	}
-
-	for (int y = 0; y < original_dim_y; ++y)
-	{
-		for (int x = 0; x < original_dim_x; ++x)
-		{
-			for(int c1 = 0; c1 < HASH_SIZE; c1++){
-				for(int c2 = 0; c2 < HASH_SIZE; c2++){
-					int del_x = min_int(x+c2,original_dim_x);
-					int del_y = min_int(y+c1, original_dim_y);
-					if(hitbox[y][x] != 0)
-						set_pixel(visualization, &del_x, &del_y, hitbox[y][x], hitbox[y][x], hitbox[y][x]);
-				}
-			}
-		}
-	}
-
-	save_ppm(visualization, "visual_hsv.ppm");
-	free_board(&visualization);
-	////////////////////////////////////
-	*/
 }
 
 void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_search_image,

@@ -673,6 +673,9 @@ void bounding_box(struct board** board, struct best_score_info* score)
 	//double adder = (double)bounding_box_x/360.0;
 	printf("The adder is %f\n",adder);
 
+  int original_dimx = (*board) -> resolution_x;
+  int original_dimy = (*board) -> resolution_y;
+
 	//horizontal
 	for (x = 0; x < bounding_box_x; ++x)
 	{
@@ -682,9 +685,8 @@ void bounding_box(struct board** board, struct best_score_info* score)
 		for(int thick = 0; thick < border_thickness; ++thick)
 		{
 			int border_y = thick+start_y;
-			set_pixel(*board,&border_x,&border_y,r,g,b);
+		  set_pixel(*board,&border_x,&border_y,r,g,b);
 			border_y = thick+start_y+bounding_box_y;
-
 			set_pixel(*board,&border_x2,&border_y,r,g,b);
 		}
 		hsv.h+=adder;
@@ -700,9 +702,9 @@ void bounding_box(struct board** board, struct best_score_info* score)
 		for(int thick = 0; thick < border_thickness; ++thick)
 		{
 			int border_x = thick+start_x;
-			set_pixel(*board,&border_x,&border_y2,r,g,b);
+		  set_pixel(*board,&border_x,&border_y2,r,g,b);
 			border_x = thick+start_x+bounding_box_x;
-			set_pixel(*board,&border_x,&border_y,r,g,b);
+		  set_pixel(*board,&border_x,&border_y,r,g,b);
 		}
 		hsv.h+=adder;
 	}
