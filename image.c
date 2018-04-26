@@ -656,7 +656,7 @@ void bounding_box(struct board** board, struct best_score_info* score)
   int bounding_box_y = score->dimension_y;
 
 	//change maybe?
-	int border_thickness = 4;
+	int border_thickness = 3;
 	int x = 0;
 	int y = 0;
 
@@ -685,9 +685,15 @@ void bounding_box(struct board** board, struct best_score_info* score)
 		for(int thick = 0; thick < border_thickness; ++thick)
 		{
 			int border_y = thick+start_y;
-		  set_pixel(*board,&border_x,&border_y,r,g,b);
+      if(border_y<(*board)->resolution_y && border_x<(*board)->resolution_x)
+      {
+		    set_pixel(*board,&border_x,&border_y,r,g,b);
+      }
 			border_y = thick+start_y+bounding_box_y;
-			set_pixel(*board,&border_x2,&border_y,r,g,b);
+      if(border_y<(*board)->resolution_y && border_x2<(*board)->resolution_x)
+      {
+			  set_pixel(*board,&border_x2,&border_y,r,g,b);
+      }
 		}
 		hsv.h+=adder;
 	}
@@ -702,9 +708,15 @@ void bounding_box(struct board** board, struct best_score_info* score)
 		for(int thick = 0; thick < border_thickness; ++thick)
 		{
 			int border_x = thick+start_x;
-		  set_pixel(*board,&border_x,&border_y2,r,g,b);
+      if(border_y2<(*board)->resolution_y && border_x<(*board)->resolution_x)
+      {
+		    set_pixel(*board,&border_x,&border_y2,r,g,b);
+      }
 			border_x = thick+start_x+bounding_box_x;
-		  set_pixel(*board,&border_x,&border_y,r,g,b);
+      if(border_y<(*board)->resolution_y && border_x<(*board)->resolution_x)
+      {
+		    set_pixel(*board,&border_x,&border_y,r,g,b);
+      }
 		}
 		hsv.h+=adder;
 	}

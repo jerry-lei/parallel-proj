@@ -144,21 +144,23 @@ int main(int argc, char* argv[])
   MPI_Barrier(MPI_COMM_WORLD);
   printf("Rank: %d -- Score: %f -- Total hits: %d -- Pos: (%d, %d) -- Size: (%d, %d)\n", mpi_taskid, best_current_score.score, best_current_score.total_hits, best_current_score.search_start_x, best_current_score.search_start_y, best_current_score.dimension_x, best_current_score.dimension_y);
 
-  double local_res[2];
-  double global_res[2];
-  local_res[0]=best_current_score.score;
-  local_res[1]=mpi_taskid;
+  struct{
+    double score;
+    int rank;
+  }local_res,global_res;
+
+  local_res.score=best_current_score.score;
+  local_res.rank=mpi_taskid;
 
   //we need to define a struct with a double and int
-  MPI_Allreduce(local_res,global_res,1,MPI_DOUBLE_INT,MPI_MAXLOC,MPI_COMM_WORLD);
+  MPI_Allreduce(&local_res,&global_res,1,MPI_DOUBLE_INT,MPI_MAXLOC,MPI_COMM_WORLD);
 
-  printf("%f and %f\n",global_res[0],global_res[1]);
 
-  if(mpi_taskid == (int)global_res[1])
+  if(mpi_taskid == global_res.rank)
   {
     printf("Rank %d has the best score\n", mpi_taskid);
-    // bounding_box(&original,&best_current_score);
-    // save_ppm(original,"boxed.ppm");
+    bounding_box(&original,&best_current_score);
+    save_ppm(original,"boxed.ppm");
   }
 
   free_board(&search);
