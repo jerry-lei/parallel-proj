@@ -164,8 +164,7 @@ int main(int argc, char* argv[])
     bounding_box(&original,&best_current_score);
     int size_x = best_current_score.dimension_x;
     int size_y = best_current_score.dimension_y;
-    double scale = (double)size_x/search_dimx;
-    remake_hitbox(&original, &search, size_x, size_y, scale * scale);
+    remake_hitbox(&original, &search, size_x, size_y);
     save_ppm(original,"boxed.ppm");
   }
 
