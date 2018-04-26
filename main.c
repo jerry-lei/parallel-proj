@@ -24,13 +24,16 @@ int main(int argc, char* argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &mpi_taskid);
   MPI_Comm_size(MPI_COMM_WORLD, &mpi_numtasks);
 
+  char* search_image = "left_windy.ppm";
+  char* original_image = "desert.ppm";
 
 
-  struct board* search = load_ppm("left_windy.ppm");
+  struct board* search = load_ppm(search_image);
   autocrop_board(&search, 255,255,255);
-  struct board* original = load_ppm("desert.ppm");
+  struct board* original = load_ppm(original_image);
   //resize_percent(&original,.5);
 
+  if(mpi_taskid == 0) printf("Searching for %s in %s\n", search_image, original_image);
 
   /**
     Work distribution Problem:
@@ -164,8 +167,7 @@ int main(int argc, char* argv[])
     bounding_box(&original,&best_current_score);
     int size_x = best_current_score.dimension_x;
     int size_y = best_current_score.dimension_y;
-    double scale = (double)size_x/search_dimx;
-    remake_hitbox(&original, &search, size_x, size_y, scale * scale);
+    remake_hitbox(&original, &search, size_x, size_y);
     save_ppm(original,"boxed.ppm");
   }
 
