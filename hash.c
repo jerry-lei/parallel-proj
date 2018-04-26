@@ -59,7 +59,7 @@ struct best_score_info find_image(struct board** original_image, struct board** 
 
 	for(int y = 0; y < original_dim_y; ++y)
   {
-   free(hashed_original[y]);
+  	free(hashed_original[y]);
   }
   free(hashed_original);
 
@@ -311,6 +311,8 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 	int x = start_x;
 	int y = start_y;
 
+	//printf("Starting at (%d,%d) on search img size %dx%d and original img size %dx%d\n",start_x,start_y,search_dim_x,search_dim_y,original_dim_x,original_dim_y);
+
 	while(y < search_dim_y)
 	{
 		struct hsv_hash my_hash = hash8_hsv_pixels(my_search_image, x, y);
@@ -318,49 +320,50 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 		double my_corner_hue = my_hash.corner_hue;
 		double my_hash2 = my_hash.hash2;
 		struct pixel corner = my_search_image[y][x];
-		if(my_hash.h == 0 && corner.red >= 255 && corner.green >= 255 && corner.blue >= 255){
-			continue;
-		}
-		double weight = 1.0 / (scale_h + scale_s + scale_v);
-
-		double weight_h = weight * scale_h;
-		double weight_s = weight * scale_s;
-		double weight_v = weight * scale_v;
-
-		int original_hash_x = original_dim_x - HASH_SIZE;
-		int original_hash_y = original_dim_y - HASH_SIZE;
-
-		for (int y2 = 0; y2 < original_hash_y; ++y2)
+		if(!(my_hash.h == 0 && corner.red >= 255 && corner.green >= 255 && corner.blue >= 255))
 		{
-			for (int x2 = 0; x2 < original_hash_x; ++x2)
+			double weight = 1.0 / (scale_h + scale_s + scale_v);
+
+			double weight_h = weight * scale_h;
+			double weight_s = weight * scale_s;
+			double weight_v = weight * scale_v;
+
+			int original_hash_x = original_dim_x - HASH_SIZE;
+			int original_hash_y = original_dim_y - HASH_SIZE;
+
+			for (int y2 = 0; y2 < original_hash_y; ++y2)
 			{
-				//Idea for better hits, limit the h range
-				//if the hash matches, mark the hitbox
-				int ham_h = hamming_distance(&my_hash.h, &original_hashed_image[y2][x2].h);
-				int ham_s = hamming_distance(&my_hash.s, &original_hashed_image[y2][x2].s);
-				int ham_v = hamming_distance(&my_hash.v, &original_hashed_image[y2][x2].v);
-				double check_weight = (weight_h * ham_h) + (weight_s * ham_s) + (weight_v * ham_v);
-				double check_average = fabs(my_avg_hue - original_hashed_image[y2][x2].avg_hue);
-				double check_total = fabs(my_hash2 - original_hashed_image[y2][x2].hash2);
-				if (check_weight < best_weighted
-						&& fabs(my_corner_hue - original_hashed_image[y2][x2].corner_hue) < 20.0
-						&&  check_average < 10.0
-						&& 	check_total < 10.0
-					)
+				for (int x2 = 0; x2 < original_hash_x; ++x2)
 				{
-					best_x=x2;
-					best_y=y2;
-					best_weighted = check_weight;
-					best_average = check_average;
-					best_total = check_total;
+					//Idea for better hits, limit the h range
+					//if the hash matches, mark the hitbox
+					int ham_h = hamming_distance(&my_hash.h, &original_hashed_image[y2][x2].h);
+					int ham_s = hamming_distance(&my_hash.s, &original_hashed_image[y2][x2].s);
+					int ham_v = hamming_distance(&my_hash.v, &original_hashed_image[y2][x2].v);
+					double check_weight = (weight_h * ham_h) + (weight_s * ham_s) + (weight_v * ham_v);
+					double check_average = fabs(my_avg_hue - original_hashed_image[y2][x2].avg_hue);
+					double check_total = fabs(my_hash2 - original_hashed_image[y2][x2].hash2);
+					if (check_weight < best_weighted
+							&& fabs(my_corner_hue - original_hashed_image[y2][x2].corner_hue) < 20.0
+							&&  check_average < 10.0
+							&& 	check_total < 10.0
+						)
+					{
+						best_x=x2;
+						best_y=y2;
+						best_weighted = check_weight;
+						best_average = check_average;
+						best_total = check_total;
+					}
 				}
 			}
-		}
-		if (best_weighted < 20)
-		{
-			pthread_mutex_lock(hitbox_mutex);
-			hitbox[best_y][best_x] = 255; //WRONG////////////////////////////////////
-			pthread_mutex_unlock(hitbox_mutex);
+			if (best_weighted < 20)
+			{
+				pthread_mutex_lock(hitbox_mutex);
+				hitbox[best_y][best_x] +=1;
+				//hitbox[best_y][best_x] = 255; //WRONG////////////////////////////////////
+				pthread_mutex_unlock(hitbox_mutex);
+			}
 		}
 
 		x+=(8*(total_threads+1));

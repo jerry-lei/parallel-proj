@@ -1,5 +1,6 @@
 #ifndef SCORE_H
 #define SCORE_H
+//#include "image.h"
 
 struct opt_dist{
   int set_itself;

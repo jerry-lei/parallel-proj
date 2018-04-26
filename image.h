@@ -50,6 +50,7 @@ int resize_percent(struct board** board, double percent);
 int resize_dimension(struct board** board, int dim_x, int dim_y);
 int to_grayscale(struct board** board);
 void bounding_box(struct board** board, struct best_score_info* score);
+
 #endif
 
 /*

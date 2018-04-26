@@ -16,14 +16,7 @@
 int main(int argc, char* argv[])
 {
   int mpi_numtasks,     /* number of tasks in partition */
-      mpi_taskid,       /* a task identifier */
-      mpi_numworkers,   /* number of worker tasks */
-      mpi_source,       /* task id of message source */
-      mpi_dest,         /* task id of message destination */
-      mpi_nbytes,       /* number of bytes in message */
-      mpi_mtype,        /* message type */
-      mpi_intsize,      /* size of an integer in bytes */
-      mpi_dbsize;       /* size of a double float in bytes */
+      mpi_taskid;
 
 
   /* Intialize MPI */
@@ -33,8 +26,9 @@ int main(int argc, char* argv[])
 
 
 
-  struct board* search = load_ppm("nick_jerry.ppm");
-  struct board* original = load_ppm("wow.ppm");
+  struct board* search = load_ppm("left_windy.ppm");
+  struct board* original = load_ppm("desert.ppm");
+  //resize_percent(&original,.5);
 
 
   /**
@@ -73,7 +67,7 @@ int main(int argc, char* argv[])
   /* Define key variables for the problem */
   float upper_bound = min(max_scale_x, max_scale_y);
   float lower_bound = 0.1;
-  int number_scales = 20; //we will be doing number_scales + 1 total
+  int number_scales = 2; //we will be doing number_scales + 1 total
   float distance_between = (upper_bound - lower_bound)/number_scales;
 
   /* Storing the work load [rank_responsible_for_load][scales_responsible_for] */
@@ -132,19 +126,35 @@ int main(int argc, char* argv[])
     struct board* copied_search = copy_board(search);
     float scale = work_load[mpi_taskid][counter];
     struct best_score_info result = find_image(&original,&copied_search, scale);
-    // if(result.score > best_current_score.score){
-    //   best_current_score.score = result.score;
-    //   best_current_score.search_start_x = result.search_start_x;
-    //   best_current_score.search_start_y = result.search_start_y;
-    //   best_current_score.dimension_x = result.dimension_x;
-    //   best_current_score.dimension_y = result.dimension_y;
-    //   best_current_score.total_hits = result.total_hits;
-    // }
+    if(result.score > best_current_score.score){
+      best_current_score.score = result.score;
+      best_current_score.search_start_x = result.search_start_x;
+      best_current_score.search_start_y = result.search_start_y;
+      best_current_score.dimension_x = result.dimension_x;
+      best_current_score.dimension_y = result.dimension_y;
+      best_current_score.total_hits = result.total_hits;
+    }
     counter += 1;
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
   printf("Rank: %d -- Score: %f -- Total hits: %d -- Pos: (%d, %d) -- Size: (%d, %d)\n", mpi_taskid, best_current_score.score, best_current_score.total_hits, best_current_score.search_start_x, best_current_score.search_start_y, best_current_score.dimension_x, best_current_score.dimension_y);
+
+  double local_res[2];
+  double global_res[2];
+  local_res[0]=best_current_score.score;
+  local_res[1]=mpi_taskid;
+
+  //we need to define a struct with a double and int
+  MPI_Allreduce(local_res,global_res,1,MPI_DOUBLE_INT,MPI_MAXLOC,MPI_COMM_WORLD);
+
+  printf("%f and %f",global_res[0],global_res[1]);
+
+  if(mpi_taskid == (int)global_res[1])
+  {
+    bounding_box(&original,&best_current_score);
+    save_ppm(original,"boxed.ppm");
+  }
 
   free_board(&search);
   free_board(&original);
