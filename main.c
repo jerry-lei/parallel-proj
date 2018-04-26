@@ -31,6 +31,12 @@ int main(int argc, char* argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &mpi_taskid);
   MPI_Comm_size(MPI_COMM_WORLD, &mpi_numtasks);
 
+
+
+  struct board* search = load_ppm("nick_jerry.ppm");
+  struct board* original = load_ppm("wow.ppm");
+
+
   /**
     Work distribution Problem:
       Given:
@@ -56,10 +62,18 @@ int main(int argc, char* argv[])
     =======================================
   **/
 
+  int search_dimx = search->resolution_x;
+  int search_dimy = search->resolution_y;
+  int original_dimx = original->resolution_x;
+  int original_dimy = original->resolution_y;
+
+  float max_scale_x = (float)original_dimx / search_dimx;
+  float max_scale_y = (float)original_dimy / search_dimy;
+
   /* Define key variables for the problem */
-  float upper_bound = 0.7;
+  float upper_bound = min(max_scale_x, max_scale_y);
   float lower_bound = 0.1;
-  int number_scales = 10; //we will be doing number_scales + 1 total
+  int number_scales = 20; //we will be doing number_scales + 1 total
   float distance_between = (upper_bound - lower_bound)/number_scales;
 
   /* Storing the work load [rank_responsible_for_load][scales_responsible_for] */
@@ -88,7 +102,7 @@ int main(int argc, char* argv[])
     while(work_load[index_min_workload][c2] != 0) c2 += 1;
     work_load[index_min_workload][c2] = current_scale;
     // update the current_total array
-    current_total[index_min_workload] += current_scale;
+    current_total[index_min_workload] += current_scale * current_scale;
   }
 
   /* Print to check our distributed workload */
@@ -113,21 +127,19 @@ int main(int argc, char* argv[])
   best_current_score.total_hits = -1;
 
 
-  struct board* search = load_ppm("nick_jerry.ppm");
-  struct board* original = load_ppm("wow.ppm");
-
   int counter = 0;
   while(work_load[mpi_taskid][counter] != 0){
+    struct board* copied_search = copy_board(search);
     float scale = work_load[mpi_taskid][counter];
-    struct best_score_info result = find_image(&original,&search, scale);
-    if(result.score > best_current_score.score){
-      best_current_score.score = result.score;
-      best_current_score.search_start_x = result.search_start_x;
-      best_current_score.search_start_y = result.search_start_y;
-      best_current_score.dimension_x = result.dimension_x;
-      best_current_score.dimension_y = result.dimension_y;
-      best_current_score.total_hits = result.total_hits;
-    }
+    struct best_score_info result = find_image(&original,&copied_search, scale);
+    // if(result.score > best_current_score.score){
+    //   best_current_score.score = result.score;
+    //   best_current_score.search_start_x = result.search_start_x;
+    //   best_current_score.search_start_y = result.search_start_y;
+    //   best_current_score.dimension_x = result.dimension_x;
+    //   best_current_score.dimension_y = result.dimension_y;
+    //   best_current_score.total_hits = result.total_hits;
+    // }
     counter += 1;
   }
 

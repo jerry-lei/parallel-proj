@@ -113,6 +113,19 @@ struct board *make_board(const int *res_x, const int *res_y)
   return bred;
 }
 
+struct board *copy_board(const struct board* old_board){
+  int old_x = old_board -> resolution_x;
+  int old_y = old_board -> resolution_y;
+  struct board* new_board = make_board(&old_x, &old_y);
+  for(int row = 0; row < old_y; ++row){
+    for(int col = 0; col < old_x; ++col){
+      struct pixel old_pixel = get_pixel(old_board, &col, &row);
+      set_pixel(new_board, &col, &row, old_pixel.red, old_pixel.green, old_pixel.blue);
+    }
+  }
+  return new_board;
+}
+
 struct board *load_ppm(const char *file)
 {
   FILE *fp;

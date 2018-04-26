@@ -39,6 +39,7 @@ void set_pixel(const struct board *board, const int *x, const int *y, int r, int
 void scale_pixel(struct pixel* pixel, double scale);
 void save_ppm(const struct board* board, const char* file);
 struct board* make_board(const int* res_x, const int* res_y);
+struct board *copy_board(const struct board* old_board);
 void free_board(struct board** board);
 struct board* load_ppm(const char* file);
 int autocrop_board(struct board** board, int ignore_r, int ignore_g, int ignore_b);

@@ -234,6 +234,16 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	//calculate the score:
 
 	struct best_score_info best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_search_dim_x, new_search_dim_y);
+
+	for (int c1 = 0; c1 < original_dim_y; c1++)
+	{
+		free(hitbox[c1]);
+	}
+	free(hitbox);
+	free(hitbox_mutex);
+	free(children);
+
+
 	return best_score;
 	/* VISUALIZATION CODE
 	/////SAVE THE HITBOX TO AN IMAGE
@@ -280,13 +290,6 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	free_board(&visualization);
 	////////////////////////////////////
 	*/
-	for (int c1 = 0; c1 < original_dim_y; c1++)
-	{
-		free(hitbox[c1]);
-	}
-	free(hitbox);
-	free(hitbox_mutex);
-	free(children);
 }
 
 void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_search_image,
