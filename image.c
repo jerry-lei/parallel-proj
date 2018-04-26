@@ -314,6 +314,10 @@ int autocrop_board(struct board** board, int ignore_r, int ignore_g, int ignore_
   int new_dim_x = abs(right_bound - left_bound-1);
   int new_dim_y = abs(down_bound - up_bound-1);
 
+  if(new_dim_x == dim_x && new_dim_y == dim_y){
+    return 0;
+  }
+
   struct board *new_board = make_board(&new_dim_x, &new_dim_y);
 
   for(int c1 = 0; c1 < new_dim_x; ++c1){

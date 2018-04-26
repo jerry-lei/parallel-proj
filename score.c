@@ -47,8 +47,8 @@ int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx,
           if(change.set_itself == 0){
             distance_box[pos_y-n][c1].distance = n;
           }
-          distance_box[pos_y][c1].distance = n;
-          distance_box[pos_y][c1].set_itself = 1;
+          distance_box[pos_y][pos_x].distance = n;
+          distance_box[pos_y][pos_x].set_itself = 1;
           return n;
         }
       }
@@ -64,8 +64,8 @@ int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx,
           if(change.set_itself == 0){
             distance_box[pos_y+n][c1].distance = n;
           }
-          distance_box[pos_y][c1].distance = n;
-          distance_box[pos_y][c1].set_itself = 1;
+          distance_box[pos_y][pos_x].distance = n;
+          distance_box[pos_y][pos_x].set_itself = 1;
           return n;
         }
       }
@@ -81,8 +81,8 @@ int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx,
           if(change.set_itself == 0){
             distance_box[c1][pos_x-n].distance = n;
           }
-          distance_box[c1][pos_x].distance = n;
-          distance_box[c1][pos_x].set_itself = 1;
+          distance_box[pos_y][pos_x].distance = n;
+          distance_box[pos_y][pos_x].set_itself = 1;
           return n;
         }
       }
@@ -98,8 +98,8 @@ int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx,
           if(change.set_itself == 0){
             distance_box[c1][pos_x+n].distance = n;
           }
-          distance_box[c1][pos_x].distance = n;
-          distance_box[c1][pos_x].set_itself = 1;
+          distance_box[pos_y][pos_x].distance = n;
+          distance_box[pos_y][pos_x].set_itself = 1;
           return n;
         }
       }
@@ -165,11 +165,12 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
     inverted_max_distance = 1.0/max_distance;
     inverted_min_distance = 1.0/min_distance;
     inverted_avg_min_distance_from_corners = 1.0/avg_min_distance_from_corners;
-    //score = total_hits * total_hits * inverted_max_distance * inverted_avg_min_distance_from_corners * inverted_delta_avg_opt_distance_from_center;
+    double inverted_dimensions = 1.0/(search_dimx * search_dimy);
+    score = total_hits * total_hits * inverted_max_distance * inverted_avg_min_distance_from_corners * inverted_delta_avg_opt_distance_from_center * inverted_dimensions;
   }
-  if(total_hits > 0){
-    score = (double)total_hits/(search_dimx * search_dimy);
-  }
+  // if(total_hits > 0){
+  //   score = (double)total_hits/(search_dimx * search_dimy);
+  // }
   struct best_score_info return_score_info;
   return_score_info.score = score;
   return_score_info.search_start_x = search_start_x;

@@ -27,6 +27,7 @@ int main(int argc, char* argv[])
 
 
   struct board* search = load_ppm("nick_jerry.ppm");
+  autocrop_board(&search, 255,255,255);
   struct board* original = load_ppm("wow.ppm");
   //resize_percent(&original,.5);
 
@@ -127,6 +128,7 @@ int main(int argc, char* argv[])
     float scale = work_load[mpi_taskid][counter];
     printf("Rank: %d -- Started scale: %f\n", mpi_taskid, scale);
     struct best_score_info result = find_image(&original,&copied_search, scale);
+    printf("Rank: %d -- Score: %f -- Total hits: %d -- Pos: (%d, %d) -- Size: (%d, %d) -- Extra info: %f\n", mpi_taskid, result.score, result.total_hits, result.search_start_x, result.search_start_y, result.dimension_x, result.dimension_y, result.extra_info);
     if(result.score > best_current_score.score){
       best_current_score.score = result.score;
       best_current_score.search_start_x = result.search_start_x;
