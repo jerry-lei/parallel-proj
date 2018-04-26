@@ -110,7 +110,7 @@ int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx,
 }
 
 struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx, int hitbox_dimy,
-                int search_dimx, int search_dimy, int search_start_x, int search_start_y)
+                int search_dimx, int search_dimy, int search_start_x, int search_start_y, float scaling)
 {
   int total_distance = 0;
   int total_hits = 0;
@@ -166,7 +166,7 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
     inverted_min_distance = 1.0/min_distance;
     inverted_avg_min_distance_from_corners = 1.0/avg_min_distance_from_corners;
     double inverted_dimensions = 1.0/(search_dimx * search_dimy);
-    score = total_hits * total_hits * inverted_max_distance * inverted_avg_min_distance_from_corners * inverted_delta_avg_opt_distance_from_center * inverted_dimensions;
+    score = total_hits * total_hits * inverted_max_distance * inverted_delta_avg_opt_distance_from_center * inverted_dimensions / scaling;
   }
   // if(total_hits > 0){
   //   score = (double)total_hits/(search_dimx * search_dimy);
@@ -182,7 +182,7 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
 
 
 struct best_score_info calc_best_score(int** hitbox, int original_dimx, int original_dimy,
-                int search_dimx, int search_dimy)
+                int search_dimx, int search_dimy, float scaling)
 {
   struct best_score_info curr_best;
   curr_best.score = -1;
@@ -209,7 +209,7 @@ struct best_score_info calc_best_score(int** hitbox, int original_dimx, int orig
 
   for(int row = 0; row < min_int(original_dimy, max_int(original_dimy - search_dimy, search_dimy)); row++){
     for(int col = 0; col < min_int(original_dimx, max_int(original_dimx - search_dimx, search_dimx)); col++){
-      struct best_score_info check_score = calc_score(hitbox, distance_box, original_dimx, original_dimy, search_dimx, search_dimy, col, row);
+      struct best_score_info check_score = calc_score(hitbox, distance_box, original_dimx, original_dimy, search_dimx, search_dimy, col, row, scaling);
       if(check_score.score > curr_best.score){
         curr_best.score = check_score.score;
         curr_best.search_start_x = check_score.search_start_x;

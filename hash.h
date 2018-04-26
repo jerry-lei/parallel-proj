@@ -22,7 +22,7 @@ int hamming_distance(uint64_t* hash1, uint64_t* hash2);
 
 struct best_score_info find_image(struct board** original_image, struct board** search_image, double scale);
 
-struct best_score_info hash_thread_allocator(struct board **search_image, struct hsv_hash **original_hashed_image, int original_dim_x, int original_dim_y);
+struct best_score_info hash_thread_allocator(struct board **search_image, struct hsv_hash **original_hashed_image, int original_dim_x, int original_dim_y, float scaling);
 //void split_hash_HSV(struct board **search_image, struct hsv_hash **original_hashed_image, int original_dim_x, int original_dim_y);
 struct hsv_hash** hash_original_HSV(struct board** original_image,int* original_dim_x, int* original_dim_y);
 void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_search_image,
@@ -31,6 +31,6 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 								pthread_mutex_t* hitbox_mutex, int total_threads);
 void* call_thread(void* args);
 struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y);
-void remake_hitbox(struct board** original_image, struct board** search_image, int size_x, int size_y);
+void remake_hitbox(struct board** original_image, struct board** search_image, int size_x, int size_y, float scaling);
 
 #endif

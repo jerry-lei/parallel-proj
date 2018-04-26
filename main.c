@@ -26,9 +26,9 @@ int main(int argc, char* argv[])
 
 
 
-  struct board* search = load_ppm("starbucks_logo.ppm");
+  struct board* search = load_ppm("left_windy.ppm");
   autocrop_board(&search, 255,255,255);
-  struct board* original = load_ppm("coffee_cup.ppm");
+  struct board* original = load_ppm("desert.ppm");
   //resize_percent(&original,.5);
 
 
@@ -164,7 +164,8 @@ int main(int argc, char* argv[])
     bounding_box(&original,&best_current_score);
     int size_x = best_current_score.dimension_x;
     int size_y = best_current_score.dimension_y;
-    remake_hitbox(&original, &search, size_x, size_y);
+    double scale = (double)size_x/search_dimx;
+    remake_hitbox(&original, &search, size_x, size_y, scale * scale);
     save_ppm(original,"boxed.ppm");
   }
 

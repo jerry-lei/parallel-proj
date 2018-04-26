@@ -55,7 +55,7 @@ struct best_score_info find_image(struct board** original_image, struct board** 
 	resize_percent(search_image, scale);
 
   struct hsv_hash** hashed_original = hash_original_HSV(original_image,&original_dim_x,&original_dim_y);
-  struct best_score_info result = hash_thread_allocator(search_image,hashed_original, original_dim_x, original_dim_y);
+  struct best_score_info result = hash_thread_allocator(search_image,hashed_original, original_dim_x, original_dim_y, scale * scale);
 
 	for(int y = 0; y < original_dim_y; ++y)
   {
@@ -140,7 +140,7 @@ struct hsv_hash** hash_original_HSV(struct board** original_image, int* original
 	return answer;
 }
 
-struct best_score_info hash_thread_allocator(struct board **search_image, struct hsv_hash **original_hashed_image, int original_dim_x, int original_dim_y)
+struct best_score_info hash_thread_allocator(struct board **search_image, struct hsv_hash **original_hashed_image, int original_dim_x, int original_dim_y, float scaling)
 {
 	/* resize the search image */
 	int search_dim_x = (*search_image)->resolution_x;
@@ -233,7 +233,7 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 
 	//calculate the score:
 
-	struct best_score_info best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_search_dim_x, new_search_dim_y);
+	struct best_score_info best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_search_dim_x, new_search_dim_y,scaling);
 
 	for (int c1 = 0; c1 < original_dim_y; c1++)
 	{
@@ -362,7 +362,7 @@ void* call_thread(void* args)
 }
 
 
-void remake_hitbox(struct board** original_image, struct board** search_image, int size_x, int size_y){
+void remake_hitbox(struct board** original_image, struct board** search_image, int size_x, int size_y, float scaling){
 	int original_dim_x=-1;
 	int original_dim_y=-1;
 
@@ -386,7 +386,7 @@ void remake_hitbox(struct board** original_image, struct board** search_image, i
 
 
 	struct hsv_hash** hashed_original = hash_original_HSV(original_image,&original_dim_x,&original_dim_y);
-	struct best_score_info result = hash_thread_allocator(search_image, hashed_original, original_dim_x, original_dim_y);
+	struct best_score_info result = hash_thread_allocator(search_image, hashed_original, original_dim_x, original_dim_y, scaling);
 
 	printf("=== Remaking hit box ===\n");
 
