@@ -360,3 +360,139 @@ void* call_thread(void* args)
 	pthread_exit(NULL);
 
 }
+
+
+void remake_hitbox(struct board** original_image, struct board** search_image, int size_x, int size_y){
+	int original_dim_x=-1;
+	int original_dim_y=-1;
+
+
+
+
+
+	/* resize the search image */
+	int search_dim_x = size_x;
+	int search_dim_y = size_y;
+	int new_search_dim_x = search_dim_x;
+	int new_search_dim_y = search_dim_y;
+	if (search_dim_x % HASH_SIZE > 0)
+		new_search_dim_x += (HASH_SIZE - (new_search_dim_x % HASH_SIZE));
+	if (search_dim_y % HASH_SIZE > 0)
+		new_search_dim_y += (HASH_SIZE - (new_search_dim_y % HASH_SIZE));
+	new_search_dim_x += 1;
+	//resize the search image
+	resize_dimension(search_image, new_search_dim_x, new_search_dim_y);
+
+
+
+	struct hsv_hash** hashed_original = hash_original_HSV(original_image,&original_dim_x,&original_dim_y);
+	struct best_score_info result = hash_thread_allocator(search_image, hashed_original, original_dim_x, original_dim_y);
+
+	printf("=== Remaking hit box ===\n");
+
+	pthread_mutex_t *hitbox_mutex = malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(hitbox_mutex, NULL);
+
+
+	//allocate the hit box (SAME SIZE AS ORIGINAL IMAGE)
+	int **hitbox = calloc(original_dim_y, sizeof(int *));
+	if (hitbox == NULL)
+		fprintf(stderr, "ERROR: Failed to malloc (hitbox)");
+	for (int c1 = 0; c1 < original_dim_y; c1++)
+	{
+		hitbox[c1] = calloc(original_dim_x, sizeof(int));
+		if (hitbox[c1] == NULL)
+			fprintf(stderr, "ERROR: Failed to malloc (hitbox)");
+	}
+
+
+	int max_possible_threads = (new_search_dim_x-1) * new_search_dim_y / (HASH_SIZE * HASH_SIZE);
+	if(max_possible_threads>63)
+	{
+		max_possible_threads=63;
+	}
+	pthread_t *children = malloc(sizeof(pthread_t) * max_possible_threads);
+
+	//because this function will do work starting at 0 0
+	int start_x = 8;
+	int start_y = 0;
+
+	// printf("there will be %d threads created\n",max_possible_threads);
+
+	for(int thread = 0; thread < max_possible_threads; ++thread)
+	{
+		struct search_thread_params_HSV *thread_params = malloc(sizeof(struct search_thread_params_HSV));
+		thread_params->original_hashed_image = hashed_original;
+		thread_params->my_search_image = (*search_image)->image;
+		thread_params->hitbox = hitbox;
+		thread_params->original_dim_x = original_dim_x;
+		thread_params->original_dim_y = original_dim_y;
+		thread_params->search_dim_x = new_search_dim_x;
+		thread_params->serach_dim_y = new_search_dim_y;
+		thread_params->total_threads = max_possible_threads;
+		thread_params->start_x = start_x;
+		thread_params->start_y = start_y;
+		thread_params->hitbox_mutex = hitbox_mutex;
+		pthread_create(&children[thread], NULL, call_thread, thread_params);
+		// printf("created thread at (%d,%d)\n",start_x,start_y);
+		start_x+=8;
+		if(start_x>new_search_dim_x-HASH_SIZE-1)
+		{
+			start_x-=new_search_dim_x-HASH_SIZE-1;
+			start_y+=8;
+			//probably dont need this
+			/*if(start_y>new_dim_y)
+			{
+				break;
+			}*/
+		}
+	}
+
+
+	hash_worker(hashed_original, (*search_image)->image, hitbox, original_dim_x,
+									original_dim_y, new_search_dim_x, new_search_dim_y, start_x, start_y, hitbox_mutex, max_possible_threads);
+
+
+	int num_threads = 0;
+	for (int c1 = 0; c1 < max_possible_threads; c1++)
+	{
+		if(0!=pthread_join(children[c1], NULL))
+		{
+			fprintf(stderr,"ERROR\n");
+		}
+		num_threads+=1;
+	}
+
+
+	//draw hits on IMAGE
+	for (int y = 0; y < original_dim_y; ++y)
+	{
+		for (int x = 0; x < original_dim_x; ++x)
+		{
+			for(int c1 = 0; c1 < HASH_SIZE; c1++){
+				for(int c2 = 0; c2 < HASH_SIZE; c2++){
+					int del_x = x+c2;
+					int del_y = y+c1;
+					if(hitbox[y][x] != 0)
+						set_pixel(*original_image, &del_x, &del_y, 255, 0, 0);
+				}
+			}
+		}
+	}
+
+
+	for(int y = 0; y < original_dim_y; ++y)
+	{
+		free(hashed_original[y]);
+	}
+	free(hashed_original);
+	for (int c1 = 0; c1 < original_dim_y; c1++)
+	{
+		free(hitbox[c1]);
+	}
+	free(hitbox);
+	free(hitbox_mutex);
+	free(children);
+
+
+}

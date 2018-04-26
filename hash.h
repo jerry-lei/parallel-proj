@@ -31,4 +31,6 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 								pthread_mutex_t* hitbox_mutex, int total_threads);
 void* call_thread(void* args);
 struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y);
+void remake_hitbox(struct board** original_image, struct board** search_image, int size_x, int size_y);
+
 #endif

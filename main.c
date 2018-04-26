@@ -26,9 +26,9 @@ int main(int argc, char* argv[])
 
 
 
-  struct board* search = load_ppm("nick_jerry.ppm");
+  struct board* search = load_ppm("starbucks_logo.ppm");
   autocrop_board(&search, 255,255,255);
-  struct board* original = load_ppm("wow.ppm");
+  struct board* original = load_ppm("coffee_cup.ppm");
   //resize_percent(&original,.5);
 
 
@@ -162,6 +162,9 @@ int main(int argc, char* argv[])
   {
     printf("Rank %d has the best score\n", mpi_taskid);
     bounding_box(&original,&best_current_score);
+    int size_x = best_current_score.dimension_x;
+    int size_y = best_current_score.dimension_y;
+    remake_hitbox(&original, &search, size_x, size_y);
     save_ppm(original,"boxed.ppm");
   }
 
