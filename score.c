@@ -127,8 +127,7 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
     for(int col = search_start_x; col < min_int(search_dimx + search_start_x, hitbox_dimx); col++){
       //if(search_start_x == 0 && search_start_y == 1) printf("2: Row: %d, Col %d\n", row, col);
       if(hitbox[row][col] != 0){
-        struct opt_dist hitbox_closest_distance = distance_box[row][col];
-        int check_dist = hitbox_closest_distance.distance;
+        int check_dist = distance_box[row][col].distance;
         total_distance += distance(center_x, center_y, col, row);
         double check_tl = distance(search_start_x,search_start_y,col,row);
         double check_tr = distance(search_start_x + search_dimx-1,search_start_y,col,row);
@@ -166,7 +165,10 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
     inverted_max_distance = 1.0/max_distance;
     inverted_min_distance = 1.0/min_distance;
     inverted_avg_min_distance_from_corners = 1.0/avg_min_distance_from_corners;
-    score = total_hits * total_hits * inverted_max_distance * inverted_avg_min_distance_from_corners * inverted_delta_avg_opt_distance_from_center;
+    //score = total_hits * total_hits * inverted_max_distance * inverted_avg_min_distance_from_corners * inverted_delta_avg_opt_distance_from_center;
+  }
+  if(total_hits > 0){
+    score = (double)total_hits/(search_dimx * search_dimy);
   }
   struct best_score_info return_score_info;
   return_score_info.score = score;
