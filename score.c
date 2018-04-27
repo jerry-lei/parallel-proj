@@ -132,7 +132,7 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
         if(check_nearest_distance > max_distance) max_distance = check_nearest_distance;
         //updated by the weighted number of hits
         total_x_positions += hitbox[row][col] * (col - search_start_x);
-        total_y_positions += hitbox[row][col] * (col - search_start_y);
+        total_y_positions += hitbox[row][col] * (row - search_start_y);
       }
     }
   }
@@ -141,14 +141,16 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   double average_position_y = (double)total_y_positions/total_hits;
   double center_position_x = (double)search_dimx/2.0;
   double center_position_y = (double)search_dimy/2.0;
+  //printf("Avg_x: %f, Avg_y %f, Center_x: %f, Center_y: %f\n", average_position_x, average_position_y, center_position_x, center_position_y);
   //use above values to calculate aggregate distance from center point
   double average_distance_from_center_position = distance(average_position_x, average_position_y, center_position_x, center_position_y);
   double density = (double)total_hits/(search_dimx * search_dimy);
   //invert appropriate values
   double inverted_average_distance_from_center_position = 1.0/average_distance_from_center_position;
+  if(average_distance_from_center_position < 0.00001) inverted_average_distance_from_center_position = 1.0/DBL_MAX;
   double inverted_max_distance = 1.0/max_distance;
   //calculate the score
-  double score =  density * inverted_max_distance * 100000;
+  double score =  density * inverted_max_distance * inverted_average_distance_from_center_position * 10000 * total_hits;
 
   struct best_score_info return_score_info;
   return_score_info.score = score;

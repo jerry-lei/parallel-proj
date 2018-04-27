@@ -25,13 +25,13 @@ int main(int argc, char* argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &mpi_numtasks);
 
   char* search_image = "left_windy.ppm";
-  char* original_image = "desert.ppm";
+  char* original_image = "small_desert.ppm";
 
 
   struct board* search = load_ppm(search_image);
   autocrop_board(&search, 255,255,255);
   struct board* original = load_ppm(original_image);
-  //resize_percent(&original,.5);
+  resize_percent(&original,.5);
 
   if(mpi_taskid == 0) printf("Searching for %s in %s\n", search_image, original_image);
 
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
   /* Define key variables for the problem */
   float upper_bound = min(max_scale_x, max_scale_y);
   float lower_bound = 0.1;
-  int number_scales = 10; //we will be doing number_scales + 1 total
+  int number_scales = 20; //we will be doing number_scales + 1 total
   float distance_between = (upper_bound - lower_bound)/number_scales;
 
   /* Storing the work load [rank_responsible_for_load][scales_responsible_for] */
