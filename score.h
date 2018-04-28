@@ -4,10 +4,6 @@
 
 #define NUMBER_BUCKETS 6
 
-struct opt_dist{
-  int set_itself;
-  int distance;
-};
 
 struct best_score_info {
   double score;
@@ -21,17 +17,10 @@ struct best_score_info {
 
 //DEBUGGING VARIABLES
   int unique_hits;
-  int max_distance;
-  double average_position_x;
-  double average_position_y;
-  double center_position_x;
-  double center_position_y;
-  double average_distance_from_center_position;
   double density;
-  double corner2center_dist;
 
-  double bucket_x_distribution[6];
-  double bucket_y_distribution[6];
+  double bucket_x_distribution[NUMBER_BUCKETS];
+  double bucket_y_distribution[NUMBER_BUCKETS];
 };
 
 
@@ -41,10 +30,8 @@ int min_int(int x, int y);
 
 double distance(double x1, double y1, double x2, double y2);
 
-int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx, int hitbox_dimy,
-                 int pos_x, int pos_y);
 
-struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx, int hitbox_dimy,
+struct best_score_info calc_score(int** hitbox, int hitbox_dimx, int hitbox_dimy,
                 int search_dimx, int search_dimy, int search_start_x, int search_start_y, double** optimal_distribution_x, double** optimal_distribution_y);
 
 struct best_score_info calc_best_score(int** hitbox, int original_dimx, int original_dimy,
