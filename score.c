@@ -165,6 +165,12 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
 
   double* bucket_x_distribution = calloc(NUMBER_BUCKETS, sizeof(double));
   double* bucket_y_distribution = calloc(NUMBER_BUCKETS, sizeof(double));
+
+	if(bucket_y_distribution==NULL || bucket_x_distribution==NULL)
+	{
+		fprintf(stderr,"ERROR: Could not allocate buckets\n");
+	}
+
   for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
     bucket_x_distribution[c1] = (double) bucket_x[c1] / (search_dimx * search_dimy * NUMBER_BUCKETS);
     bucket_y_distribution[c1] = (double) bucket_y[c1] / (search_dimx * search_dimy * NUMBER_BUCKETS);
@@ -200,12 +206,19 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   return_score_info.average_distance_from_center_position=average_distance_from_center_position;
   return_score_info.density=density;
   return_score_info.corner2center_dist=corner2center_dist;
+	for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
+		return_score_info.bucket_x_distribution[c1]=bucket_x_distribution[c1];
+		return_score_info.bucket_y_distribution[c1]=bucket_y_distribution[c1];
+	}
   //////////////
 
-
+  //FREE THE BUCKETS
+  free(bucket_x);
+	free(bucket_y);
+	free(bucket_x_distribution);
+  free(bucket_y_distribution);
 
   return return_score_info;
-
 }
 
 
@@ -255,6 +268,10 @@ struct best_score_info calc_best_score(int** hitbox, int original_dimx, int orig
         curr_best.average_distance_from_center_position=check_score.average_distance_from_center_position;
         curr_best.density=check_score.density;
         curr_best.corner2center_dist=check_score.corner2center_dist;
+				for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
+					curr_best.bucket_x_distribution[c1]=check_score.bucket_x_distribution[c1];
+					curr_best.bucket_y_distribution[c1]=check_score.bucket_y_distribution[c1];
+				}
         //////////////
       }
     }
@@ -263,24 +280,30 @@ struct best_score_info calc_best_score(int** hitbox, int original_dimx, int orig
   curr_best.dimension_x = min_int(original_dimx, search_dimx);
   curr_best.dimension_y = min_int(original_dimy, search_dimy);
 
-
-
-
-
   //REMOVE LATER
-  printf("%dx%d:\n  total_hits:%d\nunique_hits:%d\n max_dist:%d\n avgpos: %fx%f\n centerpos: %fx%f\n  avgdistfromcenter: %f\n density: %f\n corner2center: %f\n",
-  curr_best.dimension_x,
-  curr_best.dimension_y,
-  curr_best.total_hits,
-  curr_best.unique_hits,
-  curr_best.max_distance,
-  curr_best.average_position_x,
-  curr_best.average_position_y,
-  curr_best.center_position_x,
-  curr_best.center_position_y,
-  curr_best.average_distance_from_center_position,
-  curr_best.density,
-  curr_best.corner2center_dist);
+	printf("%dx%d:\n",curr_best.dimension_x,curr_best.dimension_y);
+	for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
+		printf("x bucket[%d]->opt=%f	mine=%f\n",c1,(*optimal_distribution_x)[c1],curr_best.bucket_x_distribution[c1]);
+  }
+	printf("\n");
+	for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
+		printf("y bucket[%d]->opt=%f	mine=%f\n",c1,(*optimal_distribution_y)[c1],curr_best.bucket_y_distribution[c1]);
+  }
+
+
+  // printf("%dx%d:\n total_hits:%d\n unique_hits:%d\n  max_dist:%d\n avgpos: %fx%f\n centerpos: %fx%f\n  avgdistfromcenter: %f\n density: %f\n corner2center: %f\n",
+  // curr_best.dimension_x,
+  // curr_best.dimension_y,
+  // curr_best.total_hits,
+  // curr_best.unique_hits,
+  // curr_best.max_distance,
+  // curr_best.average_position_x,
+  // curr_best.average_position_y,
+  // curr_best.center_position_x,
+  // curr_best.center_position_y,
+  // curr_best.average_distance_from_center_position,
+  // curr_best.density,
+  // curr_best.corner2center_dist);
   //////////////
 
 
