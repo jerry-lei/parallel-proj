@@ -15,6 +15,19 @@ struct best_score_info {
   int dimension_y;
   double extra_info;
   int total_hits;
+
+
+
+  int unique_hits;
+  int max_distance;
+  double average_position_x;
+  double average_position_y;
+  double center_position_x;
+  double center_position_y;
+  double average_distance_from_center_position;
+  double density;
+  double corner2center_dist;
+
 };
 
 

@@ -98,7 +98,10 @@ struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y){
 
 	}
 	pixel = board[start_y][start_x];
-	answer.corner_hue = RGBtoHSV(pixel.red, pixel.green, pixel.blue).h;
+	struct hsv temp_hsv = RGBtoHSV(pixel.red, pixel.green, pixel.blue);
+	answer.corner.h = temp_hsv.h;
+	answer.corner.s = temp_hsv.s;
+	answer.corner.v = temp_hsv.v;
 	answer.avg_hue = total_hue/64;
 	answer.hash2 = hash2;
 	return answer;
@@ -129,7 +132,7 @@ struct hsv_hash** hash_original_HSV(struct board** original_image, int* original
 			answer[y][x].s = sh.s;
 			answer[y][x].v = sh.v;
 			answer[y][x].avg_hue = sh.avg_hue;
-			answer[y][x].corner_hue = sh.corner_hue;
+			answer[y][x].corner = sh.corner;
 			answer[y][x].hash2 = sh.hash2;
 		}
 	}
@@ -235,6 +238,33 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 
 	struct best_score_info best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_search_dim_x, new_search_dim_y);
 
+	/////////////////TEMPORRARY HITBOX WRITER////////////////////
+	/*int new_size_x = original_dim_x;
+	int new_size_y = original_dim_y;
+	struct board* visualization = make_board(&new_size_x, &new_size_y);
+
+	for (int y = 0; y < original_dim_y-HASH_SIZE; ++y)
+	{
+		for (int x = 0; x < original_dim_x-HASH_SIZE; ++x)
+		{
+			for(int c1 = 0; c1 < HASH_SIZE; c1++){
+				for(int c2 = 0; c2 < HASH_SIZE; c2++){
+					int del_x = x+c2;
+					int del_y = y+c1;
+					if(hitbox[y][x] != 0)
+						set_pixel(visualization, &del_x, &del_y, 255, 255,255);
+				}
+			}
+		}
+	}
+	char* fname = malloc(sizeof(char)*100);
+	sprintf(fname,"hitboxes/hitbox_%dx%d.ppm",search_dim_x,search_dim_y);
+	save_ppm(visualization,fname);
+	free_board(&visualization);
+	free(fname);*/
+	/////////////////////////////////////////////////////////////
+
+
 	for (int c1 = 0; c1 < original_dim_y; c1++)
 	{
 		free(hitbox[c1]);
@@ -254,7 +284,7 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 {
 	int scale_h = 4;
 	int scale_s = 1;
-	int scale_v = 1;
+	int scale_v = 1;//change this?
 
 
 	double best_weighted = 65;
@@ -272,10 +302,12 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 	{
 		struct hsv_hash my_hash = hash8_hsv_pixels(my_search_image, x, y);
 		double my_avg_hue = my_hash.avg_hue;
-		double my_corner_hue = my_hash.corner_hue;
+		struct hsv corner_hsv = my_hash.corner;
 		double my_hash2 = my_hash.hash2;
 		struct pixel corner = my_search_image[y][x];
-		if(!(my_hash.h == 0 && corner.red >= 255 && corner.green >= 255 && corner.blue >= 255))
+		//if(!(my_hash.h == 0 && corner.red >= 255 && corner.green >= 255 && corner.blue >= 255))
+		
+		if(sky_filter(&corner_hsv)==0)
 		{
 			double weight = 1.0 / (scale_h + scale_s + scale_v);
 
@@ -290,6 +322,10 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 			{
 				for (int x2 = 0; x2 < original_hash_x; ++x2)
 				{
+					//THis is no good
+					//Best is point (315,389) and my corner is h:0.000000 s:1.000000 v:0.043137 and theirs is h:16.363636 s:0.050926 v:0.847059
+
+
 					//Idea for better hits, limit the h range
 					//if the hash matches, mark the hitbox
 					int ham_h = hamming_distance(&my_hash.h, &original_hashed_image[y2][x2].h);
@@ -299,7 +335,8 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 					double check_average = fabs(my_avg_hue - original_hashed_image[y2][x2].avg_hue);
 					double check_total = fabs(my_hash2 - original_hashed_image[y2][x2].hash2);
 					if (check_weight < best_weighted
-							&& fabs(my_corner_hue - original_hashed_image[y2][x2].corner_hue) < 20.0
+							&& fabs(corner_hsv.h - original_hashed_image[y2][x2].corner.h) < 20.0
+							&& fabs(corner_hsv.v - original_hashed_image[y2][x2].corner.v) < corner_hsv.v/2
 							&&  check_average < 10.0
 							&& 	check_total < 10.0
 						)
@@ -312,15 +349,19 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 					}
 				}
 			}
-			if (best_weighted < 20)
+			if (best_weighted < 10)//20?
 			{
 				pthread_mutex_lock(hitbox_mutex);
 				hitbox[best_y][best_x] +=1;
+				//printf("Best is point (%d,%d) and my corner is h:%f s:%f v:%f and theirs is h:%f s:%f v:%f\n",best_x,best_y,corner_hsv.h,corner_hsv.s,corner_hsv.v,original_hashed_image[best_y][best_x].corner.h,original_hashed_image[best_y][best_x].corner.s,original_hashed_image[best_y][best_x].corner.v);
 				//hitbox[best_y][best_x] = 255; //WRONG////////////////////////////////////
 				pthread_mutex_unlock(hitbox_mutex);
 			}
 		}
-
+		else
+		{
+			//printf("pixel at (%d,%d) is HSV:%f,%f,%f\n",x,y,my_corner_hue,my_hash.corner_sat,my_hash.corner_val);
+		}
 		x+=(8*(total_threads+1));
 		while(x>search_dim_x-HASH_SIZE-1)
 		{
@@ -352,7 +393,6 @@ void* call_thread(void* args)
 	int start_y = thread_params->start_y;
 	pthread_mutex_t *hitbox_mutex = thread_params->hitbox_mutex;
 	free(thread_params);
-
 
 	hash_worker(original_hashed_image, my_search_image, hitbox, original_dim_x,
 									original_dim_y, search_dim_x, search_dim_y, start_x, start_y, hitbox_mutex, total_threads);
@@ -495,4 +535,36 @@ void remake_hitbox(struct board** original_image, struct board** search_image, i
 	free(children);
 
 
+}
+
+//returns 0 on success(its not the sky), -1 on failure(it is the sky)
+int sky_filter(struct hsv* corner)
+{
+	//near white
+	if(corner->s<=.065 && corner->v>0.9)
+	{
+		if(corner->s!=0 && corner->h!=0 && corner->v!=1)
+		{
+			//printf("Near white: s:%f v:%f\n",corner->s,corner->v);
+		}
+		return -1;
+	}//blue?
+	else if(corner->h<230 && corner->h>180)
+	{
+		if(corner->s<.09 && corner->v>0.85)
+		{
+			//printf("Blue: h:%f s:%f v:%f\n",corner->h,corner->s,corner->v);
+			return -1;
+		}
+	}//filter grey clouds
+	else if(corner->s<=.03 && corner->v>=.75)
+	{
+		//printf("Cloud: h:%f s:%f v:%f\n",corner->h,corner->s,corner->v);
+		return -1;
+	}
+	else
+	{
+		//printf("PASS: h:%f s:%f v:%f\n",corner->h,corner->s,corner->v);
+		return 0;
+	}
 }

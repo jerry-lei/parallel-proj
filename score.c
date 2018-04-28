@@ -150,8 +150,9 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   if(average_distance_from_center_position < 0.00001) inverted_average_distance_from_center_position = 1.0/DBL_MAX;
   double inverted_max_distance = 1.0/max_distance;
   //calculate the score
-  double score =  density * inverted_max_distance * inverted_average_distance_from_center_position * 10000 * total_hits;
-
+  double corner2center_dist = distance(0,0,center_position_x,center_position_y);
+  double score =  density * inverted_max_distance * inverted_average_distance_from_center_position * 10000;//total hits
+  score/=(corner2center_dist);
   struct best_score_info return_score_info;
   return_score_info.score = score;
   return_score_info.score = score;
@@ -159,6 +160,23 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   return_score_info.search_start_y = search_start_y;
   return_score_info.extra_info = average_distance_from_center_position;
   return_score_info.total_hits = (int)total_hits;
+
+
+  //REMOVE LATER
+  return_score_info.unique_hits=unique_hits;
+  return_score_info.max_distance=max_distance;
+  return_score_info.average_position_x=average_position_x;
+  return_score_info.average_position_y=average_position_y;
+  return_score_info.center_position_x=center_position_x;
+  return_score_info.center_position_y=center_position_y;
+  return_score_info.average_distance_from_center_position=average_distance_from_center_position;
+  return_score_info.density=density;
+  return_score_info.corner2center_dist=corner2center_dist;
+  //////////////
+
+
+
+
   return return_score_info;
 
 }
@@ -199,12 +217,49 @@ struct best_score_info calc_best_score(int** hitbox, int original_dimx, int orig
         curr_best.search_start_y = check_score.search_start_y;
         curr_best.extra_info = check_score.extra_info;
         curr_best.total_hits = check_score.total_hits;
+
+        //REMOVE LATER
+        curr_best.unique_hits=check_score.unique_hits;
+        curr_best.max_distance=check_score.max_distance;
+        curr_best.average_position_x=check_score.average_position_x;
+        curr_best.average_position_y=check_score.average_position_y;
+        curr_best.center_position_x=check_score.center_position_x;
+        curr_best.center_position_y=check_score.center_position_y;
+        curr_best.average_distance_from_center_position=check_score.average_distance_from_center_position;
+        curr_best.density=check_score.density;
+        curr_best.corner2center_dist=check_score.corner2center_dist;
+        //////////////
       }
     }
   }
 
   curr_best.dimension_x = min_int(original_dimx, search_dimx);
   curr_best.dimension_y = min_int(original_dimy, search_dimy);
+
+
+
+
+
+  //REMOVE LATER
+  printf("%dx%d:\n  total_hits:%d\nunique_hits:%d\n max_dist:%d\n avgpos: %fx%f\n centerpos: %fx%f\n  avgdistfromcenter: %f\n density: %f\n corner2center: %f\n",
+  curr_best.dimension_x,
+  curr_best.dimension_y,
+  curr_best.total_hits,
+  curr_best.unique_hits,
+  curr_best.max_distance,
+  curr_best.average_position_x,
+  curr_best.average_position_y,
+  curr_best.center_position_x,
+  curr_best.center_position_y,
+  curr_best.average_distance_from_center_position,
+  curr_best.density,
+  curr_best.corner2center_dist);
+  //////////////
+
+
+
+
+
 
   for(int c1 = 0; c1 < original_dimy; c1++){
     free(distance_box[c1]);

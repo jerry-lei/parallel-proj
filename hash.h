@@ -8,13 +8,14 @@
 
 #include "image.h"
 #include "score.h"
+#include "hsv.h"
 
 struct hsv_hash{
   uint64_t h;
   uint64_t s;
   uint64_t v;
   double avg_hue;
-  double corner_hue;
+  struct hsv corner;
   double hash2;
 };
 
@@ -32,5 +33,5 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 void* call_thread(void* args);
 struct hsv_hash hash8_hsv_pixels(struct pixel** board,int start_x, int start_y);
 void remake_hitbox(struct board** original_image, struct board** search_image, int size_x, int size_y);
-
+int sky_filter(struct hsv* corner);
 #endif
