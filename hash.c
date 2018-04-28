@@ -234,12 +234,40 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	}
 	printf("Threads joined: %d\n", num_threads);
 
-	//calculate the score:
+	//CALCULATE THE DISTRIBUTION
+	double* optimal_distribution_x = calloc(NUMBER_BUCKETS,sizeof(double));
+	double* optimal_distribution_y = calloc(NUMBER_BUCKETS,sizeof(double));
+	////////////////////////////
 
-	struct best_score_info best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_search_dim_x, new_search_dim_y);
+	int width_x = ceil(search_dim_x/NUMBER_BUCKETS);
+	int width_y = ceil(search_dim_y/NUMBER_BUCKETS);
+
+	for(int y_bucket_pos = 0; y_bucket_pos < search_dim_y; y_bucket_pos++)
+	{
+		for(int x_bucket_pos = 0; x_bucket_pos < search_dim_x; x_bucket_pos++)
+		{
+			struct pixel pixel = get_pixel(*search_image,&x_bucket_pos,&y_bucket_pos);
+			struct hsv hsv = RGBtoHSV(pixel.red,pixel.green,pixel.blue);
+			if(sky_filter(&hsv)==0)
+			{
+				optimal_distribution_x[x_bucket_pos/width_x]+=1;
+				optimal_distribution_y[y_bucket_pos/width_y]+=1;
+			}
+		}
+	}
+	for(int c1 = 0;c1 < NUMBER_BUCKETS; c1++){
+		optimal_distribution_x[c1] /= (search_dim_x * search_dim_y);
+		optimal_distribution_y[c1] /= (search_dim_x * search_dim_y);
+	}
+
+	//calculate the score:
+	struct best_score_info best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_search_dim_x, new_search_dim_y,optimal_distribution_x,optimal_distribution_y);
+
+	free(optimal_distribution_x);
+	free(optimal_distribution_y);
 
 	/////////////////TEMPORRARY HITBOX WRITER////////////////////
-	/*int new_size_x = original_dim_x;
+	int new_size_x = original_dim_x;
 	int new_size_y = original_dim_y;
 	struct board* visualization = make_board(&new_size_x, &new_size_y);
 
@@ -261,7 +289,7 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	sprintf(fname,"hitboxes/hitbox_%dx%d.ppm",search_dim_x,search_dim_y);
 	save_ppm(visualization,fname);
 	free_board(&visualization);
-	free(fname);*/
+	free(fname);
 	/////////////////////////////////////////////////////////////
 
 
@@ -284,7 +312,7 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 {
 	int scale_h = 4;
 	int scale_s = 1;
-	int scale_v = 1;//change this?
+	int scale_v = 1;
 
 
 	double best_weighted = 65;
@@ -336,6 +364,7 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 					double check_total = fabs(my_hash2 - original_hashed_image[y2][x2].hash2);
 					if (check_weight < best_weighted
 							&& fabs(corner_hsv.h - original_hashed_image[y2][x2].corner.h) < 20.0
+							&& fabs(corner_hsv.s - original_hashed_image[y2][x2].corner.s) < corner_hsv.s/2
 							&& fabs(corner_hsv.v - original_hashed_image[y2][x2].corner.v) < corner_hsv.v/2
 							&&  check_average < 10.0
 							&& 	check_total < 10.0
@@ -353,7 +382,10 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 			{
 				pthread_mutex_lock(hitbox_mutex);
 				hitbox[best_y][best_x] +=1;
-				//printf("Best is point (%d,%d) and my corner is h:%f s:%f v:%f and theirs is h:%f s:%f v:%f\n",best_x,best_y,corner_hsv.h,corner_hsv.s,corner_hsv.v,original_hashed_image[best_y][best_x].corner.h,original_hashed_image[best_y][best_x].corner.s,original_hashed_image[best_y][best_x].corner.v);
+				if(search_dim_x>160 && search_dim_x<180)
+				{
+					printf("Best is point (%d,%d) and my corner is h:%f s:%f v:%f and theirs is h:%f s:%f v:%f\n",best_x,best_y,corner_hsv.h,corner_hsv.s,corner_hsv.v,original_hashed_image[best_y][best_x].corner.h,original_hashed_image[best_y][best_x].corner.s,original_hashed_image[best_y][best_x].corner.v);
+				}
 				//hitbox[best_y][best_x] = 255; //WRONG////////////////////////////////////
 				pthread_mutex_unlock(hitbox_mutex);
 			}
@@ -551,7 +583,7 @@ int sky_filter(struct hsv* corner)
 	}//blue?
 	else if(corner->h<230 && corner->h>180)
 	{
-		if(corner->s<.09 && corner->v>0.85)
+		if(corner->s<.1 && corner->v>0.73)
 		{
 			//printf("Blue: h:%f s:%f v:%f\n",corner->h,corner->s,corner->v);
 			return -1;
