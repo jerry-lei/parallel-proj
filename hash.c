@@ -252,8 +252,6 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 			struct hsv hsv = RGBtoHSV(pixel.red,pixel.green,pixel.blue);
 			if(sky_filter(&hsv)==0)
 			{
-				if(x_bucket_pos/width_x > 5) printf("(%d, %d), Width_x: %d accessing: %d\n", x_bucket_pos, y_bucket_pos, width_x, x_bucket_pos/width_x );
-				if(y_bucket_pos/width_y > 5) printf("OUT OF BOUNDS - y\n");
 				optimal_distribution_x[x_bucket_pos/width_x]+=1;
 				optimal_distribution_y[y_bucket_pos/width_y]+=1;
 				total_passed_sky_filter += 1;

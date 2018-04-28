@@ -178,6 +178,7 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
     difference_y += fabs(bucket_y[c1] - (*optimal_distribution_y)[c1]);
   }
   score /= (difference_x * difference_y);
+  score *= density;
 
 
 
