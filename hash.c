@@ -270,29 +270,29 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	free(optimal_distribution_y);
 
 	/////////////////TEMPORRARY HITBOX WRITER////////////////////
-	// int new_size_x = original_dim_x;
-	// int new_size_y = original_dim_y;
-	// struct board* visualization = make_board(&new_size_x, &new_size_y);
-	//
-	// for (int y = 0; y < original_dim_y-HASH_SIZE; ++y)
-	// {
-	// 	for (int x = 0; x < original_dim_x-HASH_SIZE; ++x)
-	// 	{
-	// 		for(int c1 = 0; c1 < HASH_SIZE; c1++){
-	// 			for(int c2 = 0; c2 < HASH_SIZE; c2++){
-	// 				int del_x = x+c2;
-	// 				int del_y = y+c1;
-	// 				if(hitbox[y][x] != 0)
-	// 					set_pixel(visualization, &del_x, &del_y, 255, 255,255);
-	// 			}
-	// 		}
-	// 	}
-	// }
-	// char* fname = malloc(sizeof(char)*100);
-	// sprintf(fname,"hitboxes/hitbox_%dx%d.ppm",search_dim_x,search_dim_y);
-	// save_ppm(visualization,fname);
-	// free_board(&visualization);
-	// free(fname);
+	int new_size_x = original_dim_x;
+	int new_size_y = original_dim_y;
+	struct board* visualization = make_board(&new_size_x, &new_size_y);
+	
+	for (int y = 0; y < original_dim_y-HASH_SIZE; ++y)
+	{
+		for (int x = 0; x < original_dim_x-HASH_SIZE; ++x)
+		{
+			for(int c1 = 0; c1 < HASH_SIZE; c1++){
+				for(int c2 = 0; c2 < HASH_SIZE; c2++){
+					int del_x = x+c2;
+					int del_y = y+c1;
+					if(hitbox[y][x] != 0)
+						set_pixel(visualization, &del_x, &del_y, 255, 255,255);
+				}
+			}
+		}
+	}
+	char* fname = malloc(sizeof(char)*100);
+	sprintf(fname,"hitboxes/hitbox_%dx%d.ppm",search_dim_x,search_dim_y);
+	save_ppm(visualization,fname);
+	free_board(&visualization);
+	free(fname);
 	/////////////////////////////////////////////////////////////
 
 
@@ -365,10 +365,12 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 					double check_weight = (weight_h * ham_h) + (weight_s * ham_s) + (weight_v * ham_v);
 					double check_average = fabs(my_avg_hue - original_hashed_image[y2][x2].avg_hue);
 					double check_total = fabs(my_hash2 - original_hashed_image[y2][x2].hash2);
+					double sat_val_diff = fabs(original_hashed_image[y2][x2].corner.s-corner_hsv.s)+fabs(original_hashed_image[y2][x2].corner.v-corner_hsv.v);
 					if (check_weight < best_weighted
 							&& fabs(corner_hsv.h - original_hashed_image[y2][x2].corner.h) < 20.0
-							&& fabs(corner_hsv.s - original_hashed_image[y2][x2].corner.s) < corner_hsv.s/2
-							&& fabs(corner_hsv.v - original_hashed_image[y2][x2].corner.v) < corner_hsv.v/2
+							&&sat_val_diff<.3
+							//&& fabs(corner_hsv.s - original_hashed_image[y2][x2].corner.s) < corner_hsv.s/2
+							//&& fabs(corner_hsv.v - original_hashed_image[y2][x2].corner.v) < corner_hsv.v/2
 							&&  check_average < 10.0
 							&& 	check_total < 10.0
 						)
@@ -603,3 +605,9 @@ int sky_filter(struct hsv* corner)
 		return 0;
 	}
 }
+
+/*
+
+FILTER LESS AND USE A MAX % DIFFERENCE FOR SAT AND VAL
+
+*/

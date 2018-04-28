@@ -24,14 +24,15 @@ int main(int argc, char* argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &mpi_taskid);
   MPI_Comm_size(MPI_COMM_WORLD, &mpi_numtasks);
 
-  char* search_image = "left_windy.ppm";
-  char* original_image = "small_desert.ppm";
+  char* search_image = "nick_jerry.ppm";
+  char* original_image = "nick_g.ppm";
 
 
   struct board* search = load_ppm(search_image);
-  autocrop_board(&search, 255,255,255);
+  //autocrop_board(&search, 255,255,255);
   struct board* original = load_ppm(original_image);
-  resize_percent(&original,.5);
+  //resize_percent(&original,.5);
+  //resize_percent(&search,.5);
 
   if(mpi_taskid == 0) printf("Searching for %s in %s\n", search_image, original_image);
 
@@ -71,7 +72,7 @@ int main(int argc, char* argv[])
   /* Define key variables for the problem */
   float upper_bound = min(max_scale_x, max_scale_y);
   float lower_bound = 0.1;
-  int number_scales = 20; //we will be doing number_scales + 1 total
+  int number_scales = 10; //we will be doing number_scales + 1 total
   float distance_between = (upper_bound - lower_bound)/number_scales;
 
   /* Storing the work load [rank_responsible_for_load][scales_responsible_for] */
@@ -165,14 +166,17 @@ int main(int argc, char* argv[])
   {
     printf("Rank %d has the best score\n", mpi_taskid);
     bounding_box(&original,&best_current_score);
-    int size_x = best_current_score.dimension_x;
-    int size_y = best_current_score.dimension_y;
-    remake_hitbox(&original, &search, size_x, size_y);
     save_ppm(original,"boxed.ppm");
   }
 
   free_board(&search);
   free_board(&original);
+
+  free(current_total);
+  for(int c1 = 0; c1 < mpi_numtasks; ++c1){
+    free(work_load[c1]);
+  }
+  free(work_load);
 
   MPI_Finalize();
   return EXIT_SUCCESS;
