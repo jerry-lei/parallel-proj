@@ -19,7 +19,7 @@ struct best_score_info {
   int total_hits;
 
 
-
+//DEBUGGING VARIABLES
   int unique_hits;
   int max_distance;
   double average_position_x;
@@ -30,6 +30,8 @@ struct best_score_info {
   double density;
   double corner2center_dist;
 
+  double bucket_x_distribution[6];
+  double bucket_y_distribution[6];
 };
 
 
