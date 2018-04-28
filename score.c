@@ -123,10 +123,20 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   //total_x, total_y is gets incremented by values from [0->search_start_(x/y)]
   int total_x_positions = 0;
   int total_y_positions = 0;
+  int number_of_buckets = 6;
+  double deviation_1 = 0.16666666;
+  double deviation_2 = 0.16666666;
+  double deviation_3 = 0.16666666;
+  int *bucket_x = calloc(number_of_buckets, sizeof(int));
+  int *bucket_y = calloc(number_of_buckets, sizeof(int));
+  int bucket_width_x = ceil(search_dimx / number_of_buckets);
+  int bucket_width_y = ceil(search_dimy / number_of_buckets);
   for(int row = search_start_y; row < min_int(search_dimy + search_start_y, hitbox_dimy); ++row){
     for(int col = search_start_x; col < min_int(search_dimx + search_start_x, hitbox_dimx); ++col){
       if(hitbox[row][col] != 0){
         total_hits += hitbox[row][col];
+        bucket_x[(col-search_start_x)/bucket_width_x] += hitbox[row][col];
+        bucket_y[(row-search_start_y)/bucket_width_y] += hitbox[row][col];
         unique_hits += 1;
         int check_nearest_distance = distance_box[row][col].distance;
         if(check_nearest_distance > max_distance) max_distance = check_nearest_distance;
@@ -136,6 +146,7 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
       }
     }
   }
+
   //possible values are 0->search_dim(x,y)
   double average_position_x = (double)total_x_positions/total_hits;
   double average_position_y = (double)total_y_positions/total_hits;
@@ -153,6 +164,38 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   double corner2center_dist = distance(0,0,center_position_x,center_position_y);
   double score =  density * inverted_max_distance * inverted_average_distance_from_center_position * 10000;//total hits
   score/=(corner2center_dist);
+
+
+  double* bucket_x_distribution = calloc(number_of_buckets, sizeof(double));
+  double* bucket_y_distribution = calloc(number_of_buckets, sizeof(double));
+  for(int c1 = 0; c1 < number_of_buckets; c1++){
+    bucket_x_distribution[c1] = (double) bucket_x[c1] / total_hits;
+    bucket_y_distribution[c1] = (double) bucket_y[c1] / total_hits;
+  }
+  double dist_neg_3_stddev_x = fabs(bucket_x_distribution[0] - deviation_3);
+  double dist_neg_2_stddev_x = fabs(bucket_x_distribution[1] - deviation_2);
+  double dist_neg_1_stddev_x = fabs(bucket_x_distribution[2] - deviation_1);
+  double dist_pos_1_stddev_x = fabs(bucket_x_distribution[3] - deviation_1);
+  double dist_pos_2_stddev_x = fabs(bucket_x_distribution[4] - deviation_2);
+  double dist_pos_3_stddev_x = fabs(bucket_x_distribution[5] - deviation_3);
+
+  double dist_neg_3_stddev_y = fabs(bucket_y_distribution[0] - deviation_3);
+  double dist_neg_2_stddev_y = fabs(bucket_y_distribution[1] - deviation_2);
+  double dist_neg_1_stddev_y = fabs(bucket_y_distribution[2] - deviation_1);
+  double dist_pos_1_stddev_y = fabs(bucket_y_distribution[3] - deviation_1);
+  double dist_pos_2_stddev_y = fabs(bucket_y_distribution[4] - deviation_2);
+  double dist_pos_3_stddev_y = fabs(bucket_y_distribution[5] - deviation_3);
+
+  double sum_diff_stddev_x = dist_neg_3_stddev_x + dist_neg_2_stddev_x + dist_neg_1_stddev_x + dist_pos_1_stddev_x + dist_pos_2_stddev_x + dist_pos_3_stddev_x;
+  double sum_diff_stddev_y = dist_neg_3_stddev_y + dist_neg_2_stddev_y + dist_neg_1_stddev_y + dist_pos_1_stddev_y + dist_pos_2_stddev_y + dist_pos_3_stddev_y;
+
+  double normalized_sum_diff_stddev_x = sum_diff_stddev_x;
+  double normalized_sum_diff_stddev_y = sum_diff_stddev_y;
+
+  score /= normalized_sum_diff_stddev_x;
+  score /= normalized_sum_diff_stddev_y;
+
+
   struct best_score_info return_score_info;
   return_score_info.score = score;
   return_score_info.score = score;
@@ -174,7 +217,10 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   return_score_info.corner2center_dist=corner2center_dist;
   //////////////
 
-
+  free(bucket_x);
+  free(bucket_y);
+  free(bucket_x_distribution);
+  free(bucket_y_distribution);
 
 
   return return_score_info;

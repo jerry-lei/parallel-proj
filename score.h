@@ -2,6 +2,8 @@
 #define SCORE_H
 //#include "image.h"
 
+#define NUMBER_BUCKETS 6
+
 struct opt_dist{
   int set_itself;
   int distance;
