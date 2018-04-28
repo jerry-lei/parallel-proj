@@ -123,10 +123,11 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   //total_x, total_y is gets incremented by values from [0->search_start_(x/y)]
   int total_x_positions = 0;
   int total_y_positions = 0;
-  int *bucket_x = calloc(NUMBER_BUCKETS, sizeof(int));
-  int *bucket_y = calloc(NUMBER_BUCKETS, sizeof(int));
+  double *bucket_x = calloc(NUMBER_BUCKETS, sizeof(double));
+  double *bucket_y = calloc(NUMBER_BUCKETS, sizeof(double));
   int bucket_width_x = ceil((double)search_dimx / NUMBER_BUCKETS);
   int bucket_width_y = ceil((double)search_dimy / NUMBER_BUCKETS);
+  int total_bucket_hits = 0;
   for(int row = search_start_y; row < min_int(search_dimy + search_start_y, hitbox_dimy); ++row){
     for(int col = search_start_x; col < min_int(search_dimx + search_start_x, hitbox_dimx); ++col){
       if(hitbox[row][col] != 0){
@@ -134,6 +135,7 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
         //look into multiplying by 64
         bucket_x[(col-search_start_x)/bucket_width_x] += (64*hitbox[row][col]);
         bucket_y[(row-search_start_y)/bucket_width_y] += (64*hitbox[row][col]);
+        total_bucket_hits += (64*hitbox[row][col]);
         unique_hits += 1;
         int check_nearest_distance = distance_box[row][col].distance;
         if(check_nearest_distance > max_distance) max_distance = check_nearest_distance;
@@ -162,22 +164,20 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   double score =  density * inverted_max_distance * inverted_average_distance_from_center_position * 10000;//total hits
   score/=(corner2center_dist);
 
-
-  double* bucket_x_distribution = calloc(NUMBER_BUCKETS, sizeof(double));
-  double* bucket_y_distribution = calloc(NUMBER_BUCKETS, sizeof(double));
   for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
-    bucket_x_distribution[c1] = (double) bucket_x[c1] / (search_dimx * search_dimy * NUMBER_BUCKETS);
-    bucket_y_distribution[c1] = (double) bucket_y[c1] / (search_dimx * search_dimy * NUMBER_BUCKETS);
+    bucket_x[c1] /= (total_bucket_hits);
+    bucket_y[c1] /= (total_bucket_hits);
   }
 
   double difference_x = 0.0;
   double difference_y = 0.0;
-  score = 0.0;
+  score = 1.0;
   //double opt_distribution
   for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
-    score /= fabs(bucket_x_distribution[c1] - (*optimal_distribution_x)[c1]);
-    score /= fabs(bucket_y_distribution[c1] - (*optimal_distribution_y)[c1]);
+    difference_x += fabs(bucket_x[c1] - (*optimal_distribution_x)[c1]);
+    difference_y += fabs(bucket_y[c1] - (*optimal_distribution_y)[c1]);
   }
+  score /= (difference_x * difference_y);
 
 
 

@@ -242,6 +242,8 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	int width_x = ceil((double)new_search_dim_x/NUMBER_BUCKETS);
 	int width_y = ceil((double)new_search_dim_y/NUMBER_BUCKETS);
 
+	int total_passed_sky_filter = 0;
+
 	for(int y_bucket_pos = 0; y_bucket_pos < new_search_dim_y; y_bucket_pos++)
 	{
 		for(int x_bucket_pos = 0; x_bucket_pos < new_search_dim_x; x_bucket_pos++)
@@ -254,12 +256,13 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 				if(y_bucket_pos/width_y > 5) printf("OUT OF BOUNDS - y\n");
 				optimal_distribution_x[x_bucket_pos/width_x]+=1;
 				optimal_distribution_y[y_bucket_pos/width_y]+=1;
+				total_passed_sky_filter += 1;
 			}
 		}
 	}
 	for(int c1 = 0;c1 < NUMBER_BUCKETS; c1++){
-		optimal_distribution_x[c1] /= (new_search_dim_x * new_search_dim_y * NUMBER_BUCKETS);
-		optimal_distribution_y[c1] /= (new_search_dim_x * new_search_dim_y * NUMBER_BUCKETS);
+		optimal_distribution_x[c1] /= (total_passed_sky_filter);
+		optimal_distribution_y[c1] /= (total_passed_sky_filter);
 	}
 
 	//calculate the score:
