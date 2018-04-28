@@ -166,19 +166,20 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   double* bucket_x_distribution = calloc(NUMBER_BUCKETS, sizeof(double));
   double* bucket_y_distribution = calloc(NUMBER_BUCKETS, sizeof(double));
   for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
-    bucket_x_distribution[c1] = (double) bucket_x[c1] / (search_dimx * search_dimy);
-    bucket_y_distribution[c1] = (double) bucket_y[c1] / (search_dimx * search_dimy);
+    bucket_x_distribution[c1] = (double) bucket_x[c1] / (search_dimx * search_dimy * NUMBER_BUCKETS);
+    bucket_y_distribution[c1] = (double) bucket_y[c1] / (search_dimx * search_dimy * NUMBER_BUCKETS);
   }
 
-  double difference = 0.0;
+  double difference_x = 0.0;
+  double difference_y = 0.0;
+  score = 0.0;
   //double opt_distribution
   for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
-    difference += fabs(bucket_x_distribution[c1] - (*optimal_distribution_x)[c1]);
-    difference += fabs(bucket_y_distribution[c1] - (*optimal_distribution_y)[c1]);
+    score /= fabs(bucket_x_distribution[c1] - (*optimal_distribution_x)[c1]);
+    score /= fabs(bucket_y_distribution[c1] - (*optimal_distribution_y)[c1]);
   }
 
 
-  score = 1.0/difference;
 
   struct best_score_info return_score_info;
   return_score_info.score = score;

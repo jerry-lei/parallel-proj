@@ -258,8 +258,8 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 		}
 	}
 	for(int c1 = 0;c1 < NUMBER_BUCKETS; c1++){
-		optimal_distribution_x[c1] /= (search_dim_x * search_dim_y);
-		optimal_distribution_y[c1] /= (search_dim_x * search_dim_y);
+		optimal_distribution_x[c1] /= (new_search_dim_x * new_search_dim_y * NUMBER_BUCKETS);
+		optimal_distribution_y[c1] /= (new_search_dim_x * new_search_dim_y * NUMBER_BUCKETS);
 	}
 
 	//calculate the score:
