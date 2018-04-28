@@ -239,17 +239,19 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	double* optimal_distribution_y = calloc(NUMBER_BUCKETS,sizeof(double));
 	////////////////////////////
 
-	int width_x = ceil(search_dim_x/NUMBER_BUCKETS);
-	int width_y = ceil(search_dim_y/NUMBER_BUCKETS);
+	int width_x = ceil((double)new_search_dim_x/NUMBER_BUCKETS);
+	int width_y = ceil((double)new_search_dim_y/NUMBER_BUCKETS);
 
-	for(int y_bucket_pos = 0; y_bucket_pos < search_dim_y; y_bucket_pos++)
+	for(int y_bucket_pos = 0; y_bucket_pos < new_search_dim_y; y_bucket_pos++)
 	{
-		for(int x_bucket_pos = 0; x_bucket_pos < search_dim_x; x_bucket_pos++)
+		for(int x_bucket_pos = 0; x_bucket_pos < new_search_dim_x; x_bucket_pos++)
 		{
 			struct pixel pixel = get_pixel(*search_image,&x_bucket_pos,&y_bucket_pos);
 			struct hsv hsv = RGBtoHSV(pixel.red,pixel.green,pixel.blue);
 			if(sky_filter(&hsv)==0)
 			{
+				if(x_bucket_pos/width_x > 5) printf("(%d, %d), Width_x: %d accessing: %d\n", x_bucket_pos, y_bucket_pos, width_x, x_bucket_pos/width_x );
+				if(y_bucket_pos/width_y > 5) printf("OUT OF BOUNDS - y\n");
 				optimal_distribution_x[x_bucket_pos/width_x]+=1;
 				optimal_distribution_y[y_bucket_pos/width_y]+=1;
 			}
@@ -261,35 +263,35 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	}
 
 	//calculate the score:
-	struct best_score_info best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_search_dim_x, new_search_dim_y,optimal_distribution_x,optimal_distribution_y);
+	struct best_score_info best_score = calc_best_score(hitbox, original_dim_x, original_dim_y, new_search_dim_x, new_search_dim_y,&optimal_distribution_x,&optimal_distribution_y);
 
 	free(optimal_distribution_x);
 	free(optimal_distribution_y);
 
 	/////////////////TEMPORRARY HITBOX WRITER////////////////////
-	int new_size_x = original_dim_x;
-	int new_size_y = original_dim_y;
-	struct board* visualization = make_board(&new_size_x, &new_size_y);
-
-	for (int y = 0; y < original_dim_y-HASH_SIZE; ++y)
-	{
-		for (int x = 0; x < original_dim_x-HASH_SIZE; ++x)
-		{
-			for(int c1 = 0; c1 < HASH_SIZE; c1++){
-				for(int c2 = 0; c2 < HASH_SIZE; c2++){
-					int del_x = x+c2;
-					int del_y = y+c1;
-					if(hitbox[y][x] != 0)
-						set_pixel(visualization, &del_x, &del_y, 255, 255,255);
-				}
-			}
-		}
-	}
-	char* fname = malloc(sizeof(char)*100);
-	sprintf(fname,"hitboxes/hitbox_%dx%d.ppm",search_dim_x,search_dim_y);
-	save_ppm(visualization,fname);
-	free_board(&visualization);
-	free(fname);
+	// int new_size_x = original_dim_x;
+	// int new_size_y = original_dim_y;
+	// struct board* visualization = make_board(&new_size_x, &new_size_y);
+	//
+	// for (int y = 0; y < original_dim_y-HASH_SIZE; ++y)
+	// {
+	// 	for (int x = 0; x < original_dim_x-HASH_SIZE; ++x)
+	// 	{
+	// 		for(int c1 = 0; c1 < HASH_SIZE; c1++){
+	// 			for(int c2 = 0; c2 < HASH_SIZE; c2++){
+	// 				int del_x = x+c2;
+	// 				int del_y = y+c1;
+	// 				if(hitbox[y][x] != 0)
+	// 					set_pixel(visualization, &del_x, &del_y, 255, 255,255);
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// char* fname = malloc(sizeof(char)*100);
+	// sprintf(fname,"hitboxes/hitbox_%dx%d.ppm",search_dim_x,search_dim_y);
+	// save_ppm(visualization,fname);
+	// free_board(&visualization);
+	// free(fname);
 	/////////////////////////////////////////////////////////////
 
 
@@ -334,7 +336,7 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 		double my_hash2 = my_hash.hash2;
 		struct pixel corner = my_search_image[y][x];
 		//if(!(my_hash.h == 0 && corner.red >= 255 && corner.green >= 255 && corner.blue >= 255))
-		
+
 		if(sky_filter(&corner_hsv)==0)
 		{
 			double weight = 1.0 / (scale_h + scale_s + scale_v);

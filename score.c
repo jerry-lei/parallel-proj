@@ -123,19 +123,17 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   //total_x, total_y is gets incremented by values from [0->search_start_(x/y)]
   int total_x_positions = 0;
   int total_y_positions = 0;
-  double deviation_1 = 0.16666666;
-  double deviation_2 = 0.16666666;
-  double deviation_3 = 0.16666666;
   int *bucket_x = calloc(NUMBER_BUCKETS, sizeof(int));
   int *bucket_y = calloc(NUMBER_BUCKETS, sizeof(int));
-  int bucket_width_x = ceil(search_dimx / NUMBER_BUCKETS);
-  int bucket_width_y = ceil(search_dimy / NUMBER_BUCKETS);
+  int bucket_width_x = ceil((double)search_dimx / NUMBER_BUCKETS);
+  int bucket_width_y = ceil((double)search_dimy / NUMBER_BUCKETS);
   for(int row = search_start_y; row < min_int(search_dimy + search_start_y, hitbox_dimy); ++row){
     for(int col = search_start_x; col < min_int(search_dimx + search_start_x, hitbox_dimx); ++col){
       if(hitbox[row][col] != 0){
         total_hits += hitbox[row][col];
-        bucket_x[(col-search_start_x)/bucket_width_x] += hitbox[row][col];
-        bucket_y[(row-search_start_y)/bucket_width_y] += hitbox[row][col];
+        //look into multiplying by 64
+        bucket_x[(col-search_start_x)/bucket_width_x] += (64*hitbox[row][col]);
+        bucket_y[(row-search_start_y)/bucket_width_y] += (64*hitbox[row][col]);
         unique_hits += 1;
         int check_nearest_distance = distance_box[row][col].distance;
         if(check_nearest_distance > max_distance) max_distance = check_nearest_distance;
@@ -203,10 +201,6 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   return_score_info.corner2center_dist=corner2center_dist;
   //////////////
 
-  free(bucket_x);
-  free(bucket_y);
-  free(bucket_x_distribution);
-  free(bucket_y_distribution);
 
 
   return return_score_info;
