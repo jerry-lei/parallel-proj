@@ -108,7 +108,7 @@ int calc_distance(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx,
 }
 
 struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, int hitbox_dimx, int hitbox_dimy,
-                int search_dimx, int search_dimy, int search_start_x, int search_start_y)
+                int search_dimx, int search_dimy, int search_start_x, int search_start_y, double** optimal_distribution_x, double** optimal_distribution_y)
 {
   /**
   Metrics:
@@ -123,14 +123,13 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   //total_x, total_y is gets incremented by values from [0->search_start_(x/y)]
   int total_x_positions = 0;
   int total_y_positions = 0;
-  int number_of_buckets = 6;
   double deviation_1 = 0.16666666;
   double deviation_2 = 0.16666666;
   double deviation_3 = 0.16666666;
-  int *bucket_x = calloc(number_of_buckets, sizeof(int));
-  int *bucket_y = calloc(number_of_buckets, sizeof(int));
-  int bucket_width_x = ceil(search_dimx / number_of_buckets);
-  int bucket_width_y = ceil(search_dimy / number_of_buckets);
+  int *bucket_x = calloc(NUMBER_BUCKETS, sizeof(int));
+  int *bucket_y = calloc(NUMBER_BUCKETS, sizeof(int));
+  int bucket_width_x = ceil(search_dimx / NUMBER_BUCKETS);
+  int bucket_width_y = ceil(search_dimy / NUMBER_BUCKETS);
   for(int row = search_start_y; row < min_int(search_dimy + search_start_y, hitbox_dimy); ++row){
     for(int col = search_start_x; col < min_int(search_dimx + search_start_x, hitbox_dimx); ++col){
       if(hitbox[row][col] != 0){
@@ -166,35 +165,22 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
   score/=(corner2center_dist);
 
 
-  double* bucket_x_distribution = calloc(number_of_buckets, sizeof(double));
-  double* bucket_y_distribution = calloc(number_of_buckets, sizeof(double));
-  for(int c1 = 0; c1 < number_of_buckets; c1++){
-    bucket_x_distribution[c1] = (double) bucket_x[c1] / total_hits;
-    bucket_y_distribution[c1] = (double) bucket_y[c1] / total_hits;
+  double* bucket_x_distribution = calloc(NUMBER_BUCKETS, sizeof(double));
+  double* bucket_y_distribution = calloc(NUMBER_BUCKETS, sizeof(double));
+  for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
+    bucket_x_distribution[c1] = (double) bucket_x[c1] / (search_dimx * search_dimy);
+    bucket_y_distribution[c1] = (double) bucket_y[c1] / (search_dimx * search_dimy);
   }
-  double dist_neg_3_stddev_x = fabs(bucket_x_distribution[0] - deviation_3);
-  double dist_neg_2_stddev_x = fabs(bucket_x_distribution[1] - deviation_2);
-  double dist_neg_1_stddev_x = fabs(bucket_x_distribution[2] - deviation_1);
-  double dist_pos_1_stddev_x = fabs(bucket_x_distribution[3] - deviation_1);
-  double dist_pos_2_stddev_x = fabs(bucket_x_distribution[4] - deviation_2);
-  double dist_pos_3_stddev_x = fabs(bucket_x_distribution[5] - deviation_3);
 
-  double dist_neg_3_stddev_y = fabs(bucket_y_distribution[0] - deviation_3);
-  double dist_neg_2_stddev_y = fabs(bucket_y_distribution[1] - deviation_2);
-  double dist_neg_1_stddev_y = fabs(bucket_y_distribution[2] - deviation_1);
-  double dist_pos_1_stddev_y = fabs(bucket_y_distribution[3] - deviation_1);
-  double dist_pos_2_stddev_y = fabs(bucket_y_distribution[4] - deviation_2);
-  double dist_pos_3_stddev_y = fabs(bucket_y_distribution[5] - deviation_3);
+  double difference = 0.0;
+  //double opt_distribution
+  for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
+    difference += fabs(bucket_x_distribution[c1] - (*optimal_distribution_x)[c1]);
+    difference += fabs(bucket_y_distribution[c1] - (*optimal_distribution_y)[c1]);
+  }
 
-  double sum_diff_stddev_x = dist_neg_3_stddev_x + dist_neg_2_stddev_x + dist_neg_1_stddev_x + dist_pos_1_stddev_x + dist_pos_2_stddev_x + dist_pos_3_stddev_x;
-  double sum_diff_stddev_y = dist_neg_3_stddev_y + dist_neg_2_stddev_y + dist_neg_1_stddev_y + dist_pos_1_stddev_y + dist_pos_2_stddev_y + dist_pos_3_stddev_y;
 
-  double normalized_sum_diff_stddev_x = sum_diff_stddev_x;
-  double normalized_sum_diff_stddev_y = sum_diff_stddev_y;
-
-  score /= normalized_sum_diff_stddev_x;
-  score /= normalized_sum_diff_stddev_y;
-
+  score = 1.0/difference;
 
   struct best_score_info return_score_info;
   return_score_info.score = score;
@@ -229,7 +215,7 @@ struct best_score_info calc_score(int** hitbox, struct opt_dist** distance_box, 
 
 
 struct best_score_info calc_best_score(int** hitbox, int original_dimx, int original_dimy,
-                int search_dimx, int search_dimy)
+                int search_dimx, int search_dimy, double** optimal_distribution_x, double** optimal_distribution_y)
 {
   struct best_score_info curr_best;
   curr_best.score = -1;
@@ -256,7 +242,7 @@ struct best_score_info calc_best_score(int** hitbox, int original_dimx, int orig
 
   for(int row = 0; row < min_int(original_dimy, max_int(original_dimy - search_dimy, search_dimy)); row++){
     for(int col = 0; col < min_int(original_dimx, max_int(original_dimx - search_dimx, search_dimx)); col++){
-      struct best_score_info check_score = calc_score(hitbox, distance_box, original_dimx, original_dimy, search_dimx, search_dimy, col, row);
+      struct best_score_info check_score = calc_score(hitbox, distance_box, original_dimx, original_dimy, search_dimx, search_dimy, col, row, optimal_distribution_x, optimal_distribution_y);
       if(check_score.score > curr_best.score){
         curr_best.score = check_score.score;
         curr_best.search_start_x = check_score.search_start_x;
