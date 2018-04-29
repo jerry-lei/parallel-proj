@@ -674,8 +674,6 @@ void bounding_box(struct board** board, struct best_score_info* score)
 	int b=0;
 
 	double adder = 6.0/(double)bounding_box_x;
-	//double adder = (double)bounding_box_x/360.0;
-	printf("The adder is %f\n",adder);
 
   int original_dimx = (*board) -> resolution_x;
   int original_dimy = (*board) -> resolution_y;

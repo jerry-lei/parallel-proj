@@ -158,8 +158,6 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	//resize the search image
 	resize_dimension(search_image, new_search_dim_x, new_search_dim_y);
 
-	printf("Search dim size-- x: %d, y: %d\n", new_search_dim_x, new_search_dim_y);
-
 	pthread_mutex_t *hitbox_mutex = malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(hitbox_mutex, NULL);
 
@@ -187,8 +185,6 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	int start_x = 8;
 	int start_y = 0;
 
-	// printf("there will be %d threads created\n",max_possible_threads);
-
 	for(int thread = 0; thread < max_possible_threads; ++thread)
 	{
 		struct search_thread_params_HSV *thread_params = malloc(sizeof(struct search_thread_params_HSV));
@@ -204,7 +200,6 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 		thread_params->start_y = start_y;
 		thread_params->hitbox_mutex = hitbox_mutex;
 		pthread_create(&children[thread], NULL, call_thread, thread_params);
-		// printf("created thread at (%d,%d)\n",start_x,start_y);
 		start_x+=8;
 		if(start_x>new_search_dim_x-HASH_SIZE-1)
 		{
@@ -232,7 +227,6 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 		}
 		num_threads+=1;
 	}
-	printf("Threads joined: %d\n", num_threads);
 
 	//CALCULATE THE DISTRIBUTION
 	double* optimal_distribution_x = calloc(NUMBER_BUCKETS,sizeof(double));
@@ -270,29 +264,29 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	free(optimal_distribution_y);
 
 	/////////////////TEMPORRARY HITBOX WRITER////////////////////
-	int new_size_x = original_dim_x;
-	int new_size_y = original_dim_y;
-	struct board* visualization = make_board(&new_size_x, &new_size_y);
+	// int new_size_x = original_dim_x;
+	// int new_size_y = original_dim_y;
+	// struct board* visualization = make_board(&new_size_x, &new_size_y);
 	
-	for (int y = 0; y < original_dim_y-HASH_SIZE; ++y)
-	{
-		for (int x = 0; x < original_dim_x-HASH_SIZE; ++x)
-		{
-			for(int c1 = 0; c1 < HASH_SIZE; c1++){
-				for(int c2 = 0; c2 < HASH_SIZE; c2++){
-					int del_x = x+c2;
-					int del_y = y+c1;
-					if(hitbox[y][x] != 0)
-						set_pixel(visualization, &del_x, &del_y, 255, 255,255);
-				}
-			}
-		}
-	}
-	char* fname = malloc(sizeof(char)*100);
-	sprintf(fname,"hitboxes/hitbox_%dx%d.ppm",search_dim_x,search_dim_y);
-	save_ppm(visualization,fname);
-	free_board(&visualization);
-	free(fname);
+	// for (int y = 0; y < original_dim_y-HASH_SIZE; ++y)
+	// {
+	// 	for (int x = 0; x < original_dim_x-HASH_SIZE; ++x)
+	// 	{
+	// 		for(int c1 = 0; c1 < HASH_SIZE; c1++){
+	// 			for(int c2 = 0; c2 < HASH_SIZE; c2++){
+	// 				int del_x = x+c2;
+	// 				int del_y = y+c1;
+	// 				if(hitbox[y][x] != 0)
+	// 					set_pixel(visualization, &del_x, &del_y, 255, 255,255);
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// char* fname = malloc(sizeof(char)*100);
+	// sprintf(fname,"hitboxes/hitbox_%dx%d.ppm",search_dim_x,search_dim_y);
+	// save_ppm(visualization,fname);
+	// free_board(&visualization);
+	// free(fname);
 	/////////////////////////////////////////////////////////////
 
 
@@ -327,8 +321,6 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 	int x = start_x;
 	int y = start_y;
 
-	//printf("Starting at (%d,%d) on search img size %dx%d and original img size %dx%d\n",start_x,start_y,search_dim_x,search_dim_y,original_dim_x,original_dim_y);
-
 	while(y < search_dim_y)
 	{
 		struct hsv_hash my_hash = hash8_hsv_pixels(my_search_image, x, y);
@@ -353,10 +345,6 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 			{
 				for (int x2 = 0; x2 < original_hash_x; ++x2)
 				{
-					//THis is no good
-					//Best is point (315,389) and my corner is h:0.000000 s:1.000000 v:0.043137 and theirs is h:16.363636 s:0.050926 v:0.847059
-
-
 					//Idea for better hits, limit the h range
 					//if the hash matches, mark the hitbox
 					int ham_h = hamming_distance(&my_hash.h, &original_hashed_image[y2][x2].h);
@@ -369,8 +357,6 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 					if (check_weight < best_weighted
 							&& fabs(corner_hsv.h - original_hashed_image[y2][x2].corner.h) < 20.0
 							&&sat_val_diff<.3
-							//&& fabs(corner_hsv.s - original_hashed_image[y2][x2].corner.s) < corner_hsv.s/2
-							//&& fabs(corner_hsv.v - original_hashed_image[y2][x2].corner.v) < corner_hsv.v/2
 							&&  check_average < 10.0
 							&& 	check_total < 10.0
 						)
@@ -387,17 +373,8 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 			{
 				pthread_mutex_lock(hitbox_mutex);
 				hitbox[best_y][best_x] +=1;
-				if(search_dim_x>160 && search_dim_x<180)
-				{
-					printf("Best is point (%d,%d) and my corner is h:%f s:%f v:%f and theirs is h:%f s:%f v:%f\n",best_x,best_y,corner_hsv.h,corner_hsv.s,corner_hsv.v,original_hashed_image[best_y][best_x].corner.h,original_hashed_image[best_y][best_x].corner.s,original_hashed_image[best_y][best_x].corner.v);
-				}
-				//hitbox[best_y][best_x] = 255; //WRONG////////////////////////////////////
 				pthread_mutex_unlock(hitbox_mutex);
 			}
-		}
-		else
-		{
-			//printf("pixel at (%d,%d) is HSV:%f,%f,%f\n",x,y,my_corner_hue,my_hash.corner_sat,my_hash.corner_val);
 		}
 		x+=(8*(total_threads+1));
 		while(x>search_dim_x-HASH_SIZE-1)
@@ -438,142 +415,6 @@ void* call_thread(void* args)
 
 }
 
-
-void remake_hitbox(struct board** original_image, struct board** search_image, int size_x, int size_y){
-	int original_dim_x=-1;
-	int original_dim_y=-1;
-
-
-
-
-
-	/* resize the search image */
-	int search_dim_x = size_x;
-	int search_dim_y = size_y;
-	int new_search_dim_x = search_dim_x;
-	int new_search_dim_y = search_dim_y;
-	if (search_dim_x % HASH_SIZE > 0)
-		new_search_dim_x += (HASH_SIZE - (new_search_dim_x % HASH_SIZE));
-	if (search_dim_y % HASH_SIZE > 0)
-		new_search_dim_y += (HASH_SIZE - (new_search_dim_y % HASH_SIZE));
-	new_search_dim_x += 1;
-	//resize the search image
-	resize_dimension(search_image, new_search_dim_x, new_search_dim_y);
-
-
-
-	struct hsv_hash** hashed_original = hash_original_HSV(original_image,&original_dim_x,&original_dim_y);
-	struct best_score_info result = hash_thread_allocator(search_image, hashed_original, original_dim_x, original_dim_y);
-
-	printf("=== Remaking hit box ===\n");
-
-	pthread_mutex_t *hitbox_mutex = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(hitbox_mutex, NULL);
-
-
-	//allocate the hit box (SAME SIZE AS ORIGINAL IMAGE)
-	int **hitbox = calloc(original_dim_y, sizeof(int *));
-	if (hitbox == NULL)
-		fprintf(stderr, "ERROR: Failed to malloc (hitbox)");
-	for (int c1 = 0; c1 < original_dim_y; c1++)
-	{
-		hitbox[c1] = calloc(original_dim_x, sizeof(int));
-		if (hitbox[c1] == NULL)
-			fprintf(stderr, "ERROR: Failed to malloc (hitbox)");
-	}
-
-
-	int max_possible_threads = (new_search_dim_x-1) * new_search_dim_y / (HASH_SIZE * HASH_SIZE);
-	if(max_possible_threads>63)
-	{
-		max_possible_threads=63;
-	}
-	pthread_t *children = malloc(sizeof(pthread_t) * max_possible_threads);
-
-	//because this function will do work starting at 0 0
-	int start_x = 8;
-	int start_y = 0;
-
-	// printf("there will be %d threads created\n",max_possible_threads);
-
-	for(int thread = 0; thread < max_possible_threads; ++thread)
-	{
-		struct search_thread_params_HSV *thread_params = malloc(sizeof(struct search_thread_params_HSV));
-		thread_params->original_hashed_image = hashed_original;
-		thread_params->my_search_image = (*search_image)->image;
-		thread_params->hitbox = hitbox;
-		thread_params->original_dim_x = original_dim_x;
-		thread_params->original_dim_y = original_dim_y;
-		thread_params->search_dim_x = new_search_dim_x;
-		thread_params->serach_dim_y = new_search_dim_y;
-		thread_params->total_threads = max_possible_threads;
-		thread_params->start_x = start_x;
-		thread_params->start_y = start_y;
-		thread_params->hitbox_mutex = hitbox_mutex;
-		pthread_create(&children[thread], NULL, call_thread, thread_params);
-		// printf("created thread at (%d,%d)\n",start_x,start_y);
-		start_x+=8;
-		if(start_x>new_search_dim_x-HASH_SIZE-1)
-		{
-			start_x-=new_search_dim_x-HASH_SIZE-1;
-			start_y+=8;
-			//probably dont need this
-			/*if(start_y>new_dim_y)
-			{
-				break;
-			}*/
-		}
-	}
-
-
-	hash_worker(hashed_original, (*search_image)->image, hitbox, original_dim_x,
-									original_dim_y, new_search_dim_x, new_search_dim_y, start_x, start_y, hitbox_mutex, max_possible_threads);
-
-
-	int num_threads = 0;
-	for (int c1 = 0; c1 < max_possible_threads; c1++)
-	{
-		if(0!=pthread_join(children[c1], NULL))
-		{
-			fprintf(stderr,"ERROR\n");
-		}
-		num_threads+=1;
-	}
-
-
-	//draw hits on IMAGE
-	for (int y = 0; y < original_dim_y; ++y)
-	{
-		for (int x = 0; x < original_dim_x; ++x)
-		{
-			for(int c1 = 0; c1 < HASH_SIZE; c1++){
-				for(int c2 = 0; c2 < HASH_SIZE; c2++){
-					int del_x = x+c2;
-					int del_y = y+c1;
-					if(hitbox[y][x] != 0)
-						set_pixel(*original_image, &del_x, &del_y, 255, 0, 0);
-				}
-			}
-		}
-	}
-
-
-	for(int y = 0; y < original_dim_y; ++y)
-	{
-		free(hashed_original[y]);
-	}
-	free(hashed_original);
-	for (int c1 = 0; c1 < original_dim_y; c1++)
-	{
-		free(hitbox[c1]);
-	}
-	free(hitbox);
-	free(hitbox_mutex);
-	free(children);
-
-
-}
-
 //returns 0 on success(its not the sky), -1 on failure(it is the sky)
 int sky_filter(struct hsv* corner)
 {
@@ -582,7 +423,6 @@ int sky_filter(struct hsv* corner)
 	{
 		if(corner->s!=0 && corner->h!=0 && corner->v!=1)
 		{
-			//printf("Near white: s:%f v:%f\n",corner->s,corner->v);
 		}
 		return -1;
 	}//blue?
@@ -590,24 +430,15 @@ int sky_filter(struct hsv* corner)
 	{
 		if(corner->s<.1 && corner->v>0.73)
 		{
-			//printf("Blue: h:%f s:%f v:%f\n",corner->h,corner->s,corner->v);
 			return -1;
 		}
 	}//filter grey clouds
 	else if(corner->s<=.03 && corner->v>=.75)
 	{
-		//printf("Cloud: h:%f s:%f v:%f\n",corner->h,corner->s,corner->v);
 		return -1;
 	}
 	else
 	{
-		//printf("PASS: h:%f s:%f v:%f\n",corner->h,corner->s,corner->v);
 		return 0;
 	}
 }
-
-/*
-
-FILTER LESS AND USE A MAX % DIFFERENCE FOR SAT AND VAL
-
-*/

@@ -13,14 +13,6 @@ struct best_score_info {
   int dimension_y;
   double extra_info;
   int total_hits;
-
-
-//DEBUGGING VARIABLES
-  int unique_hits;
-  double density;
-
-  double bucket_x_distribution[NUMBER_BUCKETS];
-  double bucket_y_distribution[NUMBER_BUCKETS];
 };
 
 

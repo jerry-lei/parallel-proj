@@ -87,16 +87,6 @@ struct best_score_info calc_score(int** hitbox,  int hitbox_dimx, int hitbox_dim
   return_score_info.extra_info = 0.0;
   return_score_info.total_hits = (int)total_hits;
 
-
-  //REMOVE LATER
-  return_score_info.unique_hits=unique_hits;
-  return_score_info.density=density;
-	for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
-		return_score_info.bucket_x_distribution[c1]=bucket_x[c1];
-		return_score_info.bucket_y_distribution[c1]=bucket_y[c1];
-	}
-  //////////////
-
   //FREE THE BUCKETS
   free(bucket_x);
 	free(bucket_y);
@@ -125,50 +115,12 @@ struct best_score_info calc_best_score(int** hitbox, int original_dimx, int orig
         curr_best.search_start_y = check_score.search_start_y;
         curr_best.extra_info = check_score.extra_info;
         curr_best.total_hits = check_score.total_hits;
-
-        //REMOVE LATER
-        curr_best.unique_hits=check_score.unique_hits;
-        curr_best.density=check_score.density;
-				for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
-					curr_best.bucket_x_distribution[c1]=check_score.bucket_x_distribution[c1];
-					curr_best.bucket_y_distribution[c1]=check_score.bucket_y_distribution[c1];
-				}
-        //////////////
       }
     }
   }
 
   curr_best.dimension_x = min_int(original_dimx, search_dimx);
   curr_best.dimension_y = min_int(original_dimy, search_dimy);
-
-  //REMOVE LATER
-	printf("%dx%d:\n",curr_best.dimension_x,curr_best.dimension_y);
-	for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
-		printf("x bucket[%d]->opt=%f	mine=%f\n",c1,(*optimal_distribution_x)[c1],curr_best.bucket_x_distribution[c1]);
-  }
-	printf("\n");
-	for(int c1 = 0; c1 < NUMBER_BUCKETS; c1++){
-		printf("y bucket[%d]->opt=%f	mine=%f\n",c1,(*optimal_distribution_y)[c1],curr_best.bucket_y_distribution[c1]);
-  }
-
-
-  // printf("%dx%d:\n total_hits:%d\n unique_hits:%d\n  max_dist:%d\n avgpos: %fx%f\n centerpos: %fx%f\n  avgdistfromcenter: %f\n density: %f\n corner2center: %f\n",
-  // curr_best.dimension_x,
-  // curr_best.dimension_y,
-  // curr_best.total_hits,
-  // curr_best.unique_hits,
-  // curr_best.max_distance,
-  // curr_best.average_position_x,
-  // curr_best.average_position_y,
-  // curr_best.center_position_x,
-  // curr_best.center_position_y,
-  // curr_best.average_distance_from_center_position,
-  // curr_best.density,
-  // curr_best.corner2center_dist);
-  //////////////
-
-
-
 
   return curr_best;
 }
