@@ -49,8 +49,8 @@ int main(int argc, char* argv[])
   struct board* search = load_ppm(search_image);
   autocrop_board(&search, 255,255,255);
   struct board* original = load_ppm(original_image);
-  // resize_percent(&original,.5);
-  //resize_percent(&search,.5);
+  resize_percent(&original,.5);
+  resize_percent(&search,.5);
 
   if(mpi_taskid == 0) fprintf(ptr, "Searching for %s in %s\n", search_image, original_image);
 
@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
       best_current_score.dimension_y = result.dimension_y;
       best_current_score.total_hits = result.total_hits;
     }
-    printf("Rank: %d -- Finished scale: %f\n", mpi_taskid, scale);
+    fprintf(ptr,"Rank: %d -- Finished scale: %f\n", mpi_taskid, scale);
     counter += 1;
     free_board(&copied_search);
   }
@@ -191,7 +191,9 @@ int main(int argc, char* argv[])
     fprintf(ptr,"Rank %d has the best score\n", mpi_taskid);
     fprintf(ptr, "Reduction took %f seconds\n",time_in_secs);
     bounding_box(&original,&best_current_score);
-    save_ppm(original,"boxed.ppm");
+    char boxed[20];
+    sprintf(boxed, "boxed_%d_ranks.ppm",mpi_numtasks);
+    save_ppm(original,boxed);
   }
 
   free_board(&search);
