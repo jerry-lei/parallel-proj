@@ -19,6 +19,8 @@
 #define HASH_SIZE_X 9
 #define HASH_SIZE_Y 8
 
+#define NUMBER_THREADS 4
+
 #define HASH_SIZE 8
 
 int hamming_distance(uint64_t *hash1, uint64_t *hash2)
@@ -175,9 +177,9 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 
 
 	int max_possible_threads = (new_search_dim_x-1) * new_search_dim_y / (HASH_SIZE * HASH_SIZE);
-	if(max_possible_threads>63)
+	if(max_possible_threads> (NUMBER_THREADS - 1))
 	{
-		max_possible_threads=63;
+		max_possible_threads=(NUMBER_THREADS - 1);
 	}
 	pthread_t *children = malloc(sizeof(pthread_t) * max_possible_threads);
 
@@ -267,7 +269,7 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	// int new_size_x = original_dim_x;
 	// int new_size_y = original_dim_y;
 	// struct board* visualization = make_board(&new_size_x, &new_size_y);
-	
+
 	// for (int y = 0; y < original_dim_y-HASH_SIZE; ++y)
 	// {
 	// 	for (int x = 0; x < original_dim_x-HASH_SIZE; ++x)
