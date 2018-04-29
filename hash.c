@@ -421,16 +421,13 @@ void* call_thread(void* args)
 int sky_filter(struct hsv* corner)
 {
 	//near white
-	if(corner->s<=.065 && corner->v>0.9)
+	if(corner->s<=.062 && corner->v>0.92)
 	{
-		if(corner->s!=0 && corner->h!=0 && corner->v!=1)
-		{
-		}
 		return -1;
 	}//blue?
 	else if(corner->h<230 && corner->h>180)
 	{
-		if(corner->s<.1 && corner->v>0.73)
+		if(corner->s<.1 && corner->v>0.82)
 		{
 			return -1;
 		}
@@ -441,6 +438,7 @@ int sky_filter(struct hsv* corner)
 	}
 	else
 	{
+
 		return 0;
 	}
 }
