@@ -30,9 +30,16 @@ int main(int argc, char* argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &mpi_taskid);
   MPI_Comm_size(MPI_COMM_WORLD, &mpi_numtasks);
 
-  char* search_image = "pepper.ppm";
-  char* original_image = "castle.ppm";
-  
+  char file_name[20];
+  sprintf(file_name, "output%d.txt",mpi_numtasks);
+
+  FILE *ptr;
+  ptr = fopen(file_name, "w");
+
+
+  char* search_image = "taxi_cab.ppm";
+  char* original_image = "nyc_streets.ppm";
+
   double time_in_secs = 0;
   double processor_frequency = 1600000000.0;
   unsigned long long start_cycles=0;
@@ -40,12 +47,12 @@ int main(int argc, char* argv[])
 
 
   struct board* search = load_ppm(search_image);
-  //autocrop_board(&search, 255,255,255);
+  autocrop_board(&search, 255,255,255);
   struct board* original = load_ppm(original_image);
-  //resize_percent(&original,.5);
+  // resize_percent(&original,.5);
   //resize_percent(&search,.5);
 
-  if(mpi_taskid == 0) printf("Searching for %s in %s\n", search_image, original_image);
+  if(mpi_taskid == 0) fprintf(ptr, "Searching for %s in %s\n", search_image, original_image);
 
   /**
     Work distribution Problem:
@@ -83,7 +90,7 @@ int main(int argc, char* argv[])
   /* Define key variables for the problem */
   float upper_bound = min(max_scale_x, max_scale_y);
   float lower_bound = 0.1;
-  int number_scales = 2; //we will be doing number_scales + 1 total
+  int number_scales = 64; //we will be doing number_scales + 1 total
   float distance_between = (upper_bound - lower_bound)/number_scales;
 
   /* Storing the work load [rank_responsible_for_load][scales_responsible_for] */
@@ -118,7 +125,7 @@ int main(int argc, char* argv[])
   /* Print to check our distributed workload */
   if(mpi_taskid == 0){
     for(int c1 = 0; c1 < mpi_numtasks; c1++){
-      printf("Rank %d - Total %f\n", c1, current_total[c1]);
+      fprintf(ptr, "Rank %d - Total %f\n", c1, current_total[c1]);
       // int c2 = 0;
       // while(work_load[c1][c2] != 0){
       //   printf("%f ", work_load[c1][c2]);
@@ -142,9 +149,9 @@ int main(int argc, char* argv[])
   while(work_load[mpi_taskid][counter] != 0){
     struct board* copied_search = copy_board(search);
     float scale = work_load[mpi_taskid][counter];
-    printf("Rank: %d -- Started scale: %f\n", mpi_taskid, scale);
+    fprintf(ptr,"Rank: %d -- Started scale: %f\n", mpi_taskid, scale);
     struct best_score_info result = find_image(&original,&copied_search, scale);
-    printf("Rank: %d -- Score: %f -- Total hits: %d -- Pos: (%d, %d) -- Size: (%d, %d) -- Extra info: %f\n", mpi_taskid, result.score, result.total_hits, result.search_start_x, result.search_start_y, result.dimension_x, result.dimension_y, result.extra_info);
+    fprintf(ptr,"Rank: %d -- Score: %f -- Total hits: %d -- Pos: (%d, %d) -- Size: (%d, %d) -- Extra info: %f\n", mpi_taskid, result.score, result.total_hits, result.search_start_x, result.search_start_y, result.dimension_x, result.dimension_y, result.extra_info);
     if(result.score > best_current_score.score){
       best_current_score.score = result.score;
       best_current_score.search_start_x = result.search_start_x;
@@ -159,10 +166,10 @@ int main(int argc, char* argv[])
   }
   end_cycles=GetTimeBase();
   time_in_secs = ((double)(end_cycles - start_cycles)) / processor_frequency;
-  printf("Rank: %d finished computations in %f seconds\n", mpi_taskid,time_in_secs);
+  fprintf(ptr, "Rank: %d finished computations in %f seconds\n", mpi_taskid,time_in_secs);
 
   MPI_Barrier(MPI_COMM_WORLD);
-  printf("Rank: %d -- Score: %f -- Total hits: %d -- Pos: (%d, %d) -- Size: (%d, %d)\n", mpi_taskid, best_current_score.score, best_current_score.total_hits, best_current_score.search_start_x, best_current_score.search_start_y, best_current_score.dimension_x, best_current_score.dimension_y);
+  fprintf(ptr,"Rank: %d -- Score: %f -- Total hits: %d -- Pos: (%d, %d) -- Size: (%d, %d)\n", mpi_taskid, best_current_score.score, best_current_score.total_hits, best_current_score.search_start_x, best_current_score.search_start_y, best_current_score.dimension_x, best_current_score.dimension_y);
   start_cycles=GetTimeBase();
   struct{
     double score;
@@ -180,9 +187,9 @@ int main(int argc, char* argv[])
   {
     end_cycles=GetTimeBase();
     time_in_secs = ((double)(end_cycles - start_cycles)) / processor_frequency;
-    
-    printf("Rank %d has the best score\n", mpi_taskid);
-    printf("Reduction took %f seconds\n",time_in_secs);
+
+    fprintf(ptr,"Rank %d has the best score\n", mpi_taskid);
+    fprintf(ptr, "Reduction took %f seconds\n",time_in_secs);
     bounding_box(&original,&best_current_score);
     save_ppm(original,"boxed.ppm");
   }
@@ -195,6 +202,8 @@ int main(int argc, char* argv[])
     free(work_load[c1]);
   }
   free(work_load);
+
+  fclose(ptr);
 
   MPI_Finalize();
   return EXIT_SUCCESS;
