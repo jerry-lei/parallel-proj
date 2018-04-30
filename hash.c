@@ -47,7 +47,7 @@ struct search_thread_params_HSV
 	int total_threads;
 	int start_x;
 	int start_y;
-	pthread_mutex_t *hitbox_mutex;
+	pthread_mutex_t ***hitbox_mutex;
 };
 struct best_score_info find_image(struct board** original_image, struct board** search_image,double scale)
 {
@@ -160,19 +160,34 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	//resize the search image
 	resize_dimension(search_image, new_search_dim_x, new_search_dim_y);
 
-	pthread_mutex_t *hitbox_mutex = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(hitbox_mutex, NULL);
+	//pthread_mutex_init(hitbox_mutex, NULL);
 
 
-	//allocate the hit box (SAME SIZE AS ORIGINAL IMAGE)
+	//allocate the hit box and mutex (SAME SIZE AS ORIGINAL IMAGE)
+	pthread_mutex_t **hitbox_mutex = calloc(original_dim_y,sizeof(pthread_mutex_t*));
 	int **hitbox = calloc(original_dim_y, sizeof(int *));
-	if (hitbox == NULL)
-		fprintf(stderr, "ERROR: Failed to malloc (hitbox)");
+
+	if (hitbox == NULL || hitbox_mutex == NULL)
+	{
+		fprintf(stderr, "ERROR: Failed to malloc (hitbox)\n");
+	}
+	
 	for (int c1 = 0; c1 < original_dim_y; c1++)
 	{
 		hitbox[c1] = calloc(original_dim_x, sizeof(int));
-		if (hitbox[c1] == NULL)
-			fprintf(stderr, "ERROR: Failed to malloc (hitbox)");
+		hitbox_mutex[c1] = calloc(original_dim_x,sizeof(pthread_mutex_t));
+
+		if (hitbox[c1] == NULL || hitbox_mutex[c1]==NULL)
+		{
+			fprintf(stderr, "ERROR: Failed to malloc (hitbox)\n");
+		}
+		for (int c2 = 0; c2 < original_dim_y; c2++)
+		{
+			if(pthread_mutex_init(&(hitbox_mutex[c1][c2]), NULL)!=0)
+			{
+				fprintf(stderr, "ERROR: Failed to initialize a mutex\n");
+			}
+		}
 	}
 
 
@@ -200,7 +215,7 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 		thread_params->total_threads = max_possible_threads;
 		thread_params->start_x = start_x;
 		thread_params->start_y = start_y;
-		thread_params->hitbox_mutex = hitbox_mutex;
+		thread_params->hitbox_mutex = &hitbox_mutex;
 		pthread_create(&children[thread], NULL, call_thread, thread_params);
 		start_x+=8;
 		if(start_x>new_search_dim_x-HASH_SIZE-1)
@@ -217,7 +232,7 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 
 
 	hash_worker(original_hashed_image, (*search_image)->image, hitbox, original_dim_x,
-									original_dim_y, new_search_dim_x, new_search_dim_y, start_x, start_y, hitbox_mutex, max_possible_threads);
+									original_dim_y, new_search_dim_x, new_search_dim_y, start_x, start_y, &hitbox_mutex, max_possible_threads);
 
 
 	int num_threads = 0;
@@ -291,10 +306,17 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 	// free(fname);
 	/////////////////////////////////////////////////////////////
 
-
+	for (int c1 = 0; c1 < original_dim_y; c1++)
+	{
+		for (int c2 = 0; c2 < original_dim_y; c2++)
+		{
+			pthread_mutex_destroy(&(hitbox_mutex[c1][c2]));
+		}
+	}
 	for (int c1 = 0; c1 < original_dim_y; c1++)
 	{
 		free(hitbox[c1]);
+		free(hitbox_mutex[c1]);
 	}
 	free(hitbox);
 	free(hitbox_mutex);
@@ -307,7 +329,7 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_search_image,
 								int **hitbox, int original_dim_x, int original_dim_y,
 								int search_dim_x, int search_dim_y, int start_x, int start_y,
-								pthread_mutex_t* hitbox_mutex, int total_threads)
+								pthread_mutex_t*** hitbox_mutex, int total_threads)
 {
 	int scale_h = 4;
 	int scale_s = 1;
@@ -373,9 +395,9 @@ void hash_worker(struct hsv_hash **original_hashed_image, struct pixel **my_sear
 			}
 			if (best_weighted < 10)//20?
 			{
-				pthread_mutex_lock(hitbox_mutex);
+				pthread_mutex_lock(&((*hitbox_mutex)[best_y][best_x]));
 				hitbox[best_y][best_x] +=1;
-				pthread_mutex_unlock(hitbox_mutex);
+				pthread_mutex_unlock(&((*hitbox_mutex)[best_y][best_x]));
 			}
 		}
 		x+=(8*(total_threads+1));
@@ -407,7 +429,7 @@ void* call_thread(void* args)
 	int total_threads = thread_params->total_threads;
 	int start_x = thread_params->start_x;
 	int start_y = thread_params->start_y;
-	pthread_mutex_t *hitbox_mutex = thread_params->hitbox_mutex;
+	pthread_mutex_t ***hitbox_mutex = thread_params->hitbox_mutex;
 	free(thread_params);
 
 	hash_worker(original_hashed_image, my_search_image, hitbox, original_dim_x,
