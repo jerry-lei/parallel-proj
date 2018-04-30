@@ -21,8 +21,8 @@ OUTPUT IS WRITTEN TO INDIVIDUAL FILES
 #
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=sztabb@rpi.edu
-srun --ntasks-per-node=1 --overcommit -o logfile.log /gpfs/u/home/PCP7/PCP7sztb/scratch/final_proj.xl 
-# --partition small --ntasks 64 I THINK YOU USE THIS TO DETERMINE THE NODES YOU WANT
+srun --ntasks-per-node=1 --overcommit -o logfile.log /gpfs/u/home/PCP7/PCP7ljrr/scratch/final_proj.xl
+srun --ntasks=<#nodes> --cpu-per-task=1 --overcommit -o logfile.log /gpfs/u/home/PCP7/PCP7ljrr/scratch/final_proj.xl
 //////////////////////////////////////////////
 THIS COMMAND QUEUES THE SCRIPT
 sbatch --partition debug --nodes 4 --time 30 ./runner.sh
@@ -35,14 +35,14 @@ all:
 
 CHANGE ALL OCCURANCES OF YOUR USERNAME
 
-                  
+
 REMOVE THIS ON BGQ  ||
                     ||
                     ||
                    \  /
                     \/
 */
-//#define BGQ 1 // when running BG/Q, comment out when running on kratos
+#define BGQ 1 // when running BG/Q, comment out when running on kratos
 #ifdef BGQ
 #include<hwi/include/bqc/A2_inlines.h>
 #else
@@ -59,16 +59,17 @@ int main(int argc, char* argv[])
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &mpi_taskid);
   MPI_Comm_size(MPI_COMM_WORLD, &mpi_numtasks);
-  
-  char file_name[20];
-  sprintf(file_name, "/gpfs/u/home/PCP7/PCP7sztb/scratch/output%dof%d.txt",mpi_taskid,mpi_numtasks);
+
+  char file_name[100];
+  //make folders: output_<1/2/4/8/16/32/64/128/256..>
+  sprintf(file_name, "/gpfs/u/home/PCP7/PCP7ljrr/scratch/output_%d/taskid_%d.txt",mpi_numtasks, mpi_taskid);
 
   FILE *ptr;
   ptr = fopen(file_name, "w");
 
 
-  char* search_image = "/gpfs/u/home/PCP7/PCP7sztb/scratch/taxi_cab.ppm";
-  char* original_image = "/gpfs/u/home/PCP7/PCP7sztb/scratch/nyc_streets.ppm";
+  char* search_image = "/gpfs/u/home/PCP7/PCP7ljrr/scratch/taxi_cab.ppm";
+  char* original_image = "/gpfs/u/home/PCP7/PCP7ljrr/scratch/nyc_streets.ppm";
 
   double time_in_secs = 0;
   double processor_frequency = 1600000000.0;
@@ -120,7 +121,7 @@ int main(int argc, char* argv[])
   /* Define key variables for the problem */
   float upper_bound = min(max_scale_x, max_scale_y);
   float lower_bound = 0.1;
-  int number_scales = 8; //we will be doing number_scales + 1 total
+  int number_scales = 256; //we will be doing number_scales + 1 total
   float distance_between = (upper_bound - lower_bound)/number_scales;
 
   /* Storing the work load [rank_responsible_for_load][scales_responsible_for] */
@@ -221,8 +222,8 @@ int main(int argc, char* argv[])
     fprintf(ptr,"Rank %d has the best score\n", mpi_taskid);
     fprintf(ptr, "Reduction took %f seconds\n",time_in_secs);
     bounding_box(&original,&best_current_score);
-    char boxed[70];
-    sprintf(boxed, "/gpfs/u/home/PCP7/PCP7sztb/scratch/output%dof%d.txtboxed_%d_ranks.ppm",mpi_numtasks);
+    char boxed[100];
+    sprintf(boxed, "/gpfs/u/home/PCP7/PCP7ljrr/scratch/output_%d/txtboxed_%d_ranks.ppm",mpi_numtasks, mpi_numtasks);
     save_ppm(original,boxed);
   }
 

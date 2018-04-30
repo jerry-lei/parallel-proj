@@ -19,7 +19,7 @@
 #define HASH_SIZE_X 9
 #define HASH_SIZE_Y 8
 
-#define NUMBER_THREADS 4
+#define NUMBER_THREADS 64
 
 #define HASH_SIZE 8
 
