@@ -11,7 +11,37 @@
 #include <inttypes.h>
 #include <mpi.h>
 #include <float.h>
+/*
+THIS DOES NO INITIAL RESIZING(WE ARE RUNNING ON A SUPER COMPUTER...)
+OUTPUT IS WRITTEN TO INDIVIDUAL FILES
+/////////////////////////////////////////////DON'T INCLUDE THE /'S
+#RUNNER.SH
+#!/bin/sh
+#SBATCH --job-name=PPCFinalProject
+#
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=sztabb@rpi.edu
+srun --ntasks-per-node=1 --overcommit -o logfile.log /gpfs/u/home/PCP7/PCP7sztb/scratch/final_proj.xl 
+# --partition small --ntasks 64 I THINK YOU USE THIS TO DETERMINE THE NODES YOU WANT
+//////////////////////////////////////////////
+THIS COMMAND QUEUES THE SCRIPT
+sbatch --partition debug --nodes 4 --time 30 ./runner.sh
+///////////////////////////////
+MAKEFILE
 
+all:
+	mpixlc_r -lpthread -O5 hash.c image.c main.c hsv.c score.c -o final_proj.xl
+
+
+CHANGE ALL OCCURANCES OF YOUR USERNAME
+
+                  
+REMOVE THIS ON BGQ  ||
+                    ||
+                    ||
+                   \  /
+                    \/
+*/
 //#define BGQ 1 // when running BG/Q, comment out when running on kratos
 #ifdef BGQ
 #include<hwi/include/bqc/A2_inlines.h>
@@ -29,16 +59,16 @@ int main(int argc, char* argv[])
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &mpi_taskid);
   MPI_Comm_size(MPI_COMM_WORLD, &mpi_numtasks);
-
+  
   char file_name[20];
-  sprintf(file_name, "output%d.txt",mpi_numtasks);
+  sprintf(file_name, "/gpfs/u/home/PCP7/PCP7sztb/scratch/output%dof%d.txt",mpi_taskid,mpi_numtasks);
 
   FILE *ptr;
   ptr = fopen(file_name, "w");
 
 
-  char* search_image = "taxi_cab.ppm";
-  char* original_image = "nyc_streets.ppm";
+  char* search_image = "/gpfs/u/home/PCP7/PCP7sztb/scratch/taxi_cab.ppm";
+  char* original_image = "/gpfs/u/home/PCP7/PCP7sztb/scratch/nyc_streets.ppm";
 
   double time_in_secs = 0;
   double processor_frequency = 1600000000.0;
@@ -49,8 +79,8 @@ int main(int argc, char* argv[])
   struct board* search = load_ppm(search_image);
   autocrop_board(&search, 255,255,255);
   struct board* original = load_ppm(original_image);
-  resize_percent(&original,.5);
-  resize_percent(&search,.5);
+  //resize_percent(&original,.5);
+  //resize_percent(&search,.5);
 
   if(mpi_taskid == 0) fprintf(ptr, "Searching for %s in %s\n", search_image, original_image);
 
@@ -90,7 +120,7 @@ int main(int argc, char* argv[])
   /* Define key variables for the problem */
   float upper_bound = min(max_scale_x, max_scale_y);
   float lower_bound = 0.1;
-  int number_scales = 64; //we will be doing number_scales + 1 total
+  int number_scales = 8; //we will be doing number_scales + 1 total
   float distance_between = (upper_bound - lower_bound)/number_scales;
 
   /* Storing the work load [rank_responsible_for_load][scales_responsible_for] */
@@ -191,8 +221,8 @@ int main(int argc, char* argv[])
     fprintf(ptr,"Rank %d has the best score\n", mpi_taskid);
     fprintf(ptr, "Reduction took %f seconds\n",time_in_secs);
     bounding_box(&original,&best_current_score);
-    char boxed[20];
-    sprintf(boxed, "boxed_%d_ranks.ppm",mpi_numtasks);
+    char boxed[70];
+    sprintf(boxed, "/gpfs/u/home/PCP7/PCP7sztb/scratch/output%dof%d.txtboxed_%d_ranks.ppm",mpi_numtasks);
     save_ppm(original,boxed);
   }
 
