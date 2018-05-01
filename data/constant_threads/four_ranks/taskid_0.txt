@@ -1,0 +1,55 @@
+Searching for /gpfs/u/home/PCP7/PCP7gjnt/scratch/taxi_cab.ppm in /gpfs/u/home/PCP7/PCP7gjnt/scratch/nyc_streets.ppm
+Rank 0 - Total 0.569678
+Rank 1 - Total 0.579574
+Rank 2 - Total 0.569626
+Rank 3 - Total 0.569626
+Rank: 0 -- Started scale: 0.262915
+Rank: 0 -- Score: 0.001037 -- Total hits: 14 -- Pos: (13, 76) -- Size: (285, 104) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.262915
+Rank: 0 -- Started scale: 0.245096
+Rank: 0 -- Score: 0.000983 -- Total hits: 5 -- Pos: (15, 27) -- Size: (273, 96) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.245096
+Rank: 0 -- Started scale: 0.234914
+Rank: 0 -- Score: 0.000386 -- Total hits: 4 -- Pos: (0, 27) -- Size: (257, 88) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.234914
+Rank: 0 -- Started scale: 0.232369
+Rank: 0 -- Score: 0.000062 -- Total hits: 2 -- Pos: (106, 13) -- Size: (257, 88) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.232369
+Rank: 0 -- Started scale: 0.214550
+Rank: 0 -- Score: 0.000493 -- Total hits: 8 -- Pos: (36, 94) -- Size: (241, 80) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.214550
+Rank: 0 -- Started scale: 0.212004
+Rank: 0 -- Score: 0.000285 -- Total hits: 5 -- Pos: (5, 92) -- Size: (233, 80) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.212004
+Rank: 0 -- Started scale: 0.201822
+Rank: 0 -- Score: 0.000485 -- Total hits: 5 -- Pos: (52, 33) -- Size: (225, 80) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.201822
+Rank: 0 -- Started scale: 0.184003
+Rank: 0 -- Score: 0.000436 -- Total hits: 8 -- Pos: (30, 94) -- Size: (201, 72) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.184003
+Rank: 0 -- Started scale: 0.173821
+Rank: 0 -- Score: 0.001346 -- Total hits: 5 -- Pos: (100, 44) -- Size: (193, 72) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.173821
+Rank: 0 -- Started scale: 0.171275
+Rank: 0 -- Score: 0.000320 -- Total hits: 4 -- Pos: (40, 100) -- Size: (193, 64) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.171275
+Rank: 0 -- Started scale: 0.158548
+Rank: 0 -- Score: 0.000325 -- Total hits: 4 -- Pos: (13, 121) -- Size: (177, 64) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.158548
+Rank: 0 -- Started scale: 0.145820
+Rank: 0 -- Score: 0.000533 -- Total hits: 4 -- Pos: (8, 124) -- Size: (161, 56) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.145820
+Rank: 0 -- Started scale: 0.135638
+Rank: 0 -- Score: 0.000051 -- Total hits: 1 -- Pos: (95, 65) -- Size: (153, 56) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.135638
+Rank: 0 -- Started scale: 0.128001
+Rank: 0 -- Score: 0.000655 -- Total hits: 4 -- Pos: (10, 132) -- Size: (145, 48) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.128001
+Rank: 0 -- Started scale: 0.120364
+Rank: 0 -- Score: 0.001006 -- Total hits: 4 -- Pos: (132, 72) -- Size: (137, 48) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.120364
+Rank: 0 -- Started scale: 0.102546
+Rank: 0 -- Score: 0.000089 -- Total hits: 1 -- Pos: (164, 0) -- Size: (113, 40) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.102546
+Rank: 0 finished computations in 93.481854 seconds
+Rank: 0 -- Score: 0.001346 -- Total hits: 5 -- Pos: (100, 44) -- Size: (193, 72)
