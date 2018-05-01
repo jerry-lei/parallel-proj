@@ -3,7 +3,7 @@ all: main.c image.c hash.c hsv.c score.c
 fast: main.c image.c hash.c hsv.c score.c
 	mpicc -O3 hash.c image.c main.c hsv.c score.c -g -lm -pthread
 run:
-	mpirun -n 4 ./a.out 10
+	mpirun -n 4 ./a.out 8 images/taxi_cab.ppm images/nyc_streets.ppm
 valgrind:
 	mpirun -n 16 valgrind --leak-check=full -v ./a.out 16
 valgrind2:

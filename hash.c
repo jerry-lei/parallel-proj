@@ -295,7 +295,6 @@ struct best_score_info hash_thread_allocator(struct board **search_image, struct
 
 	free(optimal_distribution_x);
 	free(optimal_distribution_y);
-
 	/////////////////TEMPORRARY HITBOX WRITER////////////////////
 	// int new_size_x = original_dim_x;
 	// int new_size_y = original_dim_y;

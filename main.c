@@ -40,8 +40,10 @@ int main(int argc, char* argv[])
 #endif
 
 #ifndef BGQ
-  char* search_image = "./images/taxi_cab.ppm";
-  char* original_image = "./images/nyc_streets.ppm";
+  //char* search_image = "./images/cutout.ppm";
+  char* search_image = argv[2];
+  char* original_image = argv[3];
+  //char* original_image = "./images/eight.ppm";
 #else
   //char* search_image = "/gpfs/u/home/PCP7/PCP7sztb/scratch/nick_jerry.ppm";
   //char* original_image = "/gpfs/u/home/PCP7/PCP7sztb/scratch/wow.ppm";
@@ -56,7 +58,7 @@ int main(int argc, char* argv[])
   struct board* search = load_ppm(search_image);
   autocrop_board(&search, 255,255,255);
   struct board* original = load_ppm(original_image);
-  resize_percent(&original,.50);
+  //resize_percent(&original,.50);
 
   if(mpi_taskid == 0){
 #ifdef FILE_OUTPUT
@@ -99,7 +101,7 @@ int main(int argc, char* argv[])
 
   /* Define key variables for the problem */
   float upper_bound = min(max_scale_x, max_scale_y);
-  float lower_bound = 0.1;
+  float lower_bound = 0.3;
   int number_scales = strtol(argv[1],NULL,10); //we will be doing number_scales + 1 total
   float distance_between = (upper_bound - lower_bound)/number_scales;
 
@@ -220,11 +222,9 @@ int main(int argc, char* argv[])
     printf("Reduction took %f seconds\n",time_in_secs);
     /* Make the bounding box! */
     bounding_box(&original,&best_current_score);
-#ifdef FILE_OUTPUT
     char boxed[100];
     sprintf(boxed, "./boxed_%d_ranks.ppm",mpi_numtasks);
     save_ppm(original,boxed);
-#endif
   }
 
   free_board(&search);
