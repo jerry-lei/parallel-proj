@@ -1,0 +1,50 @@
+Rank: 3 -- Started scale: 0.255278
+Rank: 3 -- Score: 0.000621 -- Total hits: 11 -- Pos: (23, 70) -- Size: (281, 96) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.255278
+Rank: 3 -- Started scale: 0.252733
+Rank: 3 -- Score: 0.000399 -- Total hits: 7 -- Pos: (12, 70) -- Size: (281, 96) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.252733
+Rank: 3 -- Started scale: 0.242551
+Rank: 3 -- Score: 0.000942 -- Total hits: 15 -- Pos: (21, 71) -- Size: (265, 96) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.242551
+Rank: 3 -- Started scale: 0.224732
+Rank: 3 -- Score: 0.001137 -- Total hits: 9 -- Pos: (0, 28) -- Size: (249, 88) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.224732
+Rank: 3 -- Started scale: 0.217095
+Rank: 3 -- Score: 0.000627 -- Total hits: 9 -- Pos: (37, 88) -- Size: (241, 88) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.217095
+Rank: 3 -- Started scale: 0.209459
+Rank: 3 -- Score: 0.000276 -- Total hits: 4 -- Pos: (5, 90) -- Size: (233, 80) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.209459
+Rank: 3 -- Started scale: 0.199276
+Rank: 3 -- Score: 0.000383 -- Total hits: 8 -- Pos: (48, 94) -- Size: (225, 80) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.199276
+Rank: 3 -- Started scale: 0.186549
+Rank: 3 -- Score: 0.000259 -- Total hits: 5 -- Pos: (12, 94) -- Size: (209, 72) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.186549
+Rank: 3 -- Started scale: 0.176366
+Rank: 3 -- Score: 0.000071 -- Total hits: 2 -- Pos: (39, 94) -- Size: (193, 72) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.176366
+Rank: 3 -- Started scale: 0.168730
+Rank: 3 -- Score: 0.000381 -- Total hits: 4 -- Pos: (5, 119) -- Size: (185, 64) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.168730
+Rank: 3 -- Started scale: 0.161093
+Rank: 3 -- Score: 0.000403 -- Total hits: 4 -- Pos: (11, 118) -- Size: (177, 64) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.161093
+Rank: 3 -- Started scale: 0.143274
+Rank: 3 -- Score: 0.000048 -- Total hits: 1 -- Pos: (0, 120) -- Size: (161, 56) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.143274
+Rank: 3 -- Started scale: 0.133092
+Rank: 3 -- Score: 0.000735 -- Total hits: 6 -- Pos: (0, 122) -- Size: (153, 56) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.133092
+Rank: 3 -- Started scale: 0.130547
+Rank: 3 -- Score: 0.000217 -- Total hits: 2 -- Pos: (0, 117) -- Size: (145, 56) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.130547
+Rank: 3 -- Started scale: 0.117819
+Rank: 3 -- Score: 0.000225 -- Total hits: 2 -- Pos: (0, 30) -- Size: (129, 48) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.117819
+Rank: 3 -- Started scale: 0.105091
+Rank: 3 -- Score: 0.000090 -- Total hits: 1 -- Pos: (4, 84) -- Size: (121, 40) -- Extra info: 0.000000
+Rank: 3 -- Finished scale: 0.105091
+Rank: 3 finished computations in 95.551560 seconds
+Rank: 3 -- Score: 0.001137 -- Total hits: 9 -- Pos: (0, 28) -- Size: (249, 88)

@@ -1,0 +1,7 @@
+ALL TESTS BESIDES "SERIAL" USES 64 THREADS. THE NUMBER OF RATIO BETWEEN RANKS AND NODES IS 1 FOR ALL TESTS. 
+
+
+-- THESE RESULTS ARE NOT WHAT WE USED IN OUR REPORT.
+---- Tests were run again after finding out we needed to include our log files.
+
+

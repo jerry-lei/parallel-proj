@@ -1,0 +1,38 @@
+Searching for /gpfs/u/home/PCP7/PCP7gjnt/scratch/taxi_cab.ppm in /gpfs/u/home/PCP7/PCP7gjnt/scratch/nyc_streets.ppm
+Rank 0 - Total 0.294631
+Rank 1 - Total 0.284994
+Rank 2 - Total 0.284657
+Rank 3 - Total 0.284709
+Rank 4 - Total 0.284865
+Rank 5 - Total 0.284839
+Rank 6 - Total 0.285098
+Rank 7 - Total 0.284709
+Rank: 0 -- Started scale: 0.262915
+Rank: 0 -- Score: 0.001037 -- Total hits: 14 -- Pos: (13, 76) -- Size: (285, 104) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.262915
+Rank: 0 -- Started scale: 0.224732
+Rank: 0 -- Score: 0.001137 -- Total hits: 9 -- Pos: (0, 28) -- Size: (249, 88) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.224732
+Rank: 0 -- Started scale: 0.204368
+Rank: 0 -- Score: 0.000709 -- Total hits: 12 -- Pos: (13, 92) -- Size: (225, 80) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.204368
+Rank: 0 -- Started scale: 0.201822
+Rank: 0 -- Score: 0.000485 -- Total hits: 5 -- Pos: (52, 33) -- Size: (225, 80) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.201822
+Rank: 0 -- Started scale: 0.166184
+Rank: 0 -- Score: 0.000360 -- Total hits: 3 -- Pos: (142, 56) -- Size: (185, 64) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.166184
+Rank: 0 -- Started scale: 0.158548
+Rank: 0 -- Score: 0.000325 -- Total hits: 4 -- Pos: (13, 121) -- Size: (177, 64) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.158548
+Rank: 0 -- Started scale: 0.130547
+Rank: 0 -- Score: 0.000217 -- Total hits: 2 -- Pos: (0, 117) -- Size: (145, 56) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.130547
+Rank: 0 -- Started scale: 0.112728
+Rank: 0 -- Score: 0.000118 -- Total hits: 2 -- Pos: (0, 46) -- Size: (129, 48) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.112728
+Rank: 0 -- Started scale: 0.100000
+Rank: 0 -- Score: 0.000379 -- Total hits: 2 -- Pos: (28, 134) -- Size: (113, 40) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.100000
+Rank: 0 finished computations in 55.705660 seconds
+Rank: 0 -- Score: 0.001137 -- Total hits: 9 -- Pos: (0, 28) -- Size: (249, 88)

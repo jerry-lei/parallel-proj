@@ -1,0 +1,8 @@
+Rank: 2 -- Started scale: 0.257824
+Rank: 2 -- Score: 0.000463 -- Total hits: 10 -- Pos: (20, 84) -- Size: (281, 96) -- Extra info: 0.000000
+Rank: 2 -- Finished scale: 0.257824
+Rank: 2 -- Started scale: 0.107637
+Rank: 2 -- Score: 0.000291 -- Total hits: 2 -- Pos: (136, 70) -- Size: (121, 48) -- Extra info: 0.000000
+Rank: 2 -- Finished scale: 0.107637
+Rank: 2 finished computations in 17.886477 seconds
+Rank: 2 -- Score: 0.000463 -- Total hits: 10 -- Pos: (20, 84) -- Size: (281, 96)

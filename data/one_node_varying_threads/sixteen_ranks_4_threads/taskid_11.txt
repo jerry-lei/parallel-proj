@@ -1,0 +1,14 @@
+Rank: 11 -- Started scale: 0.234914
+Rank: 11 -- Score: 0.000386 -- Total hits: 4 -- Pos: (0, 27) -- Size: (257, 88) -- Extra info: 0.000000
+Rank: 11 -- Finished scale: 0.234914
+Rank: 11 -- Started scale: 0.212004
+Rank: 11 -- Score: 0.000285 -- Total hits: 5 -- Pos: (5, 92) -- Size: (233, 80) -- Extra info: 0.000000
+Rank: 11 -- Finished scale: 0.212004
+Rank: 11 -- Started scale: 0.171275
+Rank: 11 -- Score: 0.000320 -- Total hits: 4 -- Pos: (40, 100) -- Size: (193, 64) -- Extra info: 0.000000
+Rank: 11 -- Finished scale: 0.171275
+Rank: 11 -- Started scale: 0.112728
+Rank: 11 -- Score: 0.000118 -- Total hits: 2 -- Pos: (0, 46) -- Size: (129, 48) -- Extra info: 0.000000
+Rank: 11 -- Finished scale: 0.112728
+Rank: 11 finished computations in 28.649082 seconds
+Rank: 11 -- Score: 0.000386 -- Total hits: 4 -- Pos: (0, 27) -- Size: (257, 88)

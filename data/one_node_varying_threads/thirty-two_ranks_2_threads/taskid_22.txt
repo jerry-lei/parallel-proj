@@ -1,0 +1,8 @@
+Rank: 22 -- Started scale: 0.206913
+Rank: 22 -- Score: 0.000571 -- Total hits: 7 -- Pos: (13, 92) -- Size: (233, 80) -- Extra info: 0.000000
+Rank: 22 -- Finished scale: 0.206913
+Rank: 22 -- Started scale: 0.158548
+Rank: 22 -- Score: 0.000325 -- Total hits: 4 -- Pos: (13, 121) -- Size: (177, 64) -- Extra info: 0.000000
+Rank: 22 -- Finished scale: 0.158548
+Rank: 22 finished computations in 17.749872 seconds
+Rank: 22 -- Score: 0.000571 -- Total hits: 7 -- Pos: (13, 92) -- Size: (233, 80)
