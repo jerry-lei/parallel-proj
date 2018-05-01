@@ -1,6 +1,6 @@
-# Project: Jerry Lei, Birch Sztabnik, Jonathan Cheng
+# Project authors: Jerry Lei, Birch Sztabnik, Jonathan Cheng
 
-# Project can be found on kratos @PPCleij4
+# Project can be found on kratos @PPCsztabb under parallel/project
 -- Under ~/parallel-proj/
 
 # How to run:
@@ -9,7 +9,7 @@
 
 #arguments
 #./a.out <scales> <search image> <original image>
-#a matched image will be written with the name boxed_# of ranks_ranks.ppm
+#a matched image will be written with the name boxed_<num_of_ranks>_ranks.ppm
 
 # To modify the number of scales, change the input argument.
 # There is no restriction to number of ranks per tasks.

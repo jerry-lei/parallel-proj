@@ -638,52 +638,7 @@ Digital Object Identifier: xx.xxxx/TVCG.201x.xxxxxxx/
    \ifvgtc@doublespaced%
        \renewcommand{\baselinestretch}{1.66}\selectfont%
    \fi%
-   \ifvgtcjournal% no copyrightspace for journal, but authorfooter
-     \ifvgtc@review\else
-       \renewcommand{\thefootnote}{}%
-       \footnotetext[0]{
-         \begin{flushleft}
-         \vskip -6pt
-         \begin{list}{\textbullet}{
-           \setlength{\partopsep}{0pt}
-           \setlength{\topsep}{0pt}
-           \setlength{\itemsep}{-2pt}
-           \setlength{\itemindent}{-4pt}
-           \setlength{\leftmargin}{12pt}}
-           \authorfootertext
-         \end{list}
-         \vskip 4pt
-         \ifvgtc@preprint\else\textit{\manuscriptnotetxt}\fi
-         \end{flushleft}
-       }%
-       \renewcommand{\thefootnote}{\arabic{footnote}}
-     \fi
-   \else%
-       \ifhavecopyrightspace\copyrightspace\fi%
-       \ifx\vgtc@abstxt\vgtc@empty \else%
-            \begingroup%
-                \begin{origabstract} \vgtc@abstxt \end{origabstract} %
-            \endgroup\par%
-            %\vspace{\abstxtspace}%
-        \fi%
-        \ifx\vgtc@keywords\vgtc@empty \else%
-            \begingroup%
-                %{\normalsize\vgtc@absfont {\bfseries Keywords - } \vgtc@keywords}%
-                \vspace{0.5\baselineskip}%
-                \par\noindent \textbf{Keywords: } \vgtc@keywords%
-            \endgroup\par%
-            %\vspace{\abstxtspace}%
-        \fi%
-        \ifx\vgtc@indexterms\vgtc@empty \else%
-            \begingroup%
-    %            {\normalsize\vgtc@absfont {\bfseries Index Terms - } %
-    %             \vgtc@indexterms}%
-                \vspace{0.5\baselineskip}%
-                \par\noindent \textbf{Index Terms:} \vgtc@indexterms%
-            \endgroup\par%
-            %\vspace{\abstxtspace}%
-        \fi%
-    \fi%
+
     \ifx\firstsectiontxt\vgtc@empty \else
       \ifvgtcjournal
         \section*{}

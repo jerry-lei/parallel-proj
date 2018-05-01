@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.5.1)  1 MAY 2018 07:46
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.5.1)  1 MAY 2018 11:10
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -301,29 +301,29 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip54
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 52.
-Package hyperref Info: Option `pageanchor' set `true' on input line 52.
-Package hyperref Info: Option `plainpages' set `false' on input line 52.
-Package hyperref Info: Option `linktocpage' set `true' on input line 52.
+Package hyperref Info: Option `colorlinks' set `true' on input line 53.
+Package hyperref Info: Option `pageanchor' set `true' on input line 53.
+Package hyperref Info: Option `plainpages' set `false' on input line 53.
+Package hyperref Info: Option `linktocpage' set `true' on input line 53.
 
 (./template.aux)
 \openout1 = `template.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 104.
-LaTeX Font Info:    ... okay on input line 104.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 104.
-LaTeX Font Info:    ... okay on input line 104.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 104.
-LaTeX Font Info:    ... okay on input line 104.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 104.
-LaTeX Font Info:    ... okay on input line 104.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 104.
-LaTeX Font Info:    ... okay on input line 104.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 104.
-LaTeX Font Info:    ... okay on input line 104.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 104.
-LaTeX Font Info:    ... okay on input line 104.
-LaTeX Font Info:    Try loading font information for OT1+ptm on input line 104.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 105.
+LaTeX Font Info:    ... okay on input line 105.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 105.
+LaTeX Font Info:    ... okay on input line 105.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 105.
+LaTeX Font Info:    ... okay on input line 105.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 105.
+LaTeX Font Info:    ... okay on input line 105.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 105.
+LaTeX Font Info:    ... okay on input line 105.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 105.
+LaTeX Font Info:    ... okay on input line 105.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 105.
+LaTeX Font Info:    ... okay on input line 105.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 105.
 
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
@@ -368,7 +368,7 @@ File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
 Package color Info: Driver file: pdftex.def on input line 147.
 )
-Package hyperref Info: Link coloring ON on input line 104.
+Package hyperref Info: Link coloring ON on input line 105.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
@@ -378,59 +378,59 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
 \c@section@level=\count115
 )
-LaTeX Info: Redefining \ref on input line 104.
-LaTeX Info: Redefining \pageref on input line 104.
-LaTeX Info: Redefining \nameref on input line 104.
+LaTeX Info: Redefining \ref on input line 105.
+LaTeX Info: Redefining \pageref on input line 105.
+LaTeX Info: Redefining \nameref on input line 105.
 
 (./template.out) (./template.out)
 \@outlinefile=\write3
 \openout3 = `template.out'.
 
-LaTeX Font Info:    Try loading font information for OT1+phv on input line 113.
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 114.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1phv.fd
 File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
 )
 LaTeX Font Info:    Try loading font information for OT1+ztmcm on input line 11
-3.
+4.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ztmcm.fd
 File: ot1ztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OT1/ztmcm.
 )
 LaTeX Font Info:    Try loading font information for OML+ztmcm on input line 11
-3.
+4.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omlztmcm.fd
 File: omlztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OML/ztmcm.
 )
 LaTeX Font Info:    Try loading font information for OMS+ztmcm on input line 11
-3.
+4.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omsztmcm.fd
 File: omsztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OMS/ztmcm.
 )
 LaTeX Font Info:    Try loading font information for OMX+ztmcm on input line 11
-3.
+4.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omxztmcm.fd
 File: omxztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OMX/ztmcm.
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 113.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 114.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 113.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 114.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 113.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 114.
 <found_taxi.png, id=72, 916.42375pt x 311.1625pt>
 File: found_taxi.png Graphic file (type png)
 <use found_taxi.png>
-Package pdftex.def Info: found_taxi.png  used on input line 113. on input line 
-113.
-Package pdftex.def Info: Requested size: 455.24408pt x 154.5743pt on input line
- 113.
+Package pdftex.def Info: found_taxi.png  used on input line 114. on input line 
+114.
+Package pdftex.def Info: Requested size: 398.33858pt x 135.25014pt on input lin
+e 114.
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <7> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 113.
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 114.
 Package epstopdf Info: Source file: <diamondrule.eps>
 (epstopdf)                    date: 2018-05-01 03:08:46
 (epstopdf)                    size: 1628 bytes
@@ -439,194 +439,182 @@ Package epstopdf Info: Source file: <diamondrule.eps>
 (epstopdf)                    size: 2547 bytes
 (epstopdf)             Command: <repstopdf --outfile=diamondrule-eps-converted-
 to.pdf diamondrule.eps>
-(epstopdf)             \includegraphics on input line 113.
+(epstopdf)             \includegraphics on input line 114.
 Package epstopdf Info: Output file is already uptodate.
 <diamondrule-eps-converted-to.pdf, id=74, pagebox=cropbox, 213.79875pt x 12.045
 pt>
 File: diamondrule-eps-converted-to.pdf Graphic file (type pdf)
 <use diamondrule-eps-converted-to.pdf>
 Package pdftex.def Info: diamondrule-eps-converted-to.pdf  used on input line 1
-13. on input line 113.
+14. on input line 114.
 Package pdftex.def Info: Requested size: 213.79822pt x 12.04495pt on input line
- 113.
+ 114.
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <10> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 113.
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 114.
 LaTeX Font Info:    Font shape `OT1/phv/bx/sc' in size <10> not available
-(Font)              Font shape `OT1/phv/b/sc' tried instead on input line 113.
-LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 113.
-LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 113.
-LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 113.
-<palm3.png, id=76, 784.9325pt x 304.13625pt>
-File: palm3.png Graphic file (type png)
-<use palm3.png>
-Package pdftex.def Info: palm3.png  used on input line 132. on input line 132.
-Package pdftex.def Info: Requested size: 216.81pt x 84.00665pt on input line 13
-2.
-<overlay_pda.png, id=77, 1015.795pt x 761.84625pt>
+(Font)              Font shape `OT1/phv/b/sc' tried instead on input line 114.
+<overlay_pda.png, id=76, 1015.795pt x 761.84625pt>
 File: overlay_pda.png Graphic file (type png)
 <use overlay_pda.png>
-Package pdftex.def Info: overlay_pda.png  used on input line 138. on input line
- 138.
+Package pdftex.def Info: overlay_pda.png  used on input line 134. on input line
+ 134.
 Package pdftex.def Info: Requested size: 216.81pt x 162.60802pt on input line 1
-38.
+34.
+ [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
-
-
- <./found_taxi.png> <./diamondrule-eps-converted-to.pdf> <./palm3.png>]
+ <./found_taxi.png> <./diamondrule-eps-converted-to.pdf> <./overlay_pda.png>]
 Missing character: There is no ‚ in font ptmr7t!
 Missing character: There is no Ä in font ptmr7t!
 Missing character: There is no ú in font ptmr7t!
 Missing character: There is no ‚ in font ptmr7t!
 Missing character: There is no Ä in font ptmr7t!
 Missing character: There is no ù in font ptmr7t!
-<thread_visualization.png, id=93, 943.525pt x 1252.68pt>
+<thread_visualization.png, id=92, 943.525pt x 1252.68pt>
 File: thread_visualization.png Graphic file (type png)
 <use thread_visualization.png>
-Package pdftex.def Info: thread_visualization.png  used on input line 155. on i
-nput line 155.
+Package pdftex.def Info: thread_visualization.png  used on input line 151. on i
+nput line 151.
 Package pdftex.def Info: Requested size: 144.54pt x 191.88878pt on input line 1
-55.
- [2 <./overlay_pda.png> <./thread_visualization.png>]
+51.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[2 <./thread_visualization.png>]
 Missing character: There is no ‚ in font ptmr7t!
 Missing character: There is no Ä in font ptmr7t!
 Missing character: There is no ô in font ptmr7t!
-<distribution.png, id=102, 1278.7775pt x 492.84125pt>
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 176.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+<distribution.png, id=99, 1278.7775pt x 492.84125pt>
 File: distribution.png Graphic file (type png)
 <use distribution.png>
-Package pdftex.def Info: distribution.png  used on input line 196. on input lin
-e 196.
+Package pdftex.def Info: distribution.png  used on input line 192. on input lin
+e 192.
 Package pdftex.def Info: Requested size: 252.94499pt x 97.4836pt on input line 
-196.
+192.
 
-Overfull \hbox (1.626pt too wide) in paragraph at lines 196--197
+Overfull \hbox (1.626pt too wide) in paragraph at lines 192--193
  [][] 
  []
 
 
-Underfull \vbox (badness 2961) has occurred while \output is active []
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
- [3 <./distribution.png>]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 204.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 201.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 204.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 201.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 201.
+[3 <./distribution.png>]
 Missing character: There is no ‚ in font ptmr7t!
 Missing character: There is no Ä in font ptmr7t!
 Missing character: There is no ú in font ptmr7t!
 Missing character: There is no ‚ in font ptmr7t!
 Missing character: There is no Ä in font ptmr7t!
 Missing character: There is no ù in font ptmr7t!
-<button.png, id=110, 401.5pt x 190.7125pt>
+<button.png, id=108, 401.5pt x 190.7125pt>
 File: button.png Graphic file (type png)
 <use button.png>
-Package pdftex.def Info: button.png  used on input line 230. on input line 230.
+Package pdftex.def Info: button.png  used on input line 227. on input line 227.
 
 Package pdftex.def Info: Requested size: 158.99377pt x 75.52412pt on input line
- 230.
-<eight.png, id=111, 803.0pt x 540.0175pt>
+ 227.
+<eight.png, id=109, 803.0pt x 540.0175pt>
 File: eight.png Graphic file (type png)
 <use eight.png>
-Package pdftex.def Info: eight.png  used on input line 235. on input line 235.
+Package pdftex.def Info: eight.png  used on input line 232. on input line 232.
 Package pdftex.def Info: Requested size: 195.12877pt x 131.22188pt on input lin
-e 235.
-<area.png, id=112, 602.25pt x 327.2225pt>
+e 232.
+<area.png, id=110, 602.25pt x 327.2225pt>
 File: area.png Graphic file (type png)
 <use area.png>
-Package pdftex.def Info: area.png  used on input line 241. on input line 241.
+Package pdftex.def Info: area.png  used on input line 238. on input line 238.
 Package pdftex.def Info: Requested size: 252.94499pt x 137.43251pt on input lin
-e 241.
+e 238.
 
-Overfull \hbox (1.626pt too wide) in paragraph at lines 241--242
+Overfull \hbox (1.626pt too wide) in paragraph at lines 238--239
  [][] 
  []
 
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-<match_distance.png, id=113, 602.25pt x 327.2225pt>
+<match_distance.png, id=111, 602.25pt x 327.2225pt>
 File: match_distance.png Graphic file (type png)
 <use match_distance.png>
-Package pdftex.def Info: match_distance.png  used on input line 246. on input l
-ine 246.
+Package pdftex.def Info: match_distance.png  used on input line 243. on input l
+ine 243.
 Package pdftex.def Info: Requested size: 252.94499pt x 137.43251pt on input lin
-e 246.
+e 243.
 
-Overfull \hbox (1.626pt too wide) in paragraph at lines 246--247
+Overfull \hbox (1.626pt too wide) in paragraph at lines 243--244
  [][] 
  []
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[4 <./button.png> <./eight.png>]
-<cropped.png, id=123, 647.41875pt x 211.79124pt>
+[4 <./button.png> <./eight.png> <./area.png>]
+<cropped.png, id=121, 647.41875pt x 211.79124pt>
 File: cropped.png Graphic file (type png)
 <use cropped.png>
-Package pdftex.def Info: cropped.png  used on input line 252. on input line 252
+Package pdftex.def Info: cropped.png  used on input line 249. on input line 249
 .
 Package pdftex.def Info: Requested size: 252.94499pt x 82.7469pt on input line 
-252.
+249.
 
-Overfull \hbox (1.626pt too wide) in paragraph at lines 252--253
+Overfull \hbox (1.626pt too wide) in paragraph at lines 249--250
  [][] 
  []
 
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-<scaling_performance.png, id=124, 924.45375pt x 469.755pt>
+<scaling_performance.png, id=122, 924.45375pt x 469.755pt>
 File: scaling_performance.png Graphic file (type png)
 <use scaling_performance.png>
-Package pdftex.def Info: scaling_performance.png  used on input line 264. on in
-put line 264.
+Package pdftex.def Info: scaling_performance.png  used on input line 261. on in
+put line 261.
 Package pdftex.def Info: Requested size: 252.94499pt x 128.52716pt on input lin
-e 264.
+e 261.
 
-Overfull \hbox (1.626pt too wide) in paragraph at lines 264--265
+Overfull \hbox (1.626pt too wide) in paragraph at lines 261--262
  [][] 
  []
 
-[5 <./area.png> <./match_distance.png> <./cropped.png (PNG copy)> <./scaling_pe
-rformance.png>]
-<64.png, id=134, 602.25pt x 372.39125pt>
+[5 <./match_distance.png> <./cropped.png (PNG copy)> <./scaling_performance.png
+>]
+<64.png, id=131, 602.25pt x 372.39125pt>
 File: 64.png Graphic file (type png)
 <use 64.png>
-Package pdftex.def Info: 64.png  used on input line 276. on input line 276.
+Package pdftex.def Info: 64.png  used on input line 273. on input line 273.
 Package pdftex.def Info: Requested size: 252.94499pt x 156.40324pt on input lin
-e 276.
+e 273.
 
-Overfull \hbox (1.626pt too wide) in paragraph at lines 276--277
+Overfull \hbox (1.626pt too wide) in paragraph at lines 273--274
  [][] 
  []
 
-(./template.bbl [6 <./64.png (PNG copy)>])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 312.
- [7
-
-]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 312.
+(./template.bbl)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 309.
+ [6 <./64.png (PNG copy)>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 309.
  (./template.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 312.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 312.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 309.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 309.
 Package rerunfilecheck Info: File `template.out' has not changed.
 (rerunfilecheck)             Checksum: 4B2E0B376CB7D2A37E158E191CD871B1;991.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 312.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 309.
  ) 
 Here is how much of TeX's memory you used:
- 6452 strings out of 494931
- 92603 string characters out of 6180852
- 178626 words of memory out of 5000000
- 9611 multiletter control sequences out of 15000+600000
- 54175 words of font info for 115 fonts, out of 8000000 for 9000
+ 6435 strings out of 494931
+ 92387 string characters out of 6180852
+ 177361 words of memory out of 5000000
+ 9597 multiletter control sequences out of 15000+600000
+ 50550 words of font info for 106 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 29i,10n,29p,1282b,447s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 29i,10n,29p,1221b,382s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/
@@ -635,10 +623,10 @@ type1/urw/helvetic/uhvb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/he
 lvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.p
 fb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/
 texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on template.pdf (7 pages, 6334770 bytes).
+Output written on template.pdf (6 pages, 6040007 bytes).
 PDF statistics:
- 194 PDF objects out of 1000 (max. 8388607)
- 156 compressed objects within 2 object streams
- 42 named destinations out of 1000 (max. 500000)
- 202 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 185 PDF objects out of 1000 (max. 8388607)
+ 150 compressed objects within 2 object streams
+ 40 named destinations out of 1000 (max. 500000)
+ 197 words of extra memory for PDF output out of 10000 (max. 10000000)
 

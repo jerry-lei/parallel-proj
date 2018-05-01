@@ -1,4 +1,5 @@
 \documentclass[10pt, journal]{vgtc}                % final (journal style)
+
 %\documentclass[review,journal]{vgtc}         % review (journal style)
 %\documentclass[widereview]{vgtc}             % wide-spaced review
 %\documentclass[preprint,journal]{vgtc}       % preprint (journal style)
@@ -86,7 +87,7 @@
 %% Uncomment below to include a teaser figure.
   \teaser{
  \centering
- \includegraphics[width=16cm]{found_taxi.png}
+ \includegraphics[width=14cm]{found_taxi.png}
   %\{Image recognition through .}
   }
 
@@ -127,16 +128,11 @@
 
 \tab Some image manipulation functions are used. Most commonly used are the image resizing functions. One version resizes by percent. This version is used in the workload algorithm for creating variations for each rank to hash. The other version resizes to predefined dimensions. This is used prior to distributing hashing work in order to make certain that the number of hashes that can be made is an integer value. Both operate on integer division to fill the resized image.\smallskip \\
 \tab A helpful function to use before starting any hashing is to crop the board. The ideal search image to be used is one on a solid white background. Then it can be cropped by the program to reduce as much background as possible. This is an important step for the search image. The fact that white pixel are ignored in hashing and that image size is larger than it need to be means that the scoring distribution would be skewed. Images with large white borders would report zero for pixels on the edges, which make it difficult to score effectively.
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=3in]{palm3.png}
-	\caption{Search images on white background produce best results.}
-\end{figure}
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=3.0in]{overlay_pda.png}
-	\caption[White boxes represent hash blocks]{The scoring system correctly matched the PDA from Fig. 1. with the PDA on the left. Distribution is important in determining between extremely similar objects. The white blocks represent hashses.}
+	\caption[White boxes represent hash blocks]{The scoring system correctly matched the PDA using a stock photo. Distribution is important in determining between extremely similar objects. The white blocks represent hashses.}
 \end{figure}
 \subsection{Hashing Function}
 \begin{flushleft}
@@ -196,7 +192,8 @@
 \includegraphics[width=3.5in]{distribution.png}
 \caption{Distribution breakdown for taxi example.}
 \end{figure}
-\tab We computed distribution by dividing up the search area and the original search image into equally sized buckets both lengthwise and widthwise, representing two one-dimensional arrays. For the search image we filled up the buckets with the number of pixels that passed filtering in its section, and divided it by the total number of pixels that passed filtering in the original search image. Essentially, the pixels across the y-axis for the width of each bucket are compressed into a one-dimensional array that represents the distribution of the pixels across the x-axis. We calculated the distribution to be used during each scoring based using the same buckets, but used the hitbox received from the hashing process for a given search image. The distribution measurement can be thought of as a pseudo-shape detector. This was not enough to give us accurate results of image recognition so we also incorporated density of hits of each search area to the score. The calculation for density was simply the number of total hits in the search area divided by the total area of the search image. Scoring was largely dependent on the search image, so we are unable to determine a set score that could decide whether the search image exists inside the original image.
+\tab We computed distribution by dividing up the search area and the original search image into equally sized buckets both lengthwise and widthwise, representing two one-dimensional arrays. For the search image we filled up the buckets with the number of pixels that passed filtering in its section, and divided it by the total number of pixels that passed filtering in the original search image. Essentially, the pixels across the y-axis for the width of each bucket are compressed into a one-dimensional array that represents the distribution of the pixels across the x-axis. We calculated the distribution to be used during each scoring based using the same buckets, but used the hitbox received from the hashing process for a given search image. The distribution measurement can be thought of as a pseudo-shape detector.\\\smallskip
+\tab This was not enough to give us accurate results of image recognition so we also incorporated density of hits of each search area to the score. The calculation for density was simply the number of total hits in the search area divided by the total area of the search image. Scoring was largely dependent on the search image, so we are unable to determine a set score that could decide whether the search image exists inside the original image.
 
 \end{flushleft}
 \subsection{Scaling}
@@ -212,19 +209,19 @@
 	\text{ where } i &= 0\rightarrow s\\
 \end{align*}
 \subsection{Workload balancing}
-\tab We came across a problem where we had to distribute the number of search images, or “jobs”, into different ranks to do independent calculations. The algorithm distributes the workload of search images into ranks such that their calculation times are the same. We valued the workload of each job with the scale of the search image squared. This represented the area that the rank must search through. The number of ranks that we gave the program corresponds to the number of machines that we have to process the calculations. This is a load balancing problem. There does not exist a polynomial time algorithm to distribute the workload optimally, but a sorted greedy problem gives a good approximation. We ran the greedy algorithm by generating the jobs in descending order and assigning them to machine with the least current load. Every rank did this calculation because the result of the greedy algorithm is deterministic and it would be faster to do the calculation than to have one rank do the calculation and send it to the other ranks. This algorithm has a $\frac{3}{2}$ approximation factor, and our experiments showed that the load was balanced within 1\% with more than 20 scales of images.  
+\tab We came across a problem where we had to distribute the number of search images, or “jobs”, into different ranks to do independent calculations. The algorithm distributes the workload of search images into ranks such that their calculation times are the same. We valued the workload of each job with the scale of the search image squared. This represented the area that the rank must search through. The number of ranks given to the program corresponds to the number of machines that we have to process the calculations. This is a load balancing problem. There does not exist a polynomial time algorithm to distribute the workload optimally, but a sorted greedy problem gives a good approximation. We ran the greedy algorithm by generating the jobs in descending order and assigning them to machine with the least current load. Every rank did this calculation because the result of the greedy algorithm is deterministic and it would be faster to do the calculation than to have one rank do the calculation and send it to the other ranks. This algorithm has a $\frac{3}{2}$ approximation factor, and our experiments showed that the load was balanced within 1\% with more than 20 scales of images.  
 
 \subsection{MPI Implementation}
 \begin{flushleft}
-\tab Our initial idea was to combine all of the hitboxes that every rank computed, but we recognized that because we are hashing with color, larger scales of base images would overpower the smaller scales, and there would not be a great way to find out where the object we are searching for is located. Also, passing our hitboxes across ranks would too take too long and there would be a lot of time spent waiting for the hitboxes to transfer over. \\\smallskip
+\tab Our initial idea was to combine all of the hitboxes that every rank computed, but we recognized that because we are hashing many sizes, larger scales of base images would overpower the smaller scales, and the scoring system would have a difficult time determining where the image truly was. Also, passing our hitboxes across ranks would too take too long and summations of these large arrays may take too long. \\\smallskip
 \tab Instead, we implemented a scoring system such that if we were given any two hitboxes, and two search sizes, we can determine which was better. We assigned a score value to each search size and reduced the best score into a single rank. That rank reported the score and overlaid the resulting bounding box over the original image to display our result. \\\smallskip
-The final implementation has ranks using an MPI\_Allreduce in MPI\_MAXLOC mode. The maximum score that each rank computes is shared with its rank number. The rank with the highest score draws a bounding box on the original image and writes it to a file.
+\tab The final implementation has ranks using an MPI\_Allreduce in MPI\_MAXLOC mode. The maximum score that each rank computes is shared with its rank number. The rank with the highest score draws a bounding box on the original image and writes it to a file.
 \end{flushleft}
 \section{Results}
 \subsection{Matching Results}
 \begin{flushleft}
-	\tab Image matching depends on a wide range of factors. Using search images that have too much glare or are too shiny will have most of their information filtered or will not match well. Colors such as gray also pose trouble since two similar looking grays can have very different values. \\\smallskip
-	\tab The test chosen was to search for a button on a coat in good lighting condition. The search image appears twice in the image, with four more similarly colored sections further away. The algorithm would have to determine the newspaper photos did not match and match the circular search image distribution with the button, not the photo. The button was copied from the original image and placed on a white background. It was then searched on the original image. The button was 4 pixel away from its actual position in the image. This represents the best-effort scenario, or the control for this test. A different photo of the same button was used as a search image.\\
+	\tab Image matching depends on a wide range of factors. Using search images that have too much glare or are too shiny will have most of their information filtered or will not match well. Colors such as gray also pose trouble since two similar looking grays can have very different hues. \\\smallskip
+	\tab The test chosen was to search for a button on a coat in good lighting condition. The search image appears twice in the image, with four more similarly colored sections further away. The algorithm would have to determine the newspaper photos did not match and match the circular search image distribution with the button, not the photo. The button was copied from the original image and placed on a white background. It was then searched on the original image. The button was 4 pixels away from its actual position in the image. This represents the best-effort scenario in which the perfect match conditions are set. This is used as the control for this test. A different photo of the same button was used as a search image.\\
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[width=2.2in]{button.png}
@@ -235,7 +232,7 @@ The final implementation has ranks using an MPI\_Allreduce in MPI\_MAXLOC mode. 
 		\includegraphics[width=2.7in]{eight.png}
 		\caption{Multiple areas of same colors will cause mismatches if search set is small.}
 	\end{figure}
-	\tab The scales tested were powers of two from 2 to 64. Pixel distances are from the control and area is in terms of the cutout button. Distances are on a logarithmic scale.\\\smallskip
+	\tab The scales tested were powers of two from 2 to 64. Pixel distances are from the control to the match and area is rated in terms of the cutout button. Distances are on a logarithmic scale.\\\smallskip
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[width=3.5in]{area.png}
@@ -252,7 +249,7 @@ The final implementation has ranks using an MPI\_Allreduce in MPI\_MAXLOC mode. 
 		\includegraphics[width=3.5in]{cropped.png}
 		\caption{Left to right: 2,4 scales; 8 scales; 16,32,64 scales.}
 	\end{figure}
-	\tab For two and four scales, the algorithm failed to match the button. It instead matched with the blue photos in the newspaper, which was to be expected because of poor scoring. The 8 scales test was able to land on the button at only 28 pixels away from the best-effort. Tests with greater than 16 scales showed excellent results being nearly 6 times closer than the 8 scale test. In some cases, the search image cannot get closer to the best-effort with more scales. Disregarding image differences, this is because the image is resize for divisibility. The search image match in the 16 scale test of size 153x152 has an automatic distance of one away from the real position since it was not completely divisible by 8.\\\smallskip
+	\tab For two and four scales, the algorithm failed to match the button. It instead matched with the blue photos in the newspaper, which was to be expected because of poor scoring due to poor scale sizes. The 8 scales test was able to land on the button at only 28 pixels away from the best-effort. Tests with greater than 16 scales showed excellent results being nearly 6 times closer than the 8 scale test. In some cases, the search image cannot get closer to the best-effort with more scales. Disregarding image differences, this is because the image is resize for divisibility. The search image match in the 16 scale test of size 153x152 has an automatic distance of one away from the real position since it was not completely divisible by 8.\\\smallskip
 \tab Another thing to be noted is that the right button was not matched. This is because of the reflection down the middle. These pixel would be filtered out during hashing and alter the distribution. A circle has the highest distribution in the center buckets, which filtering would remove. This means that the search image would never match with the right button.
 	
 \end{flushleft}
@@ -270,7 +267,7 @@ The final implementation has ranks using an MPI\_Allreduce in MPI\_MAXLOC mode. 
 \tab We also checked how much overhead we have from using a single mutex rather than having an array of mutex, and found that there is a significant amount of slowdown with an increased number of threads. \\\smallskip
 We tested with a single node, using a varying number of ranks and threads that multiplied up to the maximum 64 per node. We noticed a significant amount of overhead was resulted from the using a single mutex lock for the entire hitbox among all threads. When a search starts, all the threads are active and will try to lock at the same time which is inefficient. This problem lessens as threads complete operation.\\\smallskip
 \tab As a result, we created a board of mutexes to that gave access to individual indices in the hitbox. This significantly reduced our computation time. After making this change, we reran the same test and found no differences in compute times with a constant number of threads. \\\smallskip
-\tab Further tests were also done to determine the usefulness of pthreads in relation to the number of ranks. The number of ranks plus the number of threads was kept equal to 64. There was little slowdown versus using the maximum number of threads possible. This could be due to the gains received from further parallelizing the hashing process being passed by slowdown from thread creation. Slowdown could also be due to spinlocking even though a 2d mutex array is in use. Areas where the match is apparent early on will get hit frequently, at a scale of hundreds of times. This delays hashing for a long period of time as the thread could be waiting in a line. More threads make this problem worse. Larger images do not benefit from less coinciding hits.\\\smallskip
+\tab Further tests were also done to determine the usefulness of pthreads in relation to the number of ranks. The number of ranks plus the number of threads was kept equal to 64. There was little slowdown versus using the maximum number of threads possible. This could be due to the gains received from further parallelizing the hashing process being passed by slowdown from thread creation. Slowdown could also be due to spinlocking even though a 2D mutex array is in use. Areas where the match is apparent early on will get hit frequently, at a scale of hundreds of times. This delays hashing for a long period of time as the thread could be waiting in a line. More threads make this problem worse. Larger images do not benefit from less coinciding hits.\\\smallskip
 	\begin{figure}[h!]
 		\centering
 		\includegraphics[width=3.5in]{64.png}
@@ -282,9 +279,9 @@ We tested with a single node, using a varying number of ranks and threads that m
 \section{Future Work}
 \begin{flushleft}
 \tab Given more time, we would attempt to make the hashing algorithm on the hitbox more position-aware, meaning that it will not consider a set of pixels a hit if it is too far away from an already discovered cluster on another rank or a previously considered hash. Further improvement could be made by having hashes from the search image remember their position relative to their neighbors. This would help to maintain a cohesive image rather than a wide spread over the hitbox. This method would require high levels of communication between the threads with would slow performance but could yield more accurate results. With a more meaningful scoring system, we could also attempt to share information about what jobs to skip. Meaning, if we were to get a consistently decreasing score while lowering the scale, we would skip scales that are lower than that. We could do this by leaving a thread open with the sole purpose of sending/receiving the current status of scores and scales that other ranks have been computing. \\\smallskip
-	\tab We would also like to be able to come up with a better way to filter our images to reduce noise beyond filtering light colors. The current iteration of the filtering mechanism is used on hashing and distribution detection which greatly influences image detection. Currently, it aggressively filters out near-white pixels and grays. This means it has difficulty detecting . Ideally it would have different functionality based on what color is passed in to it and have some sort of awareness to what is background on a cropped image.  \\\smallskip
+	\tab We would also like to be able to come up with a better way to filter our images to reduce noise beyond filtering light colors. The current iteration of the filtering mechanism is used on hashing and distribution detection which greatly influences image detection. Currently, it aggressively filters out near-white pixels and grays. This means it has difficulty detecting shiny objects or object light in color. Ideally it would have different functionality based on what color is passed in to it and have some sort of awareness to what is background on a cropped image.  \\\smallskip
 	\tab Noise from cameras can be a problem on low light or heavily zoomed images. As image size grows, the problem becomes worse since the program will start hashing noise. A noise detection and reduction algorithm would have to implemented. Effects of noise can be reduced by shrinking the image down. \\\smallskip
-	\tab There were also functions for image skewing and rotation created, but were not used due long runtimes \cite{Paeth:1990:FAG:90767.90811}. The workload algorithm and hashing does repetitive work which slows operation. Introducing rotation and skew to the workload would drastically increase runtime. The current hashing function handles perspective shift well but cannot account for rotation.
+	\tab There were also functions for image skewing and rotation created, but were not used due to long runtimes \cite{Paeth:1990:FAG:90767.90811}. The workload algorithm and hashing does repetitive work which slows operation. Introducing rotation and skew to the workload would drastically increase runtime. The current hashing function handles perspective shift well but cannot account for rotation.
 	Instead of hashing every pixel, most other image recognition algorithms rely on a random sampling of pixels to check \cite{7838673,1634363}, and we would like to do something similar given more time. We would also like to be able to check for better combinations of threads and ranks to reach greater parallelism and speedup. 
 	
 \end{flushleft}
