@@ -1,0 +1,38 @@
+Searching for /gpfs/u/home/PCP7/PCP7gjnt/scratch/taxi_cab.ppm in /gpfs/u/home/PCP7/PCP7gjnt/scratch/nyc_streets.ppm
+Rank 0 - Total 0.069124
+Rank 1 - Total 0.067792
+Rank 2 - Total 0.078059
+Rank 3 - Total 0.077307
+Rank 4 - Total 0.076581
+Rank 5 - Total 0.075882
+Rank 6 - Total 0.075208
+Rank 7 - Total 0.074560
+Rank 8 - Total 0.073938
+Rank 9 - Total 0.073342
+Rank 10 - Total 0.072771
+Rank 11 - Total 0.072227
+Rank 12 - Total 0.071709
+Rank 13 - Total 0.071216
+Rank 14 - Total 0.070750
+Rank 15 - Total 0.070309
+Rank 16 - Total 0.069894
+Rank 17 - Total 0.069506
+Rank 18 - Total 0.069143
+Rank 19 - Total 0.068806
+Rank 20 - Total 0.068495
+Rank 21 - Total 0.068210
+Rank 22 - Total 0.067950
+Rank 23 - Total 0.067717
+Rank 24 - Total 0.067510
+Rank 25 - Total 0.067328
+Rank 26 - Total 0.067173
+Rank 27 - Total 0.067043
+Rank 28 - Total 0.066940
+Rank 29 - Total 0.076862
+Rank 30 - Total 0.077326
+Rank 31 - Total 0.077828
+Rank: 0 -- Started scale: 0.262915
+Rank: 0 -- Score: 0.001037 -- Total hits: 14 -- Pos: (13, 76) -- Size: (285, 104) -- Extra info: 0.000000
+Rank: 0 -- Finished scale: 0.262915
+Rank: 0 finished computations in 8.276119 seconds
+Rank: 0 -- Score: 0.001037 -- Total hits: 14 -- Pos: (13, 76) -- Size: (285, 104)

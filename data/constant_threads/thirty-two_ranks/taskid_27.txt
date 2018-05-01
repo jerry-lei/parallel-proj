@@ -1,0 +1,8 @@
+Rank: 27 -- Started scale: 0.194185
+Rank: 27 -- Score: 0.000212 -- Total hits: 4 -- Pos: (10, 107) -- Size: (217, 80) -- Extra info: 0.000000
+Rank: 27 -- Finished scale: 0.194185
+Rank: 27 -- Started scale: 0.171275
+Rank: 27 -- Score: 0.000320 -- Total hits: 4 -- Pos: (40, 100) -- Size: (193, 64) -- Extra info: 0.000000
+Rank: 27 -- Finished scale: 0.171275
+Rank: 27 finished computations in 12.024511 seconds
+Rank: 27 -- Score: 0.000320 -- Total hits: 4 -- Pos: (40, 100) -- Size: (193, 64)

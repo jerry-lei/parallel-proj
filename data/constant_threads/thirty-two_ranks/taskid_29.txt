@@ -1,0 +1,11 @@
+Rank: 29 -- Started scale: 0.189094
+Rank: 29 -- Score: 0.000507 -- Total hits: 7 -- Pos: (14, 101) -- Size: (209, 72) -- Extra info: 0.000000
+Rank: 29 -- Finished scale: 0.189094
+Rank: 29 -- Started scale: 0.176366
+Rank: 29 -- Score: 0.000071 -- Total hits: 2 -- Pos: (39, 94) -- Size: (193, 72) -- Extra info: 0.000000
+Rank: 29 -- Finished scale: 0.176366
+Rank: 29 -- Started scale: 0.100000
+Rank: 29 -- Score: 0.000379 -- Total hits: 2 -- Pos: (28, 134) -- Size: (113, 40) -- Extra info: 0.000000
+Rank: 29 -- Finished scale: 0.100000
+Rank: 29 finished computations in 15.580739 seconds
+Rank: 29 -- Score: 0.000507 -- Total hits: 7 -- Pos: (14, 101) -- Size: (209, 72)

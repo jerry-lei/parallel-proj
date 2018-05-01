@@ -1,0 +1,10 @@
+Rank: 10 -- Started scale: 0.237460
+Rank: 10 -- Score: 0.003123 -- Total hits: 9 -- Pos: (0, 39) -- Size: (265, 96) -- Extra info: 0.000000
+Rank: 10 -- Finished scale: 0.237460
+Rank: 10 -- Started scale: 0.128001
+Rank: 10 -- Score: 0.000655 -- Total hits: 4 -- Pos: (10, 132) -- Size: (145, 48) -- Extra info: 0.000000
+Rank: 10 -- Finished scale: 0.128001
+Rank: 10 finished computations in 11.395437 seconds
+Rank: 10 -- Score: 0.003123 -- Total hits: 9 -- Pos: (0, 39) -- Size: (265, 96)
+Rank 10 has the best score
+Reduction took 0.000077 seconds
