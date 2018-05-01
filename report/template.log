@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  30 APR 2018 23:51
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  1 MAY 2018 01:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -479,34 +479,31 @@ Missing character: There is no ù in font ptmr7t!
 File: thread_visualization.png Graphic file (type png)
 
 <use thread_visualization.png>
-Package pdftex.def Info: thread_visualization.png used on input line 144.
+Package pdftex.def Info: thread_visualization.png used on input line 145.
 (pdftex.def)             Requested size: 180.67499pt x 239.86575pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [2 <./thread_visualization.png>]
+[2 <./thread_visualization.png>]
 Missing character: There is no ‚ in font ptmr7t!
 Missing character: There is no Ä in font ptmr7t!
 Missing character: There is no ô in font ptmr7t!
- <distribution.png, id=96, 1278.7775pt x 492.84125pt>
-File: distribution.png Graphic file (type png)
 
-<use distribution.png>
-Package pdftex.def Info: distribution.png used on input line 182.
+<distribution.png, id=96, 1278.7775pt x 492.84125pt>
+File: distribution.png Graphic file (type png)
+ <use distribution.png>
+Package pdftex.def Info: distribution.png used on input line 184.
 (pdftex.def)             Requested size: 252.94499pt x 97.4836pt.
 
-Overfull \hbox (1.626pt too wide) in paragraph at lines 182--183
+Overfull \hbox (1.626pt too wide) in paragraph at lines 184--185
  [][] 
  []
 
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 190.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 192.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 190.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 192.
 Missing character: There is no ‚ in font ptmr7t!
 Missing character: There is no Ä in font ptmr7t!
 Missing character: There is no ú in font ptmr7t!
@@ -517,71 +514,93 @@ Missing character: There is no ù in font ptmr7t!
 File: taxi_cab.png Graphic file (type png)
 
 <use taxi_cab.png>
-Package pdftex.def Info: taxi_cab.png used on input line 213.
+Package pdftex.def Info: taxi_cab.png used on input line 216.
 (pdftex.def)             Requested size: 252.94499pt x 87.4129pt.
 
-Overfull \hbox (1.626pt too wide) in paragraph at lines 213--214
+Overfull \hbox (1.626pt too wide) in paragraph at lines 216--217
  [][] 
  []
 
 <nyc_streets.png, id=108, 1144.275pt x 754.82pt>
 File: nyc_streets.png Graphic file (type png)
  <use nyc_streets.png>
-Package pdftex.def Info: nyc_streets.png used on input line 219.
+Package pdftex.def Info: nyc_streets.png used on input line 222.
 (pdftex.def)             Requested size: 252.94499pt x 166.85562pt.
 
-Overfull \hbox (1.626pt too wide) in paragraph at lines 219--220
- [][] 
- []
-
-<overlay_taxi.png, id=109, 1144.275pt x 754.82pt>
-File: overlay_taxi.png Graphic file (type png)
- <use overlay_taxi.png>
-Package pdftex.def Info: overlay_taxi.png used on input line 226.
-(pdftex.def)             Requested size: 252.94499pt x 166.85562pt.
-
-Overfull \hbox (1.626pt too wide) in paragraph at lines 226--227
+Overfull \hbox (1.626pt too wide) in paragraph at lines 222--223
  [][] 
  []
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[4 <./taxi_cab.png> <./nyc_streets.png> <./overlay_taxi.png>] (./template.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 260.
+<overlay_taxi.png, id=109, 1144.275pt x 754.82pt>
+File: overlay_taxi.png Graphic file (type png)
+ <use overlay_taxi.png>
+Package pdftex.def Info: overlay_taxi.png used on input line 229.
+(pdftex.def)             Requested size: 252.94499pt x 166.85562pt.
 
-[5
+Overfull \hbox (1.626pt too wide) in paragraph at lines 229--230
+ [][] 
+ []
 
-]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 260.
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[4 <./taxi_cab.png> <./nyc_streets.png> <./overlay_taxi.png>]
+<scaling_performance.png, id=122, 924.45375pt x 469.755pt>
+File: scaling_performance.png Graphic file (type png)
+
+<use scaling_performance.png>
+Package pdftex.def Info: scaling_performance.png used on input line 249.
+(pdftex.def)             Requested size: 252.94499pt x 128.52716pt.
+
+Overfull \hbox (1.626pt too wide) in paragraph at lines 249--250
+ [][] 
+ []
+
+(./template.bbl)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 274.
+ [5 <./scaling_performance.png>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 274.
  (./template.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 260.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 260.
-Package rerunfilecheck Info: File `template.out' has not changed.
-(rerunfilecheck)             Checksum: D447358FBA35E3016890B62966A90E60;985.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 260.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 274.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 274.
+
+
+Package rerunfilecheck Warning: File `template.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `template.out':
+(rerunfilecheck)             Before: D447358FBA35E3016890B62966A90E60;985
+(rerunfilecheck)             After:  F7692ED40AB161DC5B79A73D66AA5925;939.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 274.
  ) 
 Here is how much of TeX's memory you used:
- 6470 strings out of 492995
- 93575 string characters out of 6132704
- 187742 words of memory out of 5000000
- 9885 multiletter control sequences out of 15000+600000
- 52467 words of font info for 112 fonts, out of 8000000 for 9000
+ 6479 strings out of 492995
+ 93732 string characters out of 6132704
+ 186742 words of memory out of 5000000
+ 9889 multiletter control sequences out of 15000+600000
+ 54175 words of font info for 115 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 29i,10n,29p,1277b,381s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/te
-xlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texl
-ive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texli
-ve/2017/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2017
-/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2017/texmf-
-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2017/texmf-dist/fonts
-/type1/urw/times/utmr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw
-/times/utmri8a.pfb>
-Output written on template.pdf (5 pages, 7567536 bytes).
+ 29i,10n,29p,1810b,382s stack positions out of 5000i,500n,10000p,200000b,80000s
+pdfTeX warning (dest): name{section.7} has been referenced but does not exist
+, replaced by a fixed one
+
+{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/tex
+live/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texl
+ive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texliv
+e/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
+/2017/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2017/t
+exmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2017/texmf-di
+st/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/t
+ype1/urw/times/utmr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw/t
+imes/utmri8a.pfb>
+Output written on template.pdf (5 pages, 7620606 bytes).
 PDF statistics:
- 167 PDF objects out of 1000 (max. 8388607)
- 139 compressed objects within 2 object streams
- 34 named destinations out of 1000 (max. 500000)
- 172 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 170 PDF objects out of 1000 (max. 8388607)
+ 140 compressed objects within 2 object streams
+ 35 named destinations out of 1000 (max. 500000)
+ 177 words of extra memory for PDF output out of 10000 (max. 10000000)
 
