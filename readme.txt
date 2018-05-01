@@ -1,5 +1,7 @@
 # Project: Jerry Lei, Birch Sztabnik, Jonathan Cheng
 
+# Project can be found in: 
+
 # How to run:
 - $ make fast
 - $ make run
