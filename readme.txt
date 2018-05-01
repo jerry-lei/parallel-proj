@@ -1,6 +1,7 @@
 # Project: Jerry Lei, Birch Sztabnik, Jonathan Cheng
 
-# Project can be found in: 
+# Project can be found on kratos @PPCleij4
+-- Under ~/parallel-proj/
 
 # How to run:
 - $ make fast
