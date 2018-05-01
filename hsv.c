@@ -14,7 +14,7 @@ double max(double x, double y)
   return (x > y) ? x : y;
 }
 
-
+/* Function that converts given RGB values to its HSV equivalent -- Returns an HSV struct */
 struct hsv RGBtoHSV(int r, int g, int b){
   double in_r = r/255.0;
   double in_g = g/255.0;
@@ -53,6 +53,8 @@ struct hsv RGBtoHSV(int r, int g, int b){
   return returnHSV;
 }
 
+
+/* Function that converts and HSV to an RGB value -- Reports the values through RGB out pointers */
 void HSVtoRGB (struct hsv hsv, int* r_out, int* g_out, int* b_out)
 {
   double c = hsv.v*hsv.s;

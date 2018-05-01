@@ -6,13 +6,12 @@
 #include <ctype.h>
 #include <math.h>
 #include "image.h"
-#include "boolean.h"
 #include "hash.h"
 #include "hsv.h"
 #include "score.h"
 
 
-//returns the pixel at the given x,y coordinate
+/* Returns a pixel at a given x,y position */
 struct pixel get_pixel(const struct board *board, const int *x, const int *y)
 {
   if ((*x) >= board->resolution_x || ((*y) >= board->resolution_y) || (*x) < 0 || (*y) < 0)
@@ -25,6 +24,7 @@ struct pixel get_pixel(const struct board *board, const int *x, const int *y)
   return (board->image)[*y][*x];
 }
 
+/* Assign a pixel on a board an RGB value */
 void set_pixel(const struct board *board, const int *x, const int *y, int r, int g, int b)
 {
   if ((*x) >= board->resolution_x || ((*y) >= board->resolution_y) || (*x) < 0 || (*y) < 0)
@@ -42,7 +42,7 @@ void set_pixel(const struct board *board, const int *x, const int *y, int r, int
   }
   else
   {
-    (board->image)[*y][*x].red = r;
+    (board->image)[*y][*x].red = 255;
   }
 
   if (r <= 255)
@@ -51,7 +51,7 @@ void set_pixel(const struct board *board, const int *x, const int *y, int r, int
   }
   else
   {
-    (board->image)[*y][*x].blue = b;
+    (board->image)[*y][*x].blue = 255;
   }
 
   if (r <= 255)
@@ -60,9 +60,11 @@ void set_pixel(const struct board *board, const int *x, const int *y, int r, int
   }
   else
   {
-    (board->image)[*y][*x].green = g;
+    (board->image)[*y][*x].green = 255;
   }
 }
+
+/* Multiply each pixel by a scaling factor -- Used for skewing images */
 void scale_pixel(struct pixel *pixel, double scale)
 {
   pixel->red *= scale;
@@ -70,7 +72,7 @@ void scale_pixel(struct pixel *pixel, double scale)
   pixel->green *= scale;
 }
 
-//saves the specified board into the file.
+/* Takes an board, and outputs the board in the PPM format and saves it to the file name */
 void save_ppm(const struct board *board, const char *file)
 {
   FILE *fp;
@@ -88,16 +90,15 @@ void save_ppm(const struct board *board, const char *file)
   fclose(fp);
 }
 
+/* Allocate a 2D array for the board. Each index holds a pixel with RGB values. Returns a pointer to a newly allocated board */
 struct board *make_board(const int *res_x, const int *res_y)
 {
   struct board *bred = malloc(sizeof(struct board));
   struct pixel **image;
-
   if ((image = calloc((*res_y), sizeof(struct pixel *) )) == NULL)
   {
     return NULL;
   }
-
   for (int y = 0; y < (*res_y); ++y)
   {
     if ((image[y] = calloc((*res_x),sizeof(struct pixel)))  == NULL)
@@ -113,6 +114,7 @@ struct board *make_board(const int *res_x, const int *res_y)
   return bred;
 }
 
+/* Allocate a board that is the exact same as the input board. Returns a pointer to the newly allocated board */
 struct board *copy_board(const struct board* old_board){
   int old_x = old_board -> resolution_x;
   int old_y = old_board -> resolution_y;
@@ -126,6 +128,7 @@ struct board *copy_board(const struct board* old_board){
   return new_board;
 }
 
+/* Load a PPM file into a board */
 struct board *load_ppm(const char *file)
 {
   FILE *fp;
@@ -170,7 +173,6 @@ struct board *load_ppm(const char *file)
           if (isdigit(*ptr))
           {
             long val = strtol(ptr, &ptr, 10);
-            //this is so bad i don't even know what i'm thinking
             if (number_ints_read == 0)
             {
               res_x = val;
@@ -203,7 +205,6 @@ struct board *load_ppm(const char *file)
 
   struct board *new_board;
   new_board = make_board(&res_x, &res_y);
-  //fire we made the board
   //read in the pixels
   int current_y = 0;
   int number_ints_read = 0;
@@ -221,7 +222,6 @@ struct board *load_ppm(const char *file)
           number_ints_read = 0;
         }
         long val = strtol(ptr, &ptr, 10);
-        //this is so bad i don't even know what i'm thinking
         if (number_ints_read % 3 == 0)
         {
           r = val;
@@ -250,6 +250,7 @@ struct board *load_ppm(const char *file)
   return new_board;
 }
 
+/* Frees the dynamically allocated board */
 void free_board(struct board **board)
 {
   for (int y = 0; y < (*board)->resolution_y; ++y)
@@ -260,6 +261,7 @@ void free_board(struct board **board)
   free(*board);
 }
 
+/* Crop from all 4 directions while rows/columns are still equal to the input RGB values */
 int autocrop_board(struct board** board, int ignore_r, int ignore_g, int ignore_b)
 {
   int dim_x = (*board) -> resolution_x;
@@ -318,8 +320,10 @@ int autocrop_board(struct board** board, int ignore_r, int ignore_g, int ignore_
     return 0;
   }
 
+  /* Make up a new board */
   struct board *new_board = make_board(&new_dim_x, &new_dim_y);
 
+  /* Set the important pixels (Not ignored by input parameters) */
   for(int c1 = 0; c1 < new_dim_x; ++c1){
     for(int c2 = 0; c2 < new_dim_y; ++c2){
       int start_left = left_bound + c1 + 1;
@@ -336,6 +340,7 @@ int autocrop_board(struct board** board, int ignore_r, int ignore_g, int ignore_
   return 0;
 }
 
+/* Shear in the x dimension -- information can be found in references linked in image.h */
 int shear_x(struct board **board, double degrees, int ignore_r, int ignore_g, int ignore_b)
 {
   double beta = tan((degrees * (PI / 180.0)) / 2);
@@ -443,6 +448,7 @@ int shear_x(struct board **board, double degrees, int ignore_r, int ignore_g, in
 }
 
 
+/* Shear in the y dimension -- information can be found in references linked in image.h */
 int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, int ignore_b)
 {
   double alpha = sin((0-degrees) * (PI / 180.0));
@@ -551,6 +557,7 @@ int shear_y(struct board **board, double degrees, int ignore_r, int ignore_g, in
   return 0;
 }
 
+/* Rotation -- information can be found in references linked in image.h */
 int rotate(struct board** board, double degrees,int ignore_r, int ignore_g, int ignore_b)
 {
   if(shear_x(board,degrees,ignore_r,ignore_g,ignore_b)==-1)
@@ -568,6 +575,7 @@ int rotate(struct board** board, double degrees,int ignore_r, int ignore_g, int 
   return 0;
 }
 
+/* Resize an image by a given percentage */
 int resize_percent(struct board** board, double percent)
 {
   int dim_x = ceil((*board)->resolution_x*percent);
@@ -582,6 +590,7 @@ int resize_percent(struct board** board, double percent)
 
   struct pixel pixel;
 
+  /* Set a pixels in the resized image */
   for (int y = 0; y < dim_y; y++)
   {
     for (int x = 0; x < dim_x; x++)
@@ -599,6 +608,8 @@ int resize_percent(struct board** board, double percent)
 
   return 0;
 }
+
+/* Resize an image with given height (y) and width (x) dimensions. */
 int resize_dimension(struct board** board, int dim_x, int dim_y)
 {
   double y_percent= (double)(*board)->resolution_y/(double)dim_y;
@@ -631,9 +642,7 @@ int resize_dimension(struct board** board, int dim_x, int dim_y)
   return 0;
 }
 
-//returns the average pixel color
-//needed for hashing
-//should happen after resizing if resizing
+/* Modifies a board and changes its pixels to its greyscale value */
 int to_grayscale(struct board** board)
 {
   int avg_color = 0;
@@ -652,6 +661,8 @@ int to_grayscale(struct board** board)
   return avg_color / ((*board)->resolution_x*(*board)->resolution_y);
 }
 
+
+/* Draw a rainbow bounding box around the found object */
 void bounding_box(struct board** board, struct best_score_info* score)
 {
   int start_x = score->search_start_x;

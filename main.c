@@ -11,34 +11,6 @@
 #include <inttypes.h>
 #include <mpi.h>
 #include <float.h>
-/*
-/////////////////////////////////////////////DON'T INCLUDE THE /'S
-#RUNNER.SH
-#!/bin/sh
-#SBATCH --job-name=PPCFinalProject
-#
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=sztabb@rpi.edu
-srun --nodes=<#nodes> --nodes-per-task=1 --exclusive --overcommit -o logfile.log /gpfs/u/home/PCP7/PCP7sztb/scratch/final_proj.xl 4
-//////////////////////////////////////////////
-THIS COMMAND QUEUES THE SCRIPT
-sbatch --partition debug --nodes 4 --time 30 ./runner.sh
-///////////////////////////////
-MAKEFILE
-
-all:
-	mpixlc_r -lpthread -O5 hash.c image.c main.c hsv.c score.c -o final_proj.xl
-
-
-CHANGE ALL OCCURANCES OF YOUR USERNAME
-
-
-REMOVE THIS ON BGQ  ||
-                    ||
-                    ||
-                   \  /
-                    \/
-*/
 //#define BGQ 1 // when running BG/Q, comment out when running on kratos
 //#define FILE_OUTPUT 1 //uncomment if you want file output for each rank. Requires correct directories
 #ifdef BGQ
@@ -68,8 +40,8 @@ int main(int argc, char* argv[])
 #endif
 
 #ifndef BGQ
-  char* search_image = "nick_jerry.ppm";
-  char* original_image = "wow.ppm";
+  char* search_image = "./images/taxi_cab.ppm";
+  char* original_image = "./images/nyc_streets.ppm";
 #else
   //char* search_image = "/gpfs/u/home/PCP7/PCP7sztb/scratch/nick_jerry.ppm";
   //char* original_image = "/gpfs/u/home/PCP7/PCP7sztb/scratch/wow.ppm";
@@ -84,8 +56,7 @@ int main(int argc, char* argv[])
   struct board* search = load_ppm(search_image);
   autocrop_board(&search, 255,255,255);
   struct board* original = load_ppm(original_image);
-  //resize_percent(&original,.18);
-  //resize_percent(&search,.18);
+  resize_percent(&original,.50);
 
   if(mpi_taskid == 0){
 #ifdef FILE_OUTPUT
@@ -168,12 +139,6 @@ int main(int argc, char* argv[])
       fprintf(ptr, "Rank %d - Total %f\n", c1, current_total[c1]);
 #endif
       printf("Rank %d - Total %f\n", c1, current_total[c1]);
-      // int c2 = 0;
-      // while(work_load[c1][c2] != 0){
-      //   printf("%f ", work_load[c1][c2]);
-      //   c2++;
-      // }
-      // printf("\n");
     }
   }
 
@@ -188,6 +153,7 @@ int main(int argc, char* argv[])
   //START TIMING
   int counter = 0;
   start_cycles = GetTimeBase();
+  /* Loop through the work assigned to the rank */
   while(work_load[mpi_taskid][counter] != 0){
     struct board* copied_search = copy_board(search);
     float scale = work_load[mpi_taskid][counter];
@@ -195,11 +161,13 @@ int main(int argc, char* argv[])
     fprintf(ptr,"Rank: %d -- Started scale: %f\n", mpi_taskid, scale);
 #endif
     printf("Rank: %d -- Started scale: %f\n", mpi_taskid, scale);
+    /* Do the entire computation and get the score! */
     struct best_score_info result = find_image(&original,&copied_search, scale);
 #ifdef FILE_OUTPUT
     fprintf(ptr,"Rank: %d -- Score: %f -- Total hits: %d -- Pos: (%d, %d) -- Size: (%d, %d) -- Extra info: %f\n", mpi_taskid, result.score, result.total_hits, result.search_start_x, result.search_start_y, result.dimension_x, result.dimension_y, result.extra_info);
 #endif
     printf("Rank: %d -- Score: %f -- Total hits: %d -- Pos: (%d, %d) -- Size: (%d, %d) -- Extra info: %f\n", mpi_taskid, result.score, result.total_hits, result.search_start_x, result.search_start_y, result.dimension_x, result.dimension_y, result.extra_info);
+    /* Compare the current score with previous scores and get the best one */
     if(result.score > best_current_score.score){
       best_current_score.score = result.score;
       best_current_score.search_start_x = result.search_start_x;
@@ -236,10 +204,10 @@ int main(int argc, char* argv[])
   local_res.score=best_current_score.score;
   local_res.rank=mpi_taskid;
 
-  //we need to define a struct with a double and int
+  /* Reduce all scores into a single rank */
   MPI_Allreduce(&local_res,&global_res,1,MPI_DOUBLE_INT,MPI_MAXLOC,MPI_COMM_WORLD);
 
-
+  /* If the max score is reduced to "my rank", draw onto the original image to show the outline */
   if(mpi_taskid == global_res.rank)
   {
     end_cycles=GetTimeBase();
@@ -250,11 +218,11 @@ int main(int argc, char* argv[])
 #endif
     printf("Rank %d has the best score\n", mpi_taskid);
     printf("Reduction took %f seconds\n",time_in_secs);
+    /* Make the bounding box! */
     bounding_box(&original,&best_current_score);
-#ifdef FILE_OUTPUT    
+#ifdef FILE_OUTPUT
     char boxed[100];
-    sprintf(boxed, "/gpfs/u/home/PCP7/PCP7sztb/scratch/output_%d/boxed_%d_ranks.ppm",mpi_numtasks, mpi_numtasks);
-    sprintf(boxed, "boxed_%d_ranks.ppm",mpi_numtasks);
+    sprintf(boxed, "./boxed_%d_ranks.ppm",mpi_numtasks);
     save_ppm(original,boxed);
 #endif
   }

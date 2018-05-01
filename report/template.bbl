@@ -1,0 +1,26 @@
+\begin{thebibliography}{1}
+
+\bibitem{7838673}
+M.~Guan, C.~Wen, K.~Y. Lim, M.~Shan, P.~Tan, C.~L. Ng, and Y.~Zou.
+\newblock Visual tracking via random partition image hashing.
+\newblock In {\em 2016 14th International Conference on Control, Automation,
+  Robotics and Vision (ICARCV)}, pages 1--6, Nov 2016.
+
+\bibitem{Paeth:1990:FAG:90767.90811}
+A.~W. Paeth.
+\newblock Graphics gems.
+\newblock chapter A Fast Algorithm for General Raster Rotation, pages 179--195.
+  Academic Press Professional, Inc., San Diego, CA, USA, 1990.
+
+\bibitem{1634363}
+A.~Swaminathan, Y.~Mao, and M.~Wu.
+\newblock Robust and secure image hashing.
+\newblock {\em IEEE Transactions on Information Forensics and Security},
+  1(2):215--230, June 2006.
+
+\bibitem{DBLP:conf/iih-msp/YangGN06}
+B.~Yang, F.~Gu, and X.~Niu.
+\newblock Block mean value based image perceptual hashing.
+\newblock In {\em IIH-MSP}, pages 167--172. IEEE Computer Society, 2006.
+
+\end{thebibliography}
